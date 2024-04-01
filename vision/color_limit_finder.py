@@ -14,7 +14,7 @@ def save_value(lower, upper):
         f.write("\n")
         f.write(str(np.array2string(upperLimit, separator=',')))
 
-max_value = 254
+max_value = 255
 max_value_H = 360//2
 low_H = 0
 low_S = 0
