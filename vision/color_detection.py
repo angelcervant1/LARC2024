@@ -55,19 +55,19 @@ class ColorDetection():
                 temp =  ymenor, xmenor, ymayor, xmayor
 
                 if color == (255,0,0):
-                    print('azul')
+                    # print('azul')
                     self.detections.append('azul')
                     
                 if color == (0,255,0):
-                    print('verde')
+                    # print('verde')
                     self.detections.append('verde')
 
                 if color == (0,0,255):
-                    print('rojo')   
+                    # print('rojo')   
                     self.detections.append('rojo')
 
                 if color == (0,255,255):
-                    print('amarillo')
+                    # print('amarillo')
                     self.detections.append('amarillo')
 
                 self.updated = cv2.drawContours(frame,[nuevoContorno],0,color,3)
@@ -95,10 +95,14 @@ class ColorDetection():
 
         for index in range(len(boxes)):
             # [label, xmin, xmax, pixel en x]
-
-            midpoint = abs(float(boxes[index][2]) - float(boxes[index][1])) / 2 + float(boxes[index][1]) - self.x_pixels / 2 # (xmax - xmin)/2 + xmin - width
+            diference = abs(float(boxes[index][3]) - float(boxes[index][1]))/2
+            half = self.x_pixels/2 
+            xc = diference + float(boxes[index][1])
+            midpoint =  xc - half# (xmax - xmin)/2 + xmin - width
+            # print("min: " + str(boxes[index][1]) + " xc: " + str(xc) + "midpoint: " + str(midpoint) + " diference: " + str(diference) + " half " + str(half))
             res.append([str(detections[index]), float(boxes[index][1]), float(boxes[index][3]), midpoint])
-        self.color_detections_data = res 
+        self.color_detections_data = res
+        self.detect_color_pattern_cb()
 
     def color_detection(self):
         frame = self.image
@@ -110,14 +114,14 @@ class ColorDetection():
         lowerRed2 = np.array([155,162,150], np.uint8)
         upperRed2 = np.array([179,255,255], np.uint8)
         
-        lowerBlue = np.array([105,250,200], np.uint8)
-        upperBlue = np.array([121,255,255], np.uint8)
+        lowerBlue = np.array([  0,187, 32], np.uint8)
+        upperBlue = np.array([180,255,255], np.uint8)
         
         lowerYellow = np.array([26,171,168], np.uint8)
         upperYellow = np.array([34,255,255], np.uint8)
         
-        lowerGreen = np.array([74,65,32], np.uint8)
-        upperGreen = np.array([139,183,255], np.uint8)  
+        lowerGreen = np.array([75,48, 5], np.uint8)
+        upperGreen = np.array([104,203, 97], np.uint8)  
 
         frameHSV = cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
         maskAzul = cv2.inRange(frameHSV, lowerBlue, upperBlue)
@@ -136,16 +140,16 @@ class ColorDetection():
 
         self.get_objects(self.boxes, self.detections)
     
-    def detect_color_pattern_cb(self, req):
-        print("detect_color_pattern_cb")
-        data = self.detections
+    def detect_color_pattern_cb(self):
+        # print("detect_color_pattern_cb")
+        data = self.color_detections_data
         xTile = 0
 
         sz = len(data)
         if sz == 0:
             return xTile
 
-        x_last_max = data[len(data-1)][1]
+        x_last_max = data[len(data)-1][1]
         point_x_min_id = 0
         color_seq = ""
 
@@ -167,10 +171,11 @@ class ColorDetection():
                 point_x_min_id = i
 
         #check if subsequence
-        print(color_seq)
-        #Checa que detecte un minimo de 3 colores
-        if color_seq in self.static_color_seq and len(color_seq) >= 3:
+        # print(color_seq)
+        #Checa que detecte un minimo de # colores
+        if color_seq in self.static_color_seq and len(color_seq) >= 2:
             #get square from closer point x and adjacents
+            print(data[point_x_min_id][0])
             x_square_label = color2Letter[ data[point_x_min_id][0] ]
             x_square_cont = ""
             if point_x_min_id > 0:
@@ -193,7 +198,7 @@ class ColorDetection():
             elif x_square_label == "G" and x_square_cont == "BG":
                 xTile = 1
 
-            print("xTile: " + str(xTile))
+            # print("xTile: " + str(xTile))
         self.xTile = xTile
     
     def main(self):
@@ -204,7 +209,7 @@ class ColorDetection():
             ret, frame = cap.read()
             self.image = frame
             if self.first_iteration:
-                (x, y) = frame.shape()
+                y, x, _= frame.shape
                 self.x_pixels = x
                 self.y_pixels = y
                 self.first_iteration = False
