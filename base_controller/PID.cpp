@@ -67,8 +67,8 @@ double PID::compute_dt(const double setpoint, const double input, const double s
   error2 = error1;
   error1 = error;
   
-  if(output > 100.0)
-    output = 100.0;
+  if(output > 380.0)
+    output = 380.0;
   if(output < 1.0)
     output = 1.0;
   

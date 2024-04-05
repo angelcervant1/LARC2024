@@ -40,8 +40,6 @@ Kinematics::Kinematics(int motor_max_rpm, float wheel_diameter, float fr_wheels_
   this->bno = bno; //Pass BNO info by reference
 }
 
-
-
 Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angular_z)
 {
   

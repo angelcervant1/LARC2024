@@ -5,15 +5,13 @@
 //////////////////////////////////Constructor//////////////////////////////////////
 Motor::Motor() {}
 Motor::Motor(const MotorId id, const uint8_t digital_one, const uint8_t digital_two, 
-const uint8_t analog_one, const uint8_t encoder_one, const uint8_t encoder_two) : 
+const uint8_t analog_one, const uint8_t encoder_one) : 
 pid_(kP, kI, kD, kPidMinOutputLimit, kPidMaxOutputLimit, kPidMaxErrorSum, kPidSampleTime) {
   id_ = id;
   digital_one_ = digital_one;
   digital_two_ = digital_two;
   analog_one_ = analog_one;
   encoder_one_ = encoder_one;
-  encoder_two_ = encoder_two;
-
   stop();
   defineOutput();
 
@@ -26,19 +24,18 @@ void Motor::defineOutput() {
   pinMode(digital_two_, OUTPUT);
   pinMode(analog_one_, OUTPUT);
   pinMode(encoder_one_, INPUT);
-  pinMode(encoder_two_, INPUT);
 }
 
 void Motor::initEncoders() {
   switch (id_) {
-    case MotorId::BackLeft:
-      attachInterrupt(digitalPinToInterrupt(encoder_one_), Encoder::backLeftEncoder, RISING);
-    break;
-    case MotorId::FrontLeft:
+    case MotorId::BackRight:
       attachInterrupt(digitalPinToInterrupt(encoder_one_), Encoder::frontLeftEncoder, RISING);
     break;
-    case MotorId::BackRight:
+    case MotorId::FrontLeft:
       attachInterrupt(digitalPinToInterrupt(encoder_one_), Encoder::backRightEncoder, RISING);
+    break;
+    case MotorId::BackLeft:
+      attachInterrupt(digitalPinToInterrupt(encoder_one_), Encoder::backLeftEncoder, RISING);
     break;
     case MotorId::FrontRight:
       attachInterrupt(digitalPinToInterrupt(encoder_one_), Encoder::frontRightEncoder, RISING);
@@ -127,8 +124,7 @@ void Motor::stableRPM(const double velocity) {
     current_speed_ = 10 * pid_ticks_ * (60 / kPulsesPerRevolution);
     setPidTicks(0);
   }
-  
-  //Serial.println(getCurrentSpeed());
+  Serial.print("PPR: "); Serial.println(pid_ticks_);
 
   int speed_sign = fmin(1, fmax(-1, velocity));
   //velocity = fabs(velocity);
@@ -151,7 +147,6 @@ void Motor::stableRPM(const double velocity) {
   Serial.print("Current Motor rpm: "); Serial.println(getCurrentSpeed());
   RpmToPwm(tmp_pwm);
   //Serial.print("PWM value: "); Serial.println(pwm_);
-
   changePwm(pwm_);
 }
 
@@ -200,8 +195,4 @@ MotorState Motor::getCurrentState() {
 
 uint8_t Motor::getEncoderOne() {
   return encoder_one_;
-}
-
-uint8_t Motor::getEncoderTwo() {
-  return encoder_two_;
 }

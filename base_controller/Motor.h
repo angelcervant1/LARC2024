@@ -16,14 +16,14 @@ enum class MotorState {
 class Motor {
   public:
     // Motor Characteristics.
-    static constexpr double kPulsesPerRevolution = 4320.0;
-    static constexpr double kWheelDiameter = 0.105;
-    static constexpr double kWheelCircumference = 0.33;
+    static constexpr double kPulsesPerRevolution = 242.0;
+    static constexpr double kWheelDiameter = 0.072;
+    static constexpr double kWheelCircumference = kWheelDiameter * 3.14159;
     
     //////////////////////////////////Constructor//////////////////////////////////////
     Motor();
     Motor(const MotorId id, const uint8_t digital_one, const uint8_t digital_two, 
-    const uint8_t analog_one, const uint8_t encoder_one, const uint8_t encoder_two);
+    const uint8_t analog_one, const uint8_t encoder_one);
     
     
     //////////////////////////////////Initialization//////////////////////////////////////
@@ -92,8 +92,6 @@ class Motor {
     uint8_t getEncoderOne();
 
     // Get Encoder Two pin.
-    uint8_t getEncoderTwo();
-
     // Get PWM
     uint8_t getPWM();
 
@@ -111,8 +109,6 @@ class Motor {
     uint8_t digital_two_;
     uint8_t analog_one_;
     uint8_t encoder_one_;
-    uint8_t encoder_two_;
-
     // Velocity.
     uint8_t pwm_ = 0;
     double tmp_pwm = 0;
@@ -122,7 +118,7 @@ class Motor {
     double last_ticks_ = 0;
     double current_speed_ = 0;
     double target_speed_ = 0;
-    double kMaxRpm = 100.0;
+    double kMaxRpm = 380.0;
     double prevMillis = 0;
     double currentMillis = 0;
     double interval = 100;
@@ -139,8 +135,8 @@ class Motor {
     static constexpr double kSecondsInMinute = 60;
     static constexpr double kPidCountTimeSamplesInOneSecond = kOneSecondInMillis/kPidMotorSampleTime;
     static constexpr double kPidCountTimeSamplesInOneMinute = kSecondsInMinute*kPidCountTimeSamplesInOneSecond;
-    static constexpr double kP = 5.0;
-    static constexpr double kI = 1.5;
+    static constexpr double kP = 1.0;
+    static constexpr double kI = 0.5;
     static constexpr double kD = 0;
     
 

@@ -9,16 +9,16 @@ Movement::Movement(BNO *bno) : kinematics_(kRPM, kWheelDiameter, kFrWheelsDist, 
 
   back_left_motor_ = Motor(MotorId::BackLeft, kDigitalPinsBackLeftMotor[1], 
                           kDigitalPinsBackLeftMotor[0], kAnalogPinBackLeftMotor, 
-                          kEncoderPinsBackLeftMotor[0], kEncoderPinsBackLeftMotor[1]);
+                          kEncoderPinsBackLeftMotor);
   front_left_motor_ = Motor(MotorId::FrontLeft, kDigitalPinsFrontLeftMotor[1], 
                             kDigitalPinsFrontLeftMotor[0], kAnalogPinFrontLeftMotor, 
-                            kEncoderPinsFrontLeftMotor[0], kEncoderPinsFrontLeftMotor[1]);
+                            kEncoderPinsFrontLeftMotor);
   back_right_motor_ = Motor(MotorId::BackRight, kDigitalPinsBackRightMotor[0], 
                             kDigitalPinsBackRightMotor[1], kAnalogPinBackRightMotor, 
-                            kEncoderPinsBackRightMotor[0], kEncoderPinsBackRightMotor[1]);
+                            kEncoderPinsBackRightMotor);
   front_right_motor_ = Motor(MotorId::FrontRight, kDigitalPinsFrontRightMotor[0], 
                             kDigitalPinsFrontRightMotor[1], kAnalogPinFrontRightMotor, 
-                            kEncoderPinsFrontRightMotor[0], kEncoderPinsFrontRightMotor[1]);
+                            kEncoderPinsFrontRightMotor);
 }
 
 //////////////////////////////////Encoders//////////////////////////////////////

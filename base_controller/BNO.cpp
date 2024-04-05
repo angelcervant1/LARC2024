@@ -53,9 +53,6 @@ float BNO::getZAccel() {
 }
 
 //////////////////////////////////Get Functions//////////////////////////////////////
-
-
-
 void BNO::reset() {
   digitalWrite(reset_pin_, LOW);  
   delayMicroseconds(30);

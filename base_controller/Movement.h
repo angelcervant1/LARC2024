@@ -80,27 +80,27 @@ class Movement {
     double radiansToDegrees(const double radians);
 
     // Pins,
-    static constexpr uint8_t kDigitalPinsFrontLeftMotor[2] = {15, 14};
-    static constexpr uint8_t kAnalogPinFrontLeftMotor = 11;
-    static constexpr uint8_t kEncoderPinsFrontLeftMotor[2] = {3, 49};
+    static constexpr uint8_t kDigitalPinsFrontLeftMotor[2] = {44, 43};
+    static constexpr uint8_t kAnalogPinFrontLeftMotor = 5;
+    static constexpr uint8_t kEncoderPinsFrontLeftMotor = 2;
 
-    static constexpr uint8_t kDigitalPinsBackLeftMotor[2] = {23, 22};
-    static constexpr uint8_t kAnalogPinBackLeftMotor = 6;
-    static constexpr uint8_t kEncoderPinsBackLeftMotor[2] = {2, 48};
+    static constexpr uint8_t kDigitalPinsBackLeftMotor[2] = {42, 41};
+    static constexpr uint8_t kAnalogPinBackLeftMotor = 4;
+    static constexpr uint8_t kEncoderPinsBackLeftMotor = 19;
 
-    static constexpr uint8_t kDigitalPinsFrontRightMotor[2] = {26,27};
-    static constexpr uint8_t kAnalogPinFrontRightMotor = 7;
-    static constexpr uint8_t kEncoderPinsFrontRightMotor[2] = {19, 45};
+    static constexpr uint8_t kDigitalPinsFrontRightMotor[2] = {40,39};
+    static constexpr uint8_t kAnalogPinFrontRightMotor = 10;
+    static constexpr uint8_t kEncoderPinsFrontRightMotor = 3;
 
-    static constexpr uint8_t kDigitalPinsBackRightMotor[2] = {30,31};
-    static constexpr uint8_t kAnalogPinBackRightMotor = 8;
-    static constexpr uint8_t kEncoderPinsBackRightMotor[2] = {18, 44};
+    static constexpr uint8_t kDigitalPinsBackRightMotor[2] = {38,37};
+    static constexpr uint8_t kAnalogPinBackRightMotor = 9;
+    static constexpr uint8_t kEncoderPinsBackRightMotor = 18;
 
     // Velocity maximum.
-    static constexpr double kFrWheelsDist = 0.24;
-    static constexpr double kLrWheelsDist = 0.24;
-    static constexpr double kWheelDiameter = 0.15;
-    static constexpr double kRPM = 40.0;
+    static constexpr double kFrWheelsDist = 0.235;
+    static constexpr double kLrWheelsDist = 0.120;
+    static constexpr double kWheelDiameter = 0.072;
+    static constexpr double kRPM = 380.0;
     static constexpr double kRPS = kRPM / 60;
     static constexpr double kMaxVelocity = kRPS * (M_PI * kWheelDiameter);
 
