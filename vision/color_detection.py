@@ -173,7 +173,7 @@ class ColorDetection():
         #check if subsequence
         # print(color_seq)
         #Checa que detecte un minimo de # colores
-        if color_seq in self.static_color_seq and len(color_seq) >= 2:
+        if color_seq in self.static_color_seq and len(color_seq) >= 3:
             #get square from closer point x and adjacents
             print(data[point_x_min_id][0])
             x_square_label = color2Letter[ data[point_x_min_id][0] ]
