@@ -114,8 +114,8 @@ class ColorDetection():
         lowerRed2 = np.array([155,162,150], np.uint8)
         upperRed2 = np.array([179,255,255], np.uint8)
         
-        lowerBlue = np.array([  0,187, 32], np.uint8)
-        upperBlue = np.array([180,255,255], np.uint8)
+        lowerBlue = np.array([110,102,26], np.uint8)
+        upperBlue = np.array([120,177,61], np.uint8)
         
         lowerYellow = np.array([26,171,168], np.uint8)
         upperYellow = np.array([34,255,255], np.uint8)
@@ -173,9 +173,9 @@ class ColorDetection():
         #check if subsequence
         # print(color_seq)
         #Checa que detecte un minimo de # colores
-        if color_seq in self.static_color_seq and len(color_seq) >= 3:
+        if color_seq in self.static_color_seq and len(color_seq) >= 2:
             #get square from closer point x and adjacents
-            print(data[point_x_min_id][0])
+            # print(data[point_x_min_id][0])
             x_square_label = color2Letter[ data[point_x_min_id][0] ]
             x_square_cont = ""
             if point_x_min_id > 0:
@@ -198,7 +198,7 @@ class ColorDetection():
             elif x_square_label == "G" and x_square_cont == "BG":
                 xTile = 1
 
-            # print("xTile: " + str(xTile))
+            print("xTile: " + str(xTile))
         self.xTile = xTile
     
     def main(self):
