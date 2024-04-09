@@ -2,8 +2,9 @@ import cv2
 import numpy as np
 import pathlib
 import sys
+import Constants
 
-sys.path.append(str(pathlib.Path(__file__).parent) + '/../include')
+# sys.path.append(str(pathlib.Path(__file__).parent) + '/../include')
 from vision_utils import *
 
 class DetectorAruco:
@@ -14,13 +15,26 @@ class DetectorAruco:
         self.flag = False
         self.mask  = None
         self.cv_image = np.array([])
+
+        self.boxes = []
+        self.detections = []
+
+        self.x_pixels = 0
+        self.y_pixels = 0
+
+        self.aruco_detections_data = None
+
+        # Flags 
+        self.first_iteration = True 
+        self.img_flag = True
+
         self.main()
 
 
     def detectar_arucos(self):
         frame = self.cv_image
-        dictionary = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
-        parameters = cv2.aruco.DetectorParameters_create()
+        dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_250)
+        parameters =  cv2.aruco.DetectorParameters()
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         corners, ids, rejectedImgPoints = cv2.aruco.detectMarkers(gray, dictionary, parameters=parameters)
         frame_with_markers = cv2.aruco.drawDetectedMarkers(frame, corners, ids)
@@ -84,63 +98,33 @@ class DetectorAruco:
             midpoint =  xc - half# (xmax - xmin)/2 + xmin - width
             # print("min: " + str(boxes[index][1]) + " xc: " + str(xc) + "midpoint: " + str(midpoint) + " diference: " + str(diference) + " half " + str(half))
             res.append([str(detections[index]), float(boxes[index][1]), float(boxes[index][3]), midpoint])
-        self.color_detections_data = res
-        self.detect_color_pattern_cb()
-    # def get_objects(self, boxes, detections):
-    #     res = []
+        self.aruco_detections_data = res            
 
-    #     pa = PoseArray()
-    #     pa.header.frame_id = "zed2_base_link"
-    #     pa.header.stamp = rospy.Time.now()
-    #     for index in range(len(boxes)):
-    #         if True:
-    #             point3D = Point()
-    #             rospy.logwarn("---------------------------")
-
-
-    #             rospy.logwarn("pose")
-    #             point2D  = get2DCentroid(boxes[index])
-    #             rospy.logwarn(point2D)
-    #             # Dummy point2d
-
-    #             if len(self.depth_image) != 0:
-    #                 depth = get_depth(self.depth_image, point2D)
-    #                 point3D_ = deproject_pixel_to_point(self.camera_info, point2D, depth)
-    #                 point3D.x = point3D_[0] - 0.05
-    #                 point3D.y = point3D_[1]
-    #                 point3D.z = point3D_[2]
-    #                 pa.poses.append(Pose(position=point3D))
-    #                 res.append(
-    #                 objectDetection(
-
-    #                     label = int(index), # 1
-    #                     labelText = str(detections[index]), # "Hscore = float(0.0),
-    #                     category = str('aruco'),
-    #                     cx = float(self.cx),
-    #                     cy = float(self.cy),    
-    #                     ymin = float(boxes[index][0]),
-    #                     xmin = float(boxes[index][1]),
-    #                     ymax = float(boxes[index][2]),
-    #                     xmax = float(boxes[index][3]),
-    #                     point3D = point3D
-    #                 )
-    #             )
-    #         self.posePublisher.publish(pa)
-
-    #     self.pubData.publish(objectDetectionArray(detections=res))                
-
-        
     
     def main(self):
-        rospy.logwarn("Starting listener")
-        rospy.init_node('detector_arucos', anonymous=True)
-        rate = rospy.Rate(10) # 10hz
-        try :
-            while not rospy.is_shutdown():
-                
-                rate.sleep()
-        except KeyboardInterrupt:
-            rospy.logwarn("Keyboard interrupt detected, stopping listener")
+       #Runs camara
+        camara_index = Constants.camara_index
+        cap = cv2.VideoCapture(camara_index)
+        while True: 
+            ret, frame = cap.read()
+            self.image = frame
+            if self.first_iteration:
+                y, x, _= frame.shape
+                self.x_pixels = x
+                self.y_pixels = y
+                self.first_iteration = False
+            
+            if self.img_flag: 
+                self.updated = frame
+                self.cv_image = self.updated
+
+            self.detectar_arucos()
+            cv2.imshow("frame", self.updated)
+            self.boxes = []
+            self.detections = []
+            self.img_flag = True
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
 
 
 if __name__ == '__main__':
