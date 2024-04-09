@@ -43,7 +43,7 @@ Kinematics::output Kinematics::getRPM(float linearX, float linearY, float angula
   
   //Distance from the center of the robot to the center of the wheels
   float R = 0.33;
-
+  bno->updateBNO();
   // //Vt = ω * radius
   tangential_vel_ = angular_vel_z_mins_ * lr_wheels_dist_;
   x_rpm_ = linear_vel_x_mins_ / circumference_;

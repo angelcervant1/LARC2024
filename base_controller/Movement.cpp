@@ -3,7 +3,7 @@
 //////////////////////////////////Constructor//////////////////////////////////////
 Movement::Movement(BNO *bno) : kinematics_(kRPM, kWheelDiameter, kWheelBase, kWheelTrack,  bno)
 { 
-  pidBno = PID(kBnoKP, kBnoKI, kBnoKD, 0, 360, kMaxErrorSum, 100);
+  pidBno = PID(kBnoKP, kBnoKI, kBnoKD, 0, 180, kMaxErrorSum, 100);
   this->bno = bno;
   back_left_motor_ = Motor(MotorId::BackLeft, kDigitalPinsBackLeftMotor[1], 
                           kDigitalPinsBackLeftMotor[0], kAnalogPinBackLeftMotor, 
@@ -89,14 +89,6 @@ void Movement::cmdVelocity(const double linear_x, const double linear_y, const d
   
   updatePIDKinematics(rpm.motor1, rpm.motor2, rpm.motor3, rpm.motor4);
 
-  Serial.print("Back Left Motor Setpoint RPM: "); Serial.println(rpm.motor1);
-  Serial.print("Back Right Motor Setpoint RPM: "); Serial.println(rpm.motor2);
-  Serial.print("Front Left Motor Setpoint RPM: "); Serial.println(rpm.motor3);
-  Serial.print("Front Right Motor Setpoint RPM: "); Serial.println(rpm.motor4);  
-  Serial.print("Back Left Motor PWM: "); Serial.println(back_left_motor_.getPWM());
-  Serial.print("Back Right Motor PWM: "); Serial.println(back_right_motor_.getPWM());
-  Serial.print("Front Left Motor PWM: "); Serial.println(front_left_motor_.getPWM());
-  Serial.print("Front Right Motor PWM: "); Serial.println(front_right_motor_.getPWM());
 }
 
 //////////////////////////ADJUSTING CMD VELOCITY BASED ON BNO FEEDBACK//////////////////////////
@@ -104,47 +96,47 @@ void Movement::orientedMovement(const double linear_x, const double linear_y, do
   bno->updateBNO();
   float current_angle = bno->getYaw();
   float angle_error = robotAngle_ - current_angle;
+  if (current_angle>180){
+    current_angle-=360;
+    angle_error = robotAngle_ + current_angle;
+  } else {
+    angle_error = robotAngle_ - current_angle;
+  }
 
+  Serial.print("Setpoint:");Serial.print(robotAngle_); 
+  Serial.print(" "); 
+  Serial.print("Current:"); Serial.println(current_angle);
   Kinematics::output rpm;
   
   if(abs(angle_error) > kAngleTolerance_){
-    float angular_speed = pidBno.compute_dt(robotAngle_, current_angle, kBNO_time);
-    float max_angular_change = 1.2; 
+    float angular_speed = pidBno.compute_dt(robotAngle_, abs(current_angle), kBNO_time);
+    float max_angular_change = 1.0; 
     angular_speed = constrain(angular_speed, -max_angular_change, max_angular_change);
     
-    // Check if its shorter to turn clockwise or counterclockwise to reach the target angle
+    //Check if its shorter to turn clockwise or counterclockwise to reach the target angle
     
-    if (abs(angle_error) > robotAngle_) {
-      if (current_angle > robotAngle_) {
-        angular_z = -angular_speed; 
-      } else {
-        angular_z = angular_speed; 
-      }
-    } else {
-      if (current_angle > robotAngle_) {
-        angular_z = angular_speed; 
-      } else {
-        angular_z = -angular_speed; 
-      }
+    if (current_angle < robotAngle_) {
+      angular_z = -angular_speed; 
+    } else if (current_angle > robotAngle_){
+      angular_z = angular_speed; 
     }
-   
-    rpm = kinematics_.getRPM(0, 0, angular_z); // Calculate RPM when turning to adjust angle
+    rpm = kinematics_.getRPM(0, 0, angular_z); 
     
   } else {
-    // If the robot is already close to the target angle, stop turning
+    //If the robot is already close to the target angle, stop turning
     angular_z = 0.0;
-    rpm = kinematics_.getRPM(linear_x, linear_y, angular_z); // Calculate RPM when turning to adjust angle
-  }
- 
+    rpm = kinematics_.getRPM(linear_x, linear_y, angular_z); 
+  
   updatePIDKinematics(rpm.motor1, rpm.motor2, rpm.motor3, rpm.motor4);
 
-  Serial.println("//////////////////");
-  Serial.print("Goal Angle:"); Serial.println(robotAngle_);
-  Serial.print("Angle Error:"); Serial.println(angle_error);
-  Serial.print("Current Angle:"); Serial.println(current_angle);
-  Serial.print("Angular Speed:"); Serial.println(angular_z);
-  Serial.println(" ");
-  Serial.println("//////////////////");
+  //Serial.println("//////////////////");
+  //Serial.print("Goal Angle:"); Serial.println(robotAngle_);
+  //Serial.print("Angle Error:"); Serial.println(angle_error);
+  //Serial.print("Current Angle:"); Serial.println(current_angle);
+  //Serial.print("Angular Speed:"); Serial.println(angular_z);
+  //Serial.println(" ");
+  //Serial.println("//////////////////");
+  //Serial.flush();
 }
 
 

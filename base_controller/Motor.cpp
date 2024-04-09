@@ -55,7 +55,7 @@ void Motor::forward() {
   digitalWrite(digital_one_, HIGH);
   digitalWrite(digital_two_, LOW);
 
-  pid_.reset();
+  //pid_.reset();
   
   current_state_ = MotorState::Forward;
 }
@@ -71,7 +71,7 @@ void Motor::backward() {
   digitalWrite(digital_one_, LOW);
   digitalWrite(digital_two_, HIGH);
   
-  pid_.reset();
+  //pid_.reset();
 
   current_state_ = MotorState::Backward;
 }
@@ -127,7 +127,7 @@ void Motor::stableRPM(const double velocity) {
     }
     setPidTicks(0);
   }
-  Serial.print("PPR: "); Serial.println(pid_ticks_);
+  //Serial.print("PPR: "); Serial.println(pid_ticks_);
 
   int speed_sign = fmin(1, fmax(-1, velocity));
   //velocity = fabs(velocity);
@@ -147,7 +147,7 @@ void Motor::stableRPM(const double velocity) {
   //Need to change velocity into RPM units
   tmp_pwm = pid_.compute_dt(abs(target_speed_), getCurrentSpeed(), kPidMotorSampleTime);
   //Serial.print("Setpoint rpm: "); Serial.println(velocity);
-  Serial.print("Current Motor rpm: "); Serial.println(getCurrentSpeed());
+  //Serial.print("Current Motor rpm: "); Serial.println(getCurrentSpeed());
   RpmToPwm(tmp_pwm);
   //Serial.print("PWM value: "); Serial.println(pwm_);
   changePwm(pwm_);

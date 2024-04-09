@@ -20,8 +20,29 @@ float max_rpm = 40;
 float max_lin_vel = 0.20; ///Maximum linear velocity of the robot is .2 m/s approximately
 unsigned long curr_millis = 0;
 unsigned long prev_millis = 0;
+int iteration = 0;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void moveForward(Movement *robot) {
+    robot->orientedMovement(0.0, 0.3, 0.0);
+    Serial.println("Moving Forward");
+}
+
+void moveLeft(Movement *robot) {
+    robot->orientedMovement(0.3, 0.0, 0.0);
+    Serial.println("Moving Left");
+}
+
+void moveRight(Movement *robot) {
+    robot->orientedMovement(0.0, -0.3, 0.0);
+    Serial.println("Moving Right");
+}
+
+void moveBackward(Movement *robot) {
+    robot->orientedMovement(-0.3, 0.0, 0.0);
+    Serial.println("Moving Backwards");
+}
 
 void setup() {
     Serial.begin(57600);
@@ -31,37 +52,25 @@ void setup() {
     robot->initEncoders();
 }
 
-
 void loop() {
     if (CHECK_PID || CHECK_ENCODERS || CHECK_MOTORS) {
-        Serial.begin(57600);
     }
+    
     if (CHECK_PID) {
         curr_millis = millis();
-        prev_millis = curr_millis;
-        while (1) {
-            curr_millis = millis();
-            if((curr_millis - prev_millis) < 3000){
-              robot->orientedMovement(0.0, 0.4, 0.0);
-              robot->setRobotAngle(0);
-              Serial.println("Moving Forward");  
-            }
-            else if((curr_millis - prev_millis) < 6000){
-              robot->orientedMovement(0.4, 0.0, 0.0);
-              Serial.println("Turning Right");
-            }
-            else if((curr_millis - prev_millis) < 9000){
-              robot->orientedMovement(0.0, -0.4, 0.0);
-              Serial.println("Moving Backward");
-            }
-            else if((curr_millis - prev_millis) < 12000){
-              robot->orientedMovement(-0.4, 0.0, 0.0);
-              Serial.println("Turning Left");
-            }
-            if ((curr_millis - prev_millis) >= 12000) {
-              prev_millis = curr_millis;
+        if (curr_millis - prev_millis >= 4000) {
+            prev_millis = curr_millis;
+            iteration++;
+            if (iteration > 3) {
+                iteration = 0; 
             }
         }
+        
+        // Array of function pointers
+        void (*movementFunctions[])(Movement *) = {moveForward, moveLeft, moveRight, moveBackward};
+
+        // Call the function based on iteration
+        movementFunctions[iteration](robot);
     }
 
     if (CHECK_ENCODERS) {

@@ -104,6 +104,7 @@ void PID::setOutputLimits(const double out_min, const double out_max) {
 void PID::reset() {
   error_sum_ = 0;
   error_pre_ = 0;
+  output1 = 0;
 }
 
 //////////////////////////////////Get Methods//////////////////////////////////////

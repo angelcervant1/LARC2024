@@ -125,6 +125,6 @@ class Movement {
     //Angle
     float angle_error_ = 0;
     double robotAngle_ = 0;
-    static constexpr double kAngleTolerance_ = 15;
+    static constexpr double kAngleTolerance_ = 5;
 };
 #endif
