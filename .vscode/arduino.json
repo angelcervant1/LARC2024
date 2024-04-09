@@ -1,7 +1,4 @@
 {
-    "sketch": "base_controller\\base_controller.ino",
-    "configuration": "cpu=atmega2560",
     "board": "arduino:avr:mega",
-    "port": "COM3",
-    "programmer": "avrisp"
+    "port": "COM3"
 }
