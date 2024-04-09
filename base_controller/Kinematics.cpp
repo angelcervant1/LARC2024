@@ -24,49 +24,46 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE.
 */
-
 //TEST
 #include "Arduino.h"
 #include "Kinematics.h"
 
-Kinematics::Kinematics(int motor_max_rpm, float wheel_diameter, float fr_wheels_dist, float lr_wheels_dist, int pwm_bits, BNO *bno)
+Kinematics::Kinematics(int motor_max_rpm, float wheel_diameter, float kWheelBase, float kWheelTrack, BNO *bno)
 {
   //this->motor = motor;
   circumference_ = PI * wheel_diameter;
   max_rpm_ = motor_max_rpm;
-  fr_wheels_dist_ = fr_wheels_dist;
-  lr_wheels_dist_ = lr_wheels_dist;
-  pwm_res_ = pow(2, pwm_bits) - 1;
+  kWheelBase_ = kWheelBase;
+  kWheelTrack_ = kWheelTrack;
   this->bno = bno; //Pass BNO info by reference
 }
 
-Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angular_z)
+Kinematics::output Kinematics::getRPM(float linearX, float linearY, float angularZ)
 {
   
   //Distance from the center of the robot to the center of the wheels
   float R = 0.33;
 
-  //convert m/s to m/min
-  linear_vel_x_mins_ = linear_x * 60;
-  linear_vel_y_mins_ = linear_y * 60;
-
-  //convert rad/s to rad/min
-  angular_vel_z_mins_ = angular_z * 60;
-
   // //Vt = ω * radius
   tangential_vel_ = angular_vel_z_mins_ * lr_wheels_dist_;
-
   x_rpm_ = linear_vel_x_mins_ / circumference_;
   y_rpm_ = linear_vel_y_mins_ / circumference_;
   tan_rpm_ = tangential_vel_ / circumference_;
 
   Kinematics::output rpm;
+  
+    float wheelPosX = kWheelBase_/2;
+    float wheelPosY = kWheelTrack_/2;
 
-  // Need to check motor order //*(40/13.1947)
-  rpm.motor2 = (-1*sin(1*(PI/4))*linear_vel_x_mins_+cos(1*PI/4)*linear_vel_y_mins_+angular_vel_z_mins_)*(40/11.9883);
-  rpm.motor1 = (-1*sin(3*(PI/4))*linear_vel_x_mins_+cos(3*PI/4)*linear_vel_y_mins_+angular_vel_z_mins_)*(40/11.9883);
-  rpm.motor3 = (-1*sin(5*(PI/4))*linear_vel_x_mins_+cos(5*PI/4)*linear_vel_y_mins_+angular_vel_z_mins_)*(40/11.9883);
-  rpm.motor4 = (-1*sin(7*(PI/4))*linear_vel_x_mins_+cos(7*PI/4)*linear_vel_y_mins_+angular_vel_z_mins_)*(40/11.9883);
+    float frontLeftSpeed = linearX - linearY - angularZ*(wheelPosX + wheelPosY);
+    float frontRightSpeed = linearX + linearY + angularZ*(wheelPosX + wheelPosY);
+    float backLeftSpeed = linearX + linearY - angularZ*(wheelPosX + wheelPosY);
+    float backRightSpeed = linearX - linearY + angularZ*(wheelPosX + wheelPosY);
+
+    rpm.motor1 = frontLeftSpeed * 60 / circumference_;
+    rpm.motor2 = frontRightSpeed * 60 / circumference_;
+    rpm.motor3 = backLeftSpeed * 60 / circumference_;
+    rpm.motor4 = backRightSpeed * 60 / circumference_;
 
   return rpm;
   

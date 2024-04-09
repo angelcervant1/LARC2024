@@ -122,6 +122,9 @@ void Motor::stableRPM(const double velocity) {
   if((currentMillis - prevMillis) >= kPidSampleTime){
     prevMillis = currentMillis;
     current_speed_ = 10 * pid_ticks_ * (60 / kPulsesPerRevolution);
+    if(pid_ticks_ == 0){
+      pid_.reset();
+    }
     setPidTicks(0);
   }
   Serial.print("PPR: "); Serial.println(pid_ticks_);

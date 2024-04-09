@@ -4,6 +4,7 @@
 BNO::BNO() {
   bno_ = Adafruit_BNO055(55);
   if (!bno_.begin()) {
+    Serial.println("Oops no bno detected..");
     return;
   }
   Serial.begin(57600);
@@ -21,20 +22,11 @@ uint8_t BNO::orientationStatus() {
 }
 
 void BNO::updateBNO() {
-  static long long last_time = 0;
-  static sensors_event_t orientationData , angVelocityData, accelerometerData;
-  if (millis() - last_time > 10) {
-    last_time = millis();
-    bno_.getEvent(&orientationData, Adafruit_BNO055::VECTOR_EULER);
-    bno_.getEvent(&angVelocityData, Adafruit_BNO055::VECTOR_GYROSCOPE);
-    bno_.getEvent(&accelerometerData, Adafruit_BNO055::VECTOR_ACCELEROMETER);
-    yaw_ = orientationData.orientation.x;
-    yaw_vel_ = angVelocityData.gyro.x;
-    x_accel = accelerometerData.acceleration.x;
-    y_accel = accelerometerData.acceleration.y;
-    z_accel = accelerometerData.acceleration.z;
+  sensors_event_t orientationData;
+  bno_.getEvent(&orientationData);
+  yaw_ = orientationData.orientation.x;
   }
-}
+
 
 float BNO::getYaw() {
   return yaw_;

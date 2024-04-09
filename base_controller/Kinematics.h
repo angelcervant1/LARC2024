@@ -50,13 +50,15 @@ class Kinematics
       float angular_z;
     };
     
-    Kinematics(int motor_max_rpm, float wheel_diameter, float fr_wheels_dist, float lr_wheels_dist, int pwm_bits, BNO *bno);
+    Kinematics(int motor_max_rpm, float wheel_diameter, float kWheelBase, float kWheelTrack, BNO *bno);
     velocities getVelocities(int motor1, int motor2);
     velocities getVelocities(int motor1, int motor2, int motor3, int motor4);
     output getRPM(float linear_x, float linear_y, float angular_z);
     int rpmToPWM(int rpm);
 
   private:
+    float kWheelBase_;
+    float kWheelTrack_;
     float linear_vel_x_mins_;
     float linear_vel_y_mins_;
     float angular_vel_z_mins_; 

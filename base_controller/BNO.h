@@ -33,6 +33,7 @@ class BNO {
   private:
     Adafruit_BNO055 bno_;
     int reset_pin_ = 22;
+
     float yaw_ = 0.0;
     float yaw_vel_ = 0.0;
     float x_accel = 0.0;
