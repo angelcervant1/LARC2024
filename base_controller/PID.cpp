@@ -15,46 +15,6 @@ PID::PID(const double kp, const double ki, const double kd, const double out_min
 }
 
 //////////////////////////////////Compute//////////////////////////////////////
-void PID::compute(const double setpoint, double &input, double &output, int &reset_variable, const double pulses_per_rev,const double count_time_samples_in_one_second) {
-  if(millis()-time_ < sample_time_) {
-      return;
-  }
-  // Improvement: Change Time to millis() instead of fixed variable.
-  input = (reset_variable / pulses_per_rev) * count_time_samples_in_one_second;
-  reset_variable = 0;
-  
-  const double error = setpoint - input;
-  output = error * kp_ + error_sum_ * ki_ + (error - error_pre_) * kd_;
-  
-  error_pre_ = error;
-  error_sum_ += error;
-  
-
-  error_sum_ = max(max_error_sum_ * -1, min(max_error_sum_, error_sum_));
-  output = max(out_min_, min(out_max_, output));
-  
-  time_ = millis();
-  
-}
-
-void PID::compute(const double setpoint, const double input, double &output) {
-  if(millis()-time_ < sample_time_) {
-      return;
-  }
-
-  const double error = setpoint - input;
-  output = error * kp_ + error_sum_ * ki_ + (error - error_pre_) * kd_;
-  
-  error_pre_ = error;
-  error_sum_ += error;
-  
-
-  error_sum_ = max(max_error_sum_ * -1, min(max_error_sum_, error_sum_));
-  output = max(out_min_, min(out_max_, output));
-  
-  time_ = millis();
-  
-}
 
 double PID::compute_dt(const double setpoint, const double input, const double sample_time_) {
 
@@ -70,7 +30,7 @@ double PID::compute_dt(const double setpoint, const double input, const double s
   if(output > 380.0)
     output = 380.0;
   if(output < 20.0)
-    output = 20.0;
+    output = 30.0;
   
 
   //output = max(out_min_, min(out_max_, output));

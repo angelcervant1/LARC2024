@@ -126,14 +126,14 @@ class Motor {
     // PID.
     PID pid_;
     //////No olvidar cambiar de nuevo la salida de PWM mínima cuando termine
-    static constexpr uint8_t kPidMinOutputLimit = 14;
+    static constexpr uint8_t kPidMinOutputLimit = 30;
     static constexpr uint8_t kPidMaxOutputLimit = 255;
     static constexpr uint32_t kPidMaxErrorSum = 100;
     static constexpr uint16_t kPidSampleTime = 100;
     static constexpr double kPidMotorSampleTime = 0.01;
-    static constexpr double kP = 1.0;
-    static constexpr double kI = 1.5;
-    static constexpr double kD = 0.0;
+    static constexpr double kP = 1.7;
+    static constexpr double kI = 1.9;
+    static constexpr double kD = 0.005;
     
 
 };

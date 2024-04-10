@@ -14,17 +14,8 @@ class PID{
     
     //////////////////////////////////Compute//////////////////////////////////////
     // Computes an output accoriding to the error and PID constants.
-    void compute(const double error, double &output, const byte flag);
-    
-    // Computes an output accoriding to the error calculated internally and PID constants.
-    void compute(const double setpoint, const double input, double &output);
-
     double compute_dt(const double setpoint, const double input, const double sample_time_);
-    
-    // Computes an output accoriding to the error calculated internally and PID constants,
-    // also it resets a variable (used with ticks).
-    void compute(const double setpoint, double &input, double &output, int &reset_variable, const double pulses_per_rev,const double count_time_samples_in_one_second);
-    
+            
     //////////////////////////////////Set Methods//////////////////////////////////////
     // This function set kp_, ki_, kd_ variables.
     void setTunings(const double kp,  const double ki,  const double kd);         	  

@@ -3,12 +3,11 @@
 #define Movement_h
 
 #include "MotorId.h"
-
 #include "Kinematics.h"
 #include <math.h>
 #include <Arduino.h>
 #include "BNO.h"
-
+#include "QTR.h"
 #include "Motor.h"
 
 enum class Direction{
@@ -21,7 +20,6 @@ class Movement {
     //////////////////////////////////Constructor//////////////////////////////////////
     Movement(BNO *bno);
 
-
     //////////////////////////////////Motors//////////////////////////////////////
     Motor back_right_motor_;
     Motor back_left_motor_;
@@ -29,44 +27,20 @@ class Movement {
     Motor front_left_motor_;
     int kMotorCount = 4;
 
-    //////////////////////////////////Encoders//////////////////////////////////////
     // Initialize motor encoders.
     void initEncoders();
 
-
     //////////////////////////////////PWM//////////////////////////////////////
     // Set same pwm to all motors.
-    void changePwm(const uint8_t pwm);
-
-
-    //////////////////////////////////VELOCITY//////////////////////////////////////
-    // Change deltaX value.
-    void setDeltaX(const double delta_x);
-    
-    // Change deltaY value.
-    void setDeltaY(const double delta_y);
-    
-    // Change deltaAngular value.
-    void setDeltaAngular(const double delta_angular);
-
-    // Return deltaX value.
-    double getDeltaX();
-    
-    // Return deltaY value.
-    double getDeltaY();
-    
-    // Return deltaAngular value.
-    double getDeltaAngular();
-    
+    void changePwm(const uint8_t pwm);    
+  
     // Stop robot.
     void stop();
     
-    //////////////////////////////////PID//////////////////////////////////////
     // Robot linear velocity to rpm per motor. 
     void cmdVelocity(const double linear_x, const double linear_y, const double angular_z);
 
-    void cmdVelocityKinematics(const double linear_x, const double linear_y, const double angular_z);
-    
+  
     // Set motors to velocity. 
     void updatePIDKinematics(double fl_speed, double fr_speed, double bl_speed, double br_speed);
 
@@ -75,10 +49,6 @@ class Movement {
     void setRobotAngle(const double angle);
 
   private:
-    //////////////////////////////////DIRECTIONS//////////////////////////////////////
-    // Convert radians to degrees.
-    double radiansToDegrees(const double radians);
-
     // Pins
     static constexpr uint8_t kDigitalPinsFrontLeftMotor[2] = {44, 43};
     static constexpr uint8_t kAnalogPinFrontLeftMotor = 5;
@@ -109,7 +79,7 @@ class Movement {
     static constexpr uint8_t kPwmBits = 8;
     static constexpr double kBnoKP = 1.5;
     static constexpr double kBnoKI = 0.5;
-    static constexpr double kBnoKD = 0.05;
+    static constexpr double kBnoKD = 0.005;
     static constexpr double kBNO_time = 10;
     static constexpr double kMaxErrorSum = 100;
     long long cycle = 0;
@@ -125,6 +95,6 @@ class Movement {
     //Angle
     float angle_error_ = 0;
     double robotAngle_ = 0;
-    static constexpr double kAngleTolerance_ = 5;
+    static constexpr double kAngleTolerance_ = 6;
 };
 #endif
