@@ -24,8 +24,7 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE.
 */
-//TEST
-#include "Arduino.h"
+
 #include "Kinematics.h"
 
 Kinematics::Kinematics(int motor_max_rpm, float wheel_diameter, float kWheelBase, float kWheelTrack, BNO *bno)
@@ -56,9 +55,9 @@ Kinematics::output Kinematics::getRPM(float linearX, float linearY, float angula
     float wheelPosY = kWheelTrack_/2;
 
     float frontLeftSpeed = linearX - linearY - angularZ*(wheelPosX + wheelPosY);
-    float frontRightSpeed = linearX + linearY + angularZ*(wheelPosX + wheelPosY);
+    float frontRightSpeed = linearX - linearY + angularZ*(wheelPosX + wheelPosY);
     float backLeftSpeed = linearX + linearY - angularZ*(wheelPosX + wheelPosY);
-    float backRightSpeed = linearX - linearY + angularZ*(wheelPosX + wheelPosY);
+    float backRightSpeed = linearX + linearY + angularZ*(wheelPosX + wheelPosY);
 
     rpm.motor1 = frontLeftSpeed * 60 / circumference_;
     rpm.motor2 = frontRightSpeed * 60 / circumference_;
@@ -66,7 +65,6 @@ Kinematics::output Kinematics::getRPM(float linearX, float linearY, float angula
     rpm.motor4 = backRightSpeed * 60 / circumference_;
 
   return rpm;
-  
 }
 
 Kinematics::velocities Kinematics::getVelocities(int motor1, int motor2)

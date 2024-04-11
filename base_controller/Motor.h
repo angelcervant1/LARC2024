@@ -25,7 +25,6 @@ class Motor {
     Motor(const MotorId id, const uint8_t digital_one, const uint8_t digital_two, 
     const uint8_t analog_one, const uint8_t encoder_one);
     
-    
     //////////////////////////////////Initialization//////////////////////////////////////
     // Declare motor pins as output.
     void defineOutput();
@@ -33,7 +32,6 @@ class Motor {
     // Declare encoder pins as input and include attachInterrupt.
     void initEncoders();
     
-
     //////////////////////////////////Motor State//////////////////////////////////////
     // Change motor state to forward.
     void forward();
@@ -44,7 +42,6 @@ class Motor {
     // Change motor state to stop.
     void stop();
 
-
     //////////////////////////////////Velocity//////////////////////////////////////
     // Calculate target Rps according to a velocity in meters per second.
     void RpmToPwm(const double rpm);
@@ -54,7 +51,6 @@ class Motor {
     
     // Compute Pid controller and update pwm. 
     void stableRPM(const double velocity);
-
 
     //////////////////////////////////Set Methods//////////////////////////////////////
     // Set the count of ticks of the encoders, the count used in Pid.
@@ -126,14 +122,14 @@ class Motor {
     // PID.
     PID pid_;
     //////No olvidar cambiar de nuevo la salida de PWM mínima cuando termine
-    static constexpr uint8_t kPidMinOutputLimit = 30;
+    static constexpr uint8_t kPidMinOutputLimit = 50;
     static constexpr uint8_t kPidMaxOutputLimit = 255;
     static constexpr uint32_t kPidMaxErrorSum = 100;
     static constexpr uint16_t kPidSampleTime = 100;
-    static constexpr double kPidMotorSampleTime = 0.01;
-    static constexpr double kP = 1.7;
-    static constexpr double kI = 1.9;
-    static constexpr double kD = 0.005;
+    static constexpr double kPidMotorSampleTime = 0.05;
+    static constexpr double kP = 1.6 ;
+    static constexpr double kI = 5.3;
+    static constexpr double kD = 0.0004;
     
 
 };
