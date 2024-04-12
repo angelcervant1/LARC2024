@@ -15,16 +15,16 @@ class ColorDetection():
 
         self.xTile = 0
         self.color_detections_data = []
+        self.color_close = []
         # Flags 
         self.first_iteration = True 
         self.img_flag = True
 
         self.static_color_seq = "GBYRYBG" # static color sequence
         self.mask  = None
-        self.main()
     
-    def dibujar(self, mask, color):
-        frame = self.image
+    def dibujar(self, mask, color, img):
+        frame = img
         kernel = np.ones((5,5), np.uint8)
         mask = cv2.erode(mask, kernel, iterations=2)
         mask = cv2.dilate(mask, kernel, iterations=5)
@@ -36,8 +36,8 @@ class ColorDetection():
             area = cv2.contourArea(c)
             if area > 1000:
                 M = cv2.moments(c)
-                self.cx = int(M["m10"]/M["m00"]) / self.image.shape[1]
-                self.cy = int(M['m01']/M["m00"]) / self.image.shape[0]
+                self.cx = int(M["m10"]/M["m00"]) / img.shape[1]
+                self.cy = int(M['m01']/M["m00"]) / img.shape[0]
 
                 if (M["m00"]):
                     M["m00"] = 1
@@ -70,11 +70,13 @@ class ColorDetection():
                     # print('amarillo')
                     self.detections.append('amarillo')
 
-                self.updated = cv2.drawContours(frame,[nuevoContorno],0,color,3)
+                img = cv2.drawContours(frame,[nuevoContorno],0,color,3)
                 self.boxes.append(temp)
+        return img
 
     def get_objects(self, boxes, detections):
         res = []
+        ores = []
         #sort boxes full content by first parameter, then second, and save in new obj
         sorted_boxes = []
         sorted_detections = []
@@ -94,18 +96,30 @@ class ColorDetection():
         detections = sorted_detections
 
         for index in range(len(boxes)):
-            # [label, xmin, xmax, pixel en x]
+            """
+            y values
+            """
+            diferencey = abs(float(boxes[index][2])-float(boxes[index][0]))/2
+            halfy = self.y_pixels/2
+            yc = diferencey + float(boxes[index][0])
+            midpointy = yc - halfy
+            """ 
+            x values
+            """
             diference = abs(float(boxes[index][3]) - float(boxes[index][1]))/2
             half = self.x_pixels/2 
             xc = diference + float(boxes[index][1])
             midpoint =  xc - half# (xmax - xmin)/2 + xmin - width
             # print("min: " + str(boxes[index][1]) + " xc: " + str(xc) + "midpoint: " + str(midpoint) + " diference: " + str(diference) + " half " + str(half))
+            # [label, xmin, xmax, pixel en x]
             res.append([str(detections[index]), float(boxes[index][1]), float(boxes[index][3]), midpoint])
+            # [label, xmin, xmax, ymin, ymax,. xmid, ymid]
+            ores.append([str(detections[index]), float(boxes[index][1]), float(boxes[index][3]), float(boxes[index][0]), float(boxes[index][2]), midpoint, midpointy ])
         self.color_detections_data = res
-        self.detect_color_pattern_cb()
+        self.color_close = ores
 
-    def color_detection(self):
-        frame = self.image
+    def color_detection(self, img1, img2):
+        frame = img1
         """
         This can be modify to do it automatic
         """
@@ -114,8 +128,8 @@ class ColorDetection():
         lowerRed2 = np.array([155,162,150], np.uint8)
         upperRed2 = np.array([179,255,255], np.uint8)
         
-        lowerBlue = np.array([110,102,26], np.uint8)
-        upperBlue = np.array([120,177,61], np.uint8)
+        lowerBlue = np.array([100,235,122], np.uint8)
+        upperBlue = np.array([104,255,170], np.uint8)
         
         lowerYellow = np.array([26,171,168], np.uint8)
         upperYellow = np.array([34,255,255], np.uint8)
@@ -133,12 +147,13 @@ class ColorDetection():
         maskred = cv2.add(maskRed1,maskRed2)
         #maskverde = cv2.add(maskVerde1,maskVerde2)
         maskverde = maskVerde1
-        self.dibujar(maskAzul,(255,0,0))
-        self.dibujar(maskamarillo,(0,255,255))
-        self.dibujar(maskverde,(0,255,0))
-        self.dibujar(maskred,(0,0,255))
+        self.dibujar(maskAzul,(255,0,0), img2)
+        img2 = self.dibujar(maskamarillo,(0,255,255), img2)
+        img2 = self.dibujar(maskverde,(0,255,0), img2)
+        img2 = self.dibujar(maskred,(0,0,255), img2)
 
         self.get_objects(self.boxes, self.detections)
+        return img2
     
     def detect_color_pattern_cb(self):
         # print("detect_color_pattern_cb")
@@ -197,10 +212,13 @@ class ColorDetection():
                 xTile = 2
             elif x_square_label == "G" and x_square_cont == "BG":
                 xTile = 1
-
-            print("xTile: " + str(xTile))
         self.xTile = xTile
     
+    def setUp(self,img):
+        y, x, _= img.shape
+        self.x_pixels = x
+        self.y_pixels = y
+
     def main(self):
         #Runs camara
         camara_index = Constants.camara_index
@@ -225,7 +243,3 @@ class ColorDetection():
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
     
-
-
-if __name__ == '__main__':
-    ColorDetection()

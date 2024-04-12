@@ -27,18 +27,14 @@ class DetectorAruco:
         # Flags 
         self.first_iteration = True 
         self.img_flag = True
-
-        self.main()
-
-
-    def detectar_arucos(self):
-        frame = self.cv_image
+    
+    def detectar_arucos(self, img):
         dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_250)
         parameters =  cv2.aruco.DetectorParameters()
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         corners, ids, rejectedImgPoints = cv2.aruco.detectMarkers(gray, dictionary, parameters=parameters)
-        frame_with_markers = cv2.aruco.drawDetectedMarkers(frame, corners, ids)
-        self.cv_image = frame_with_markers
+        frame_with_markers = cv2.aruco.drawDetectedMarkers(img, corners, ids)
+        img = frame_with_markers
 
         bb = []
         detections = []
@@ -46,19 +42,17 @@ class DetectorAruco:
         if ids is not None:
             if corners:
                 for i, marker_corners in enumerate(corners):
-                    print(ids[i])
                     corner = corners[i][0]
                     xmayor = np.amax(corner[:, 0])
                     ymayor = np.amax(corner[:, 1])
                     xmenor = np.amin(corner[:, 0])
                     ymenor = np.amin(corner[:, 1])
                     #get x and y centroid
-                    self.cx = (xmayor + xmenor)/2 / self.cv_image.shape[1]
-                    self.cy = (ymayor + ymenor)/2 / self.cv_image.shape[0]
+                    self.cx = (xmayor + xmenor)/2 / img.shape[1]
+                    self.cy = (ymayor + ymenor)/2 / img.shape[0]
 
                     # draw a point on the centroid
-                    cv2.circle(self.cv_image, (int(self.cx * self.cv_image.shape[1]), int(self.cy * self.cv_image.shape[0])), 5, (0, 0, 255), -1)
-
+                    cv2.circle(img, (int(self.cx * img.shape[1]), int(self.cy * img.shape[0])), 5, (0, 0, 255), -1)
                     #print(f"Xmayor: {xmayor:.2f}, Xmenor: {xmenor:.2f}, Ymayor: {ymayor:.2f}, Ymenor: {ymenor:.2f}")    
                     tempo =  ymenor, xmenor, ymayor, xmayor
                     bb.append(tempo)
@@ -69,6 +63,7 @@ class DetectorAruco:
                     #ids[i][j] Es el id del aruco
                     #corners Es la bounding box del aruco
             self.get_objects(bb, detections)
+        return img
 
     def get_objects(self, boxes, detections):
         res = []
@@ -91,15 +86,29 @@ class DetectorAruco:
         detections = sorted_detections
 
         for index in range(len(boxes)):
+            """
+            y values
+            """
+            diferencey = abs(float(boxes[index][2])-float(boxes[index][0]))/2
+            halfy = self.y_pixels/2
+            yc = diferencey + float(boxes[index][0])
+            midpointy = yc - halfy
+            """ 
+            x values
+            """
             # [label, xmin, xmax, pixel en x]
             diference = abs(float(boxes[index][3]) - float(boxes[index][1]))/2
             half = self.x_pixels/2 
             xc = diference + float(boxes[index][1])
             midpoint =  xc - half# (xmax - xmin)/2 + xmin - width
             # print("min: " + str(boxes[index][1]) + " xc: " + str(xc) + "midpoint: " + str(midpoint) + " diference: " + str(diference) + " half " + str(half))
-            res.append([str(detections[index]), float(boxes[index][1]), float(boxes[index][3]), midpoint])
+            res.append([str(detections[index]), float(boxes[index][1]), float(boxes[index][3]), float(boxes[index][0]), float(boxes[index][2]), midpoint, midpointy ])
         self.aruco_detections_data = res            
-
+    
+    def setUp(self,img):
+        y, x, _= img.shape
+        self.x_pixels = x
+        self.y_pixels = y
     
     def main(self):
        #Runs camara
@@ -125,7 +134,3 @@ class DetectorAruco:
             self.img_flag = True
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
-
-
-if __name__ == '__main__':
-    DetectorAruco()
