@@ -126,10 +126,10 @@ class Motor {
     static constexpr uint8_t kPidMaxOutputLimit = 255;
     static constexpr uint32_t kPidMaxErrorSum = 100;
     static constexpr uint16_t kPidSampleTime = 100;
-    static constexpr double kPidMotorSampleTime = 0.05;
-    static constexpr double kP = 1.6 ;
-    static constexpr double kI = 5.3;
-    static constexpr double kD = 0.0004;
+    static constexpr double kPidMotorSampleTime = 0.01;
+    static constexpr double kP = 1.3 ;
+    static constexpr double kI = 6.5;
+    static constexpr double kD = 0.0001;
     
 
 };

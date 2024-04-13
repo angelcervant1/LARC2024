@@ -4,21 +4,26 @@ Movement *robot = nullptr;
 BNO *bnoInstance = nullptr;
 LineSensor *myLineSensor = nullptr;
 bool CHECK_PID = true;
-bool CHECK_MOTORS = false;
+bool CHECK_ODOMETRY = false;
 bool CHECK_LINES = false;
+bool CHECK_GRASP = false;
 
 /////////////////////////////////////remove after testing///////////////////////////////////////////////////  
 unsigned long curr_millis = 0;
 unsigned long prev_millis = 0;
 int iteration = 0;
-double angleOffset = 160.0;
+double angleOffset = 0.0;
+double squares = 4;
+uint8_t start_pos_x = 0;
+Direction movementVector[5] = {FORWARD, TOLEFT, BACKWARD, TORIGHT, STOP};
+String currentState = "TESTS", incomingState = "" ;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void moveForward(Movement *robot) {
     robot->orientedMovement(0.0, 0.35, 0.0);
     Serial.println("Moving Forward");
 }
-
+ 
 void moveLeft(Movement *robot) {
     robot->orientedMovement(0.35, 0.0, 0.0);
     Serial.println("Moving Left");
@@ -55,39 +60,90 @@ STATE MACHINE
 8.- Turn 180 degrees and then let go the cube
 
 */
-
-Direction movementVector[4] = {FORWARD, TOLEFT, BACKWARD, TORIGHT};
-
 void loop() {
-    if (CHECK_PID || CHECK_LINES || CHECK_MOTORS) {
+    if (Serial.available() > 0) {
+       incomingState = Serial.readStringUntil('\n');
+        if (incomingState.equals("FIND_ORIGIN")) {
+            currentState = "FIND_ORIGIN";
+        } else if (incomingState.equals("FIND_EMPTY_PATH")) {
+            currentState = "FIND_EMPTY_PATH";
+        } else if (incomingState.equals("DRIVE_TO_COLOR")) {
+            currentState = "DRIVE_TO_COLOR";
+        } else if (incomingState.equals("ROTATE_180")) {
+            currentState = "ROTATE_180";
+        } else if (incomingState.equals("SEARCH_CUBE")) { //REMEMBER TO CHEC FROM SIDE TO SIDE FOR EASER APPROACH
+            currentState = "SEARCH_CUBE";
+        } else if (incomingState.equals("DRIVE_TO_CUBE")) {
+            currentState = "DRIVE_TO_CUBE";
+        } else if (incomingState.equals("GRAB_CUBE")) {
+            currentState = "GRAB_CUBE";
+        } else if (incomingState.equals("ENTER_CLOSEST_SQUARE")) {
+            currentState = "ENTER_CLOSEST_SQUARE";
+        } else if (incomingState.equals("ROTATE_SEARCH_COLOR")) {
+            currentState = "ROTATE_SEARCH_COLOR";
+        } else if (incomingState.equals("RELEASE_CUBE")) {
+            currentState = "RELEASE_CUBE";
+        } else {
+        }
     }
-    if (CHECK_PID) {
-        robot->setRobotAngle(angleOffset);
-        curr_millis = millis();
-        if (curr_millis - prev_millis >= 3500) {
-            prev_millis = curr_millis;
-            iteration++; 
-            //angleOffset += 180;
-            if(angleOffset >= 360)
-                angleOffset = 0;
-            if (iteration > 3){
-                iteration = 0; 
+
+    if (currentState.equals("TESTS")) {
+        if (CHECK_PID) {
+            robot->setRobotAngle(angleOffset);
+            curr_millis = millis();
+            if(robot->getSquareCounter() == squares){
+                iteration++;
+                start_pos_x = robot->getCurrentPosX();
+                robot->setSquareCounter(0);
+            }
+            if(iteration > 4){
+                robot->stop();
+            }
+            else{
+                robot->moveDirection(movementVector[iteration], squares, angleOffset, start_pos_x);
+                //robot->moveDirection(movementVector[iteration], angleOffset);
             }
         }
-        //void (*movementFunctions[])(Movement *) = {moveForward, moveLeft, moveRight, moveBackward};
-        //movementFunctions[iteration](robot);
-        robot->moveDirection(movementVector[iteration], angleOffset);
-         //robot->orientedMovement(0.0 , 0.4, 0.0);
-    }
-    if (CHECK_LINES) {
-        //myLineSensor.readDataFromSide(Front);
-        //myLineSensor.readDataFromSide(Left);
-        myLineSensor->readAllData();
-    }
-
-    if (CHECK_MOTORS) {
-        while (1) {
+        if (CHECK_LINES) {
+            myLineSensor->readAllData();
         }
+        if (CHECK_ODOMETRY) {
+ 
+        }
+        if (CHECK_GRASP){
+
+        }
+    } else if (currentState.equals("FIND_ORIGIN")) {
+                angleOffset += 5; // read from rasp. Angle gonna be increasing until found a color paper 
+                robot->setRobotAngle(angleOffset);
+                robot->orientedMovement(0.0, 0.0, 0.0);
+    } else if (currentState.equals("FIND_EMPTY_PATH")) {
+        //once detected x_tile move towards center. leftmost or rightmost
+        //need to get track of squares moved
+    } else if (currentState.equals("DRIVE_TO_COLOR")) {
+        //send a direction to move and stop until detected the color
+    } else if (currentState.equals("ROTATE_180")) {
+                angleOffset += 5; //read from rasp
+                robot->setRobotAngle(angleOffset);
+                robot->orientedMovement(0.0, 0.0, 0.0);
+                //rotate from previous position
+    } else if (currentState.equals("SEARCH_CUBE")) {
+        //when already at a key point (center leftmost or rightmost) and looking towards shelfs search for cubes x_coords
+    } else if (currentState.equals("DRIVE_TO_CUBE")) {
+        //move onto a direction proportional to x_coord error. until cube right infront
+        //need to get odometry for the movement to reverse it when grabing the cube
+    } else if (currentState.equals("GRAB_CUBE")) {
+
+    } else if (currentState.equals("ENTER_CLOSEST_SQUARE")) {
+
+    } else if (currentState.equals("ROTATE_SEARCH_COLOR")) {
+
+    } else if (currentState.equals("RELEASE_CUBE")) {
+
+    } else {
+
     }
-    }
+}
+
+
     

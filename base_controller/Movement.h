@@ -14,7 +14,8 @@ enum Direction{
     FORWARD,
     BACKWARD,
     TORIGHT,
-    TOLEFT
+    TOLEFT,
+    STOP
 };
 
 class Movement {
@@ -51,13 +52,23 @@ class Movement {
 
     void moveDirection(Direction direction, const double angelOffset);
 
-    void moveDirection(Direction direction, const uint8_t squares, const double angleOffset);
+    void moveDirection(Direction direction, const uint8_t squares, const double angleOffset, const double start_x_pos);
 
-    void driveToTarget(int coord_x, int coord_y, Direction direction);
+    void driveToTarget(float coord_x, Direction direction);
 
-    void driveToTarget(int coord_x, int coord_y, const double linear_x, const double linear_y, const double angular_z);
+    void driveToTarget(float coord_x, const double linear_x, const double linear_y, const double angular_z);
 
-    void GoHome();
+    void GoToSquare();
+
+    uint8_t getCurrentPosX();
+
+    uint8_t setGlobalPosX(uint8_t globalPosX);
+    
+    uint8_t getSquareCounter();
+    
+    uint8_t setSquareCounter(uint8_t squareCounter);
+
+    Direction getDirectionState();
   
 
   private:
@@ -89,14 +100,16 @@ class Movement {
     static constexpr double kLinearXMaxVelocity = kMaxVelocity;
     static constexpr double kLinearYMaxVelocity = kMaxVelocity; 
     static constexpr uint8_t kPwmBits = 8;
-    static constexpr double kBnoKP = 2.5;
-    static constexpr double kBnoKI = 3.7;
-    static constexpr double kBnoKD = 0.0001;
+    static constexpr double kBnoKP = 2.2;
+    static constexpr double kBnoKI = 5.5;
+    static constexpr double kBnoKD = 0.0004;
     static constexpr double kBNO_time = 10;
     static constexpr double kMaxErrorSum = 100;
-    static constexpr double kMaxLinearY = 0.3;
-    static constexpr double kMaxLinearX = 0.3;
-    static constexpr double kMaxAngularZ = 1.5;
+    static constexpr double kMaxLinearY = 0.25;
+    static constexpr double kMaxLinearX = 0.32;
+    static constexpr double kMaxAngularZ = 1.0;
+    uint8_t globalPosX_ = 0;
+    Direction globalDirection_ = STOP;
 
     // Kinematics.
     Kinematics kinematics_;
@@ -113,12 +126,12 @@ class Movement {
     float current_angle = 0.0;
     //Angle
     float angle_error_ = 0;
-    float movementKp = 0.45;
+    float movementKp = 0.35;
     double robotAngle_ = 0;
     bool firstLineDetected = false;
     uint8_t squaresCount = 0;
     SignalSide prevSideDetected;
     SignalSide sideDetected_[4];
-    static constexpr double kAngleTolerance_ = 5;
+    static constexpr double kAngleTolerance_ = 4;
 };
 #endif;

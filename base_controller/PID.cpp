@@ -29,8 +29,8 @@ double PID::compute_dt(const double setpoint, const double input, const double s
   
   if(output > 380.0)
     output = 380.0;
-  if(output < 60.0)
-    output = 60.0;
+  if(output < 50.0)
+    output = 50.0;
   
 
   //output = max(out_min_, min(out_max_, output));
