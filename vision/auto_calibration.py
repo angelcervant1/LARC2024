@@ -9,7 +9,7 @@ def nothing(x):
     pass 
 
 # Screen capture
-camara_index = Constants.camara_index
+camara_index = 0   
 cap = cv2.VideoCapture(camara_index)
 cap.set(3,1280)
 cap.set(4,720)
