@@ -5,23 +5,24 @@
 #include <Stepper.h>
 #include <Servo.h>
 
+class Gripper {
+private:
+    static constexpr uint8_t stepperDigitalPin = 1; 
+    static constexpr uint8_t stepperDirectionPin = 3; 
+    static constexpr uint8_t servoAnalogPin = 2; 
+    static constexpr int stepsPerRevolution = 200; 
+    static constexpr int stepsPerLevel = 300; //example 
+    Stepper myStepper{stepsPerRevolution, stepperDigitalPin, stepperDirectionPin}; 
+    Servo myServo; 
 
-class Gripper{
-
-    private:
-        static constexpr uint8_t stepperDigitalPin = 1;
-        static constexpr uint8_t stepperDirectionPin  = 2;
-        static constexpr uint8_t servosAnalogPins[3] = {31,0,0}; //Need to updated pins        
-        Servo myServo;
-    public:
-        Gripper();
-        void UpSteps(const uint8_t steps);
-        void DownSteps(const uint8_t steps);
-        void stop();
-        void upLevel(const uint8_t level);
-        void downLevel(const uint8_t level);
-        void grabCube();
-
+public:
+    Gripper(); // Constructor
+    void downLevel(const uint8_t level); 
+    void upLevel(const uint8_t level); 
+    void downSteps(const uint8_t steps); 
+    void upSteps(const uint8_t steps); 
+    void grabCube(); 
+    void stop(); 
 };
 
 #endif

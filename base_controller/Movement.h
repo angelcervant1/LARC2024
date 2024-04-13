@@ -2,13 +2,14 @@
 #ifndef Movement_h
 #define Movement_h
 
+#include <math.h>
 #include "MotorId.h"
 #include "Kinematics.h"
-#include <math.h>
-#include <Arduino.h>
 #include "BNO.h"
 #include "QTR.h"
 #include "Motor.h"
+#include "ColorSensor.h"
+#include "Gripper.h"
 
 enum Direction{
     FORWARD,
@@ -18,10 +19,16 @@ enum Direction{
     STOP
 };
 
+enum colorNum{
+    RED,
+    GREEN,
+    BLUE
+};
+
 class Movement {
   public:
     //////////////////////////////////Constructor//////////////////////////////////////
-    Movement(BNO *bno, LineSensor *lineSensor);
+    Movement(BNO *bno, LineSensor *lineSensor, ColorSensor *colorSensor);
     //////////////////////////////////Motors//////////////////////////////////////
     Motor back_right_motor_;
     Motor back_left_motor_;
@@ -50,13 +57,19 @@ class Movement {
 
     void setRobotAngle(const double angle);
 
-    void moveDirection(Direction direction, const double angelOffset);
+    float getRobotAngle();
+
+    void moveDirection(Direction direction, const double angleOffset);
+
+    void moveDirection(Direction direction, const double angleOffset, const double linear_x, const double linear_y, const double angular_z);
 
     void moveDirection(Direction direction, const uint8_t squares, const double angleOffset, const double start_x_pos);
 
     void driveToTarget(float coord_x, Direction direction);
 
     void driveToTarget(float coord_x, const double linear_x, const double linear_y, const double angular_z);
+
+    void driveToColor(const double start_x_pos, Direction direction, colorNum color_id);
 
     void GoToSquare();
 
@@ -89,7 +102,7 @@ class Movement {
     static constexpr uint8_t kAnalogPinBackRightMotor = 9;
     static constexpr uint8_t kEncoderPinsBackRightMotor = 18;
 
-    // Velocity maximum.s
+    // Velocity maximums
     static constexpr double kWheelBase = 0.120;
     static constexpr double kWheelTrack = 0.235;
     static constexpr double kWheelDiameter = 0.072;
@@ -105,8 +118,8 @@ class Movement {
     static constexpr double kBnoKD = 0.0004;
     static constexpr double kBNO_time = 10;
     static constexpr double kMaxErrorSum = 100;
-    static constexpr double kMaxLinearY = 0.25;
-    static constexpr double kMaxLinearX = 0.32;
+    static constexpr double kMaxLinearY = 0.35;
+    static constexpr double kMaxLinearX = 0.35;
     static constexpr double kMaxAngularZ = 1.0;
     uint8_t globalPosX_ = 0;
     Direction globalDirection_ = STOP;
@@ -115,7 +128,10 @@ class Movement {
     Kinematics kinematics_;
     BNO *bno;
     LineSensor *lineSensor;
+    ColorSensor *colorSensor;
+    
     PID pidBno;
+
     // Velocity.
     double delta_x_ = 0;
     double delta_y_ = 0;
@@ -124,7 +140,8 @@ class Movement {
     double linear_y_ = 0.0;
     double angular_z_ = 0.0;
     float current_angle = 0.0;
-    //Angle
+
+    // Angle
     float angle_error_ = 0;
     float movementKp = 0.35;
     double robotAngle_ = 0;
@@ -134,4 +151,5 @@ class Movement {
     SignalSide sideDetected_[4];
     static constexpr double kAngleTolerance_ = 4;
 };
-#endif;
+
+#endif

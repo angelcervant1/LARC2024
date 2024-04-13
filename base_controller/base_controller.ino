@@ -3,6 +3,9 @@
 Movement *robot = nullptr;
 BNO *bnoInstance = nullptr;
 LineSensor *myLineSensor = nullptr;
+ColorSensor *myColorSensor = nullptr;
+Gripper myGripper;
+
 bool CHECK_PID = true;
 bool CHECK_ODOMETRY = false;
 bool CHECK_LINES = false;
@@ -13,7 +16,7 @@ unsigned long curr_millis = 0;
 unsigned long prev_millis = 0;
 int iteration = 0;
 double angleOffset = 0.0;
-double squares = 4;
+double squares = 1;
 uint8_t start_pos_x = 0;
 Direction movementVector[5] = {FORWARD, TOLEFT, BACKWARD, TORIGHT, STOP};
 String currentState = "TESTS", incomingState = "" ;
@@ -23,7 +26,7 @@ void moveForward(Movement *robot) {
     robot->orientedMovement(0.0, 0.35, 0.0);
     Serial.println("Moving Forward");
 }
- 
+
 void moveLeft(Movement *robot) {
     robot->orientedMovement(0.35, 0.0, 0.0);
     Serial.println("Moving Left");
@@ -40,10 +43,14 @@ void moveBackward(Movement *robot) {
 }
 
 void setup() {
+    Wire.begin();
     Serial.begin(57600);
+    //Serial.setTimeout(0.1);
     bnoInstance = new BNO(); 
     myLineSensor = new LineSensor();
-    robot = new Movement(bnoInstance, myLineSensor); 
+    myColorSensor = new ColorSensor();
+    myGripper = Gripper(); 
+    robot = new Movement(bnoInstance, myLineSensor, myColorSensor); 
     robot->initEncoders();
 }
 
@@ -60,9 +67,12 @@ STATE MACHINE
 8.- Turn 180 degrees and then let go the cube
 
 */
+
 void loop() {
+    
     if (Serial.available() > 0) {
-       incomingState = Serial.readStringUntil('\n');
+       incomingState = Serial.readString();
+       //Serial.println(incomingState);
         if (incomingState.equals("FIND_ORIGIN")) {
             currentState = "FIND_ORIGIN";
         } else if (incomingState.equals("FIND_EMPTY_PATH")) {
@@ -90,11 +100,11 @@ void loop() {
     if (currentState.equals("TESTS")) {
         if (CHECK_PID) {
             robot->setRobotAngle(angleOffset);
-            curr_millis = millis();
             if(robot->getSquareCounter() == squares){
                 iteration++;
                 start_pos_x = robot->getCurrentPosX();
                 robot->setSquareCounter(0);
+                //reset movement once reached squares goal
             }
             if(iteration > 4){
                 robot->stop();
@@ -105,7 +115,9 @@ void loop() {
             }
         }
         if (CHECK_LINES) {
-            myLineSensor->readAllData();
+            //myLineSensor->readAllData();
+            //robot->getRobotAngle();
+            myColorSensor->getRGBData();
         }
         if (CHECK_ODOMETRY) {
  

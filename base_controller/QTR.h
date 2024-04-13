@@ -2,6 +2,7 @@
 #define QTR_h
 
 #include <Arduino.h>
+#include "Wire.h"
 
 enum SignalSide {
     Left, //QTR1 
@@ -52,7 +53,7 @@ private:
     };
 
     int sensorData[4];
-    int threshold = 800; 
+    int threshold = 750; 
     String strSide;
     SignalSide sideDetected_, side_;
 public:
@@ -60,6 +61,7 @@ public:
     void readDataFromSide(SignalSide side);
     void readAllData();
     SignalSide lineDetectedFromSide();
+    
 };
 
 #endif

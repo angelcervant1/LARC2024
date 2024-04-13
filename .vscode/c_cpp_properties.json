@@ -23,9 +23,8 @@
                 "/snap/arduino/85/hardware/tools/avr/lib/gcc/avr/7.3.0/include",
                 "/snap/arduino/85/hardware/tools/avr/lib/gcc/avr/7.3.0/include-fixed",
                 "/snap/arduino/85/hardware/tools/avr/avr/include",
-                "/snap/arduino/current/**"
-                //"/home/angelcervant/snap/arduino/85/Arduino/libraries/**"
-                
+                "/snap/arduino/current/**",
+                "${workspaceFolder}/base_controller/libs/Adafruit_TCS34725-1.4.4"
             ],
             "forcedInclude": [
                 "/snap/arduino/85/hardware/arduino/avr/cores/arduino/Arduino.h"
