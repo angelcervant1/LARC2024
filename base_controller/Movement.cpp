@@ -197,7 +197,7 @@ void Movement::moveDirection(Direction direction, const double angleOffset){
 
 
 //When already at a known position, move given squares to a target
-void Movement::moveDirection(Direction direction, const uint8_t squares, const double angleOffset, const double start_x_pos){
+void Movement::moveDirection(Direction direction, const uint8_t squares, const double angleOffset){
   lineSensor->readDataFromSide(Right);
   sideDetected_[0] = lineSensor->lineDetectedFromSide();
   lineSensor->readDataFromSide(Left);
@@ -208,7 +208,6 @@ void Movement::moveDirection(Direction direction, const uint8_t squares, const d
   sideDetected_[3] = lineSensor->lineDetectedFromSide();
   
   globalDirection_ = direction;
-  globalPosX_ = start_x_pos;
 
   if(squaresCount != squares){
     switch (direction){
@@ -284,8 +283,8 @@ void Movement::moveDirection(Direction direction, const uint8_t squares, const d
                 globalPosX_ = (robotAngle_ == angleOffset) ? (globalPosX_ - squaresCount) : (globalPosX_ + squaresCount);
                 if(globalPosX_ < 0)
                   globalPosX_ = 0;
-                if(globalPosX_ > 7)
-                  globalPosX_ = 7;
+                if(globalPosX_ > 6)
+                  globalPosX_ = 6;
           }
           break;
           Serial.print("Current Pos X: "); Serial.println(globalPosX_);
@@ -311,8 +310,8 @@ void Movement::moveDirection(Direction direction, const uint8_t squares, const d
                 globalPosX_ = (robotAngle_ == angleOffset) ? (globalPosX_ + squaresCount) : (globalPosX_ - squaresCount);
                 if(globalPosX_ < 0)
                   globalPosX_ = 0;
-                if(globalPosX_ > 7)
-                  globalPosX_ = 7;
+                if(globalPosX_ > 6)
+                  globalPosX_ = 6;
             }
           }
           Serial.println("RIGHT");
@@ -422,7 +421,7 @@ void Movement::moveDirection(Direction direction, const double angleOffset, cons
           break;
     }
   
-  orientedMovement(linear_x_, linear_y_, angular_z_);
+  orientedMovement(linear_x_, linear_y_, angular_z);
 }
 
 void Movement::driveToColor(const double start_x_pos, Direction direction, colorNum color_id){
@@ -446,7 +445,7 @@ void Movement::driveToColor(const double start_x_pos, Direction direction, color
       return;
   }
 
-  // Check if both sides are on a white square
+  // chec if both sides are on a white square
   bool isOnWhiteSquare = sideDetected_[2] == None && sideDetected_[3] == None;
   //need to chec data from RGB when crossng Blac Lnes
   if (shouldMoveBackward && !isOnWhiteSquare) {
@@ -460,7 +459,9 @@ void Movement::driveToColor(const double start_x_pos, Direction direction, color
 
 
 void Movement::driveToTarget(float coord_x, const double linear_x, const double linear_y, const double angular_z){
-
+//The idea is to move to leftmost or rghtmost based on globalPosX varable from 0 to 7 representng the map range
+//Then while moving chec if corrd_x s receved from a color detecton model. 
+//Once detected the color. Move based on the error proportonal if the coord_x is right in the middle (0)
 }
 
 void Movement::GoToSquare(){

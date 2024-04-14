@@ -9,7 +9,7 @@
 class ColorSensor{
 
 
-    private:
+    private:    
         Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
         
     public:
@@ -18,9 +18,10 @@ class ColorSensor{
         static constexpr float kBlueTreshold = 0;
         struct colorData{
             float red;
-            float blue;
             float green;
+            float blue;
         };
+
         ColorSensor();
         colorData getRGBData();
         void initColorSensor();

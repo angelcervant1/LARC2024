@@ -63,7 +63,7 @@ class Movement {
 
     void moveDirection(Direction direction, const double angleOffset, const double linear_x, const double linear_y, const double angular_z);
 
-    void moveDirection(Direction direction, const uint8_t squares, const double angleOffset, const double start_x_pos);
+    void moveDirection(Direction direction, const uint8_t squares, const double angleOffset);
 
     void driveToTarget(float coord_x, Direction direction);
 
@@ -118,8 +118,8 @@ class Movement {
     static constexpr double kBnoKD = 0.0004;
     static constexpr double kBNO_time = 10;
     static constexpr double kMaxErrorSum = 100;
-    static constexpr double kMaxLinearY = 0.35;
-    static constexpr double kMaxLinearX = 0.35;
+    static constexpr double kMaxLinearY = 0.3;
+    static constexpr double kMaxLinearX = 0.3;
     static constexpr double kMaxAngularZ = 1.0;
     uint8_t globalPosX_ = 0;
     Direction globalDirection_ = STOP;

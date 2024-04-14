@@ -1,8 +1,13 @@
 #include "Gripper.h"
 
-Gripper::Gripper() {
+Gripper::Gripper() : myStepper(stepsPerRevolution, 49, 48) {
     // Initialize servo motor
-    myServo.attach(servoAnalogPin); // Assuming the first pin in the array is for the servo
+    myServoR.attach(servoRAnalogPin); 
+    myServoL.attach(servoLAnalogPin); 
+    releaseCube();
+    
+    // Assuming the first pin in the array is for the servo
+// Assuming the first pin in the array is for the servo
 }
 
 void Gripper::downLevel(const uint8_t level) {
@@ -23,9 +28,19 @@ void Gripper::upSteps(const uint8_t steps) {
     myStepper.step(steps);
 }
 
-void Gripper::grabCube() {
-    // Close the gripper to grab the cube
-    myServo.write(90); // Assuming 90 degrees is the closed position, adjust as needed
+void Gripper::releaseCube() {
+  
+  myServoL.write(degreesToRelease); // Set servo L to desired position// Assuming 90 degrees is the closed position, adjust as needed
+  myServoR.write(degreesToGrab); // Set servo L to desired position// Assuming 90 degrees is the closed position, adjust as needed
+
+}
+
+void Gripper::grabCube(){
+
+  myServoR.write(degreesToRelease); // Set servo R to desired position
+  myServoL.write(degreesToGrab); // Set servo L to desired position
+
+
 }
 
 void Gripper::stop() {

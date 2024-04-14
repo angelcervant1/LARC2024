@@ -1,9 +1,11 @@
+#include <Stepper.h>
+
   // This class has the declaration, initialization and usage function of the BNO.
 #ifndef BNO_h
 #define BNO_h
 
 #include <Wire.h>
-#include "Arduino.h"
+#include <Arduino.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
@@ -25,12 +27,7 @@ class BNO {
     //////////////////////////////////Get Functions//////////////////////////////////////
     void updateBNO();
     float getYaw();
-    float getYawVel();
-    float getXAccel();
-    float getYAccel();
-    float getZAccel();
-
-    
+        
   private:
     Adafruit_BNO055 bno_;
     int reset_pin_ = 22;

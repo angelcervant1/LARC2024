@@ -9,10 +9,9 @@ void ColorSensor::initColorSensor(){
   } else {
     Serial.println("No TCS34725 found ... check your connections");
   }
-  
 }
-    
-colorData ColorSensor::getRGBData() {
+
+ColorSensor::colorData ColorSensor::getRGBData() {
     curr_millis = millis();
     if((curr_millis - prev_millis) > 60){
         tcs.setInterrupt(false);  // turn on LED
@@ -28,5 +27,4 @@ colorData ColorSensor::getRGBData() {
 
     }
     return RGBData;
-   
 }

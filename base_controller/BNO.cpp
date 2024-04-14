@@ -31,18 +31,6 @@ void BNO::updateBNO() {
 float BNO::getYaw() {
   return yaw_;
 }
-float BNO::getYawVel() {
-  return yaw_vel_;
-}
-float BNO::getXAccel() {
-  return x_accel;
-}
-float BNO::getYAccel() {
-  return y_accel;
-}
-float BNO::getZAccel() {
-  return z_accel;
-}
 
 //////////////////////////////////Get Functions//////////////////////////////////////
 void BNO::reset() {
