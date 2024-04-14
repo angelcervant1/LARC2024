@@ -22,7 +22,8 @@ enum Direction{
 enum colorNum{
     RED,
     GREEN,
-    BLUE
+    BLUE,
+    YELLOW
 };
 
 class Movement {
@@ -34,7 +35,7 @@ class Movement {
     Motor back_left_motor_;
     Motor front_right_motor_;
     Motor front_left_motor_;
-
+    bool angleOffsetReached;
     int kMotorCount = 4;
 
     // Initialize motor encoders.
@@ -72,6 +73,10 @@ class Movement {
     void driveToColor(const double start_x_pos, Direction direction, colorNum color_id);
 
     void GoToSquare();
+
+    bool detectedTilefromRaspi();
+
+    bool detectedCubefromRaspi();
 
     uint8_t getCurrentPosX();
 
@@ -120,7 +125,7 @@ class Movement {
     static constexpr double kMaxErrorSum = 100;
     static constexpr double kMaxLinearY = 0.3;
     static constexpr double kMaxLinearX = 0.3;
-    static constexpr double kMaxAngularZ = 1.0;
+    static constexpr double kMaxAngularZ = 1.2;
     uint8_t globalPosX_ = 0;
     Direction globalDirection_ = STOP;
 
@@ -149,7 +154,7 @@ class Movement {
     uint8_t squaresCount = 0;
     SignalSide prevSideDetected;
     SignalSide sideDetected_[4];
-    static constexpr double kAngleTolerance_ = 4;
+    static constexpr double kAngleTolerance_ = 6;
 };
 
 #endif

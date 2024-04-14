@@ -1,4 +1,4 @@
-  #include "Movement.h"
+#include "Movement.h"
 
 Movement *robot = nullptr;
 BNO *bnoInstance = nullptr;
@@ -17,7 +17,8 @@ unsigned long prev_millis = 0;
 int iteration = 0;
 double angleOffset = 0.0;
 double squares = 2;
-uint8_t start_pos_x = 0;
+float angleAmount = 0.0;
+uint8_t start_pos_x = 3;
 Direction movementVector[5] = {FORWARD, TOLEFT, BACKWARD, TORIGHT, STOP};
 String currentState = "TESTS", incomingState = "" ;
 
@@ -53,6 +54,7 @@ void setup() {
     myGripper = new Gripper(); 
     robot = new Movement(bnoInstance, myLineSensor, myColorSensor); 
     robot->initEncoders();
+    robot->setGlobalPosX(start_pos_x);
 }
 
 /*
@@ -67,7 +69,7 @@ STATE MACHINE
     if it is looking at red, then x: 3, so move forward. 
 
     Key Coords are : 0, 3, 6 (Leftmost, Rightmost, Center) which are zones where cubes cant be placed
-    Basically in base of the coord x, move to the closest Key Coords.
+    Basically based of the coord x, move to the closest Key Coords.
 
 3.- Drive towards the color until TCS detects color (Based on color detected previous)
 4.- Routine to move backwards to keep inside squares
@@ -79,7 +81,7 @@ STATE MACHINE
     x: 3 -> Go to x: 0 
     x: 6 -> Move Right until detect a color
 
-(All squares movements)
+(All into square movements)
 
 7.- Once detected a color, try to center robot to 0 pixels coords from image. 
     Adjust linear velocity based on Error from image x_coord
@@ -88,13 +90,64 @@ STATE MACHINE
 8.- Move forward until bounding box is big enough to consider cube is right in front of the robot.
     Detect the color of the cube
 
-9.- Grab the cube 
+9.- Grabbing the cube 
     Nema Motor moves down
     Servos close to grab the cube
     Nema Motor moves up
 
-10.- Check last saved globalPosX, 
-    GlobalPosX > 3 
+10.- Because robot has moved to be in the middle of the cube, it has to move into a square
+
+    Check last saved globalPosX, 
+    last GlobalPosX > 3 
+        Then move to the Right when robot looking to shelfs or To Left if looking to colors
+        until detected a black line, then compensate a little bit with +/-linear_y
+
+    last GlobalPosX < 3
+        Then move to the Left when robot looking to shelfs or To Right if looking to colors
+        until detected a black line, then compensate a little bit with +/-linear_y
+
+
+    After aligned in X, then we move backwards until detect a black line
+    then compensate a little bit with +/- linear_x
+    this way we will be inside a square
+
+11.- Once robot into a square, then rotate to the colors once more (offsetAngle), to get the x_coord from color detector and keep track of itself 
+    
+        OR  
+
+    Drive until reached a color: Red, Green, Blue, Yellow; (By ColorSensor RGB data)
+
+    If robot sees red
+     x_coord = 3;
+    If robot sees Green (Mostly never will happen because cubes are majorly reached from the track center)
+        Move Left 1 square;
+    If robot sees Blue
+        Then Move Left 1 square
+        If robot sees yellow
+            x_coord = 4
+        If doesnt sees yellow, means it sees green
+            x_coord = 0
+    If robot sees yellow
+        then move to Left
+            If robot sees red;
+                x_coord = 3;
+            If robot sees blue;
+                x_coord = 1
+    
+12.- Once known x_coord, cube must be released in the color_id x_coord.
+    Cube is blue -> go to x: 5 or x: 1
+    Cube is red -> go to x: 3
+    Cube is green -> go to x: 0 or x: 7
+    Cube is yellow -> go to x: 2 or x: 4
+
+13.- Nema motor moves down
+     Release the cube
+     Nema motor moves up
+     Change gripper to initial position
+
+14.- Rotate towards the Shelfs
+
+15.- Repeat from step 6
 
 
 */
@@ -102,7 +155,7 @@ float graspStartTime = 3000;
 float releaseStartTime = 3000;
 bool gripping;
 bool releasing;
-
+bool reachedAngle;
 void loop() {
     // if (Serial.available() > 0) {
     //    incomingState = Serial.readString();
@@ -133,18 +186,24 @@ void loop() {
 
     if (currentState.equals("TESTS")) {
         if (CHECK_PID) {
-            robot->setRobotAngle(angleOffset);
+            robot->getRobotAngle();
             if(robot->getSquareCounter() == squares){
                 iteration++;
-                start_pos_x = robot->getCurrentPosX();
                 robot->setSquareCounter(0);
+                start_pos_x = robot->getCurrentPosX();
                 //reset movement once reached squares goal
             }
             if(iteration > 4){
                 robot->stop();
             }
             else{
-                robot->moveDirection(movementVector[iteration], squares, angleOffset);
+                if(!robot->angleOffsetReached){
+                    robot->orientedMovement(0.0, 0.0, 0.0);
+                }
+                else{
+                    robot->setRobotAngle(angleOffset);
+                    robot->moveDirection(movementVector[iteration], squares, angleOffset);
+                }
                 //robot->moveDirection(movementVector[iteration], angleOffset);
             }
         }
@@ -179,22 +238,106 @@ void loop() {
 
 
     } else if (currentState.equals("FIND_ORIGIN")) {
-                angleOffset += 5; // read from rasp. Angle gonna be increasing until found a color paper 
-                robot->setRobotAngle(angleOffset);
-                robot->orientedMovement(0.0, 0.0, 0.0);
+                robot->setRobotAngle(angleAmount); // read from rasp. Angle gonna be increasing until found a color paper 
+                if(!robot->angleOffsetReached){
+                    robot->orientedMovement(0.0, 0.0, 0.0);
+                }
+                else if (robot->detectedTilefromRaspi()){
+                    robot->stop();
+                    robot->setRobotAngle(angleAmount);
+                    robot->orientedMovement(0.0, 0.0, 0.0);
+                    robot->setGlobalPosX(start_pos_x); //this is the data received by serial with the x_coord
+                }          
+                else{
+                    angleAmount += 90;
+                }  
     } else if (currentState.equals("FIND_EMPTY_PATH")) {
-        //once detected x_tile move towards center. leftmost or rightmost
-        //need to get track of squares moved
+
+                if(robot->getCurrentPosX() > 3)
+                    robot->moveDirection(TORIGHT, (6 - robot->getCurrentPosX()), angleAmount);
+                else
+                    robot->moveDirection(TOLEFT, robot->getCurrentPosX(), angleAmount);
+
     } else if (currentState.equals("DRIVE_TO_COLOR")) {
         //send a direction to move and stop until detected the color
+                switch(robot->getCurrentPosX()){
+                    case 0:
+                        robot->driveToColor(0, FORWARD, GREEN);
+                    break; 
 
+                    case 3:
+                        robot->driveToColor(3, FORWARD, RED);
+                    break;
+                    
+                    case 6:
+                        robot->driveToColor(6, FORWARD, GREEN);
+                    break;
+
+                }
     } else if (currentState.equals("ROTATE_180")) {
-                angleOffset += 5; //read from rasp
-                robot->setRobotAngle(angleOffset);
-                robot->orientedMovement(0.0, 0.0, 0.0);
+                robot->setRobotAngle(angleAmount + 180);
+                robot->orientedMovement(0.0, 0.0, 0.0);               
                 //rotate from previous position
     } else if (currentState.equals("SEARCH_CUBE")) {
-        //when already at a key point (center leftmost or rightmost) and looking towards shelfs search for cubes x_coords
+    // Flag to track if the robot has completed a full scan
+    // Define a flag to indicate if the robot has already moved from position 6 to position 0
+    
+    static bool fullScanCompleted = false;
+
+    // Check for cube detection
+    if (robot->detectedCubefromRaspi()) {
+        // Perform action based on cube detection
+        // For example:
+        // int detectedXCoord = robot->getCurrentPosX();
+            // Perform action based on the detected x-coordinate
+    } else {
+        // Move one square at a time based on the current position
+        switch(robot->getCurrentPosX()) {
+            case 0:
+                if (!fullScanCompleted) {
+                    // Move to the next square
+                    robot->moveDirection(TORIGHT, 1, robot->getRobotAngle());
+                } else {
+                    // Full scan completed, go to the initial position (LEFT)
+                    robot->stop();
+                }
+                break; 
+
+            case 1:
+            case 2:
+            case 4:
+            case 5:
+                // Move to the next square
+                robot->moveDirection(TORIGHT, 1, robot->getRobotAngle());
+                break;
+            
+            case 3:
+                if (!fullScanCompleted) {
+                    // Full scan not completed, move to the LEFT to start scanning
+                    while (robot->getCurrentPosX() != 0) 
+                        robot->moveDirection(TOLEFT, 1, robot->getRobotAngle());
+                } else 
+                    robot->stop();
+
+                break;
+
+            case 6:
+                if (!fullScanCompleted) {
+                    // Move to the LEFT to start scanning from the LEFT
+                    robot->moveDirection(TOLEFT, 1, robot->getRobotAngle());
+                } else {
+                    // Full scan completed, stay at position 6
+                    // The robot remains at position 6 if the full scan is completed
+                }
+                // Set the flag to indicate full scan completion
+                fullScanCompleted = true;
+                break;
+        }
+    }
+
+                //The other side of this state is if not any cube detection.
+                //Robot must go to the init position to search from the other side.
+
     } else if (currentState.equals("DRIVE_TO_CUBE")) {
         //move onto a direction proportional to x_coord error. until cube right infront
         //need to get odometry for the movement to reverse it when grabing the cube

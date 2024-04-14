@@ -42,19 +42,10 @@ class Kinematics
       int motor3;
       int motor4;
     };
+
     
-    struct velocities
-    {
-      float linear_x;
-      float linear_y;
-      float angular_z;
-    };
-    
-    Kinematics(int motor_max_rpm, float wheel_diameter, float kWheelBase, float kWheelTrack, BNO *bno);
-    velocities getVelocities(int motor1, int motor2);
-    velocities getVelocities(int motor1, int motor2, int motor3, int motor4);
+    Kinematics(int motor_max_rpm, float wheel_diameter, float kWheelBase, float kWheelTrack);
     output getRPM(float linear_x, float linear_y, float angular_z);
-    int rpmToPWM(int rpm);
 
   private:
     float kWheelBase_;
@@ -63,18 +54,8 @@ class Kinematics
     float linear_vel_y_mins_;
     float angular_vel_z_mins_; 
     float circumference_;
-    float tangential_vel_;
-    float x_rpm_;
-    float y_rpm_;
-    float tan_rpm_;
-    int max_rpm_;
-    float fr_wheels_dist_;
-    float lr_wheels_dist_;
-    float pwm_res_;
-    float past_angle;
-    float target_angle;
-    BNO *bno;
-    //Motor *motor;
+    float max_rpm_;
+
 };
 
 #endif

@@ -16,6 +16,8 @@ class ColorSensor{
         static constexpr float kRedTreshold = 0;
         static constexpr float kGreenTreshold = 0;
         static constexpr float kBlueTreshold = 0;
+        static constexpr float kYellowTreshold = 0;
+
         struct colorData{
             float red;
             float green;
