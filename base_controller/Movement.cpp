@@ -287,10 +287,10 @@ void Movement::moveDirection(Direction direction, const uint8_t squares, const d
               Serial.println("Moved 1 square");
               firstLineDetected = false;
                 globalPosX_ = (robotAngle_ == angleOffset) ? (globalPosX_ - squaresCount) : (globalPosX_ + squaresCount);
-                // if(globalPosX_ < 0)
-                //   globalPosX_ = 0;
-                // if(globalPosX_ > 6)
-                //   globalPosX_ = 6;
+                if(globalPosX_ < 0)
+                  globalPosX_ = 0;
+                if(globalPosX_ > 6)
+                  globalPosX_ = 6;
           }
           Serial.println("LEFT");
           //Serial.print("Current Pos X: "); Serial.println(globalPosX_);
@@ -483,7 +483,7 @@ void Movement::GoToSquare(){
 }
 
 bool Movement::detectedTilefromRaspi(){
-
+  
 }
 
 bool Movement::detectedCubefromRaspi(){

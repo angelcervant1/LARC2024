@@ -22,6 +22,10 @@ uint8_t start_pos_x = 3;
 Direction movementVector[5] = {FORWARD, TOLEFT, BACKWARD, TORIGHT, STOP};
 String currentState = "TESTS", incomingState = "" ;
 
+static bool fullScanCompleted = false;
+static bool startingScanFrom0 = false;
+static bool startingScanFrom6 = false;
+
 ///////////////////////////////////// //////////////////////////////////////////////////////////////////////////////////////
 
 void moveForward(Movement *robot) {
@@ -45,9 +49,7 @@ void moveBackward(Movement *robot) {
 }
 
 void setup() {
-    //Wire.begin();
     Serial.begin(57600);
-    //Serial.setTimeout(0.1);
     bnoInstance = new BNO(); 
     myLineSensor = new LineSensor();
     myColorSensor = new ColorSensor();
@@ -156,6 +158,7 @@ float releaseStartTime = 3000;
 bool gripping;
 bool releasing;
 bool reachedAngle;
+
 void loop() {
     // if (Serial.available() > 0) {
     //    incomingState = Serial.readString();
@@ -251,6 +254,7 @@ void loop() {
                 else{
                     angleAmount += 90;
                 }  
+
     } else if (currentState.equals("FIND_EMPTY_PATH")) {
 
                 if(robot->getCurrentPosX() > 3)
@@ -274,64 +278,56 @@ void loop() {
                     break;
 
                 }
+            
     } else if (currentState.equals("ROTATE_180")) {
                 robot->setRobotAngle(angleAmount + 180);
                 robot->orientedMovement(0.0, 0.0, 0.0);               
                 //rotate from previous position
     } else if (currentState.equals("SEARCH_CUBE")) {
     // Flag to track if the robot has completed a full scan
-    // Define a flag to indicate if the robot has already moved from position 6 to position 0
     
-    static bool fullScanCompleted = false;
-
     // Check for cube detection
-    if (robot->detectedCubefromRaspi()) {
-        // Perform action based on cube detection
-        // For example:
-        // int detectedXCoord = robot->getCurrentPosX();
-            // Perform action based on the detected x-coordinate
-    } else {
-        // Move one square at a time based on the current position
-        switch(robot->getCurrentPosX()) {
-            case 0:
-                if (!fullScanCompleted) {
-                    // Move to the next square
-                    robot->moveDirection(TORIGHT, 1, robot->getRobotAngle());
-                } else {
-                    // Full scan completed, go to the initial position (LEFT)
-                    robot->stop();
-                }
-                break; 
+    if (robot->detectedCubefromRaspi()) { robot->stop(); }
 
-            case 1:
-            case 2:
-            case 4:
-            case 5:
-                // Move to the next square
+    else {
+    // Move one square at a time based on the current position
+    switch(robot->getCurrentPosX()) {
+        case 0:
+            if(!startingScanFrom0){
+                startingScanFrom0 = true;
+                startingScanFrom6 = false;
+            }
+            if(startingScanFrom6){
+                robot->stop();
+            }
+        
+            break; 
+        case 1:
+        case 2:
+        case 4:
+        case 5:
+            if(startingScanFrom0)
+                robot->moveDirection(TOLEFT, 1, robot->getRobotAngle());
+            else if(startingScanFrom6)
                 robot->moveDirection(TORIGHT, 1, robot->getRobotAngle());
-                break;
-            
-            case 3:
-                if (!fullScanCompleted) {
-                    // Full scan not completed, move to the LEFT to start scanning
-                    while (robot->getCurrentPosX() != 0) 
-                        robot->moveDirection(TOLEFT, 1, robot->getRobotAngle());
-                } else 
-                    robot->stop();
-
-                break;
-
-            case 6:
-                if (!fullScanCompleted) {
-                    // Move to the LEFT to start scanning from the LEFT
+            // Move to the next square
+            break;
+        
+        case 3:
+            if (!fullScanCompleted) {
+                // Full scan not completed, move to the LEFT to start scanning
+                while (robot->getCurrentPosX() != 0) 
                     robot->moveDirection(TOLEFT, 1, robot->getRobotAngle());
-                } else {
-                    // Full scan completed, stay at position 6
-                    // The robot remains at position 6 if the full scan is completed
-                }
-                // Set the flag to indicate full scan completion
-                fullScanCompleted = true;
-                break;
+            } else 
+                robot->stop();
+
+            break;
+
+        case 6:
+            if(startingScan){
+                startingScan = false;
+            }
+            break;
         }
     }
 
