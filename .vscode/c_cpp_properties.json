@@ -15,6 +15,7 @@
             ],
             "intelliSenseMode": "gcc-x64",
             "includePath": [
+
                 "${workspaceFolder}/**",
                 "/home/angelcervant/robocup-home/microcontroller/BaseController/lib/**",
                 "/snap/arduino/85/hardware/arduino/avr/cores/arduino",
