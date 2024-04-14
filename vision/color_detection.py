@@ -123,19 +123,23 @@ class ColorDetection():
         """
         This can be modify to do it automatic
         """
-        lowerRed = np.array([0,162,150], np.uint8)
-        upperRed = np.array([7,255,255], np.uint8)
-        lowerRed2 = np.array([155,162,150], np.uint8)
-        upperRed2 = np.array([179,255,255], np.uint8)
+
+        lowerRed = np.array([145,154,113], np.uint8)
+        upperRed = np.array([180,255,142], np.uint8)
+        # lowerRed2 = np.array([155,162,150], np.uint8)
+        # upperRed2 = np.array([179,255,255], np.uint8)
         
-        lowerBlue = np.array([100,235,122], np.uint8)
-        upperBlue = np.array([104,255,170], np.uint8)
+
+        lowerBlue = np.array([ 75,122,110], np.uint8)
+        upperBlue = np.array([130,255,255], np.uint8)
+
+
+        lowerYellow = np.array([  7, 99,166], np.uint8)
+        upperYellow =  np.array([ 30,178,228], np.uint8)
         
-        lowerYellow = np.array([26,171,168], np.uint8)
-        upperYellow = np.array([34,255,255], np.uint8)
-        
-        lowerGreen = np.array([75,48, 5], np.uint8)
-        upperGreen = np.array([104,203, 97], np.uint8)  
+
+        lowerGreen = np.array([ 25, 48,126], np.uint8)
+        upperGreen = np.array([ 85, 99,167], np.uint8)
 
         frameHSV = cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
         maskAzul = cv2.inRange(frameHSV, lowerBlue, upperBlue)
@@ -143,14 +147,14 @@ class ColorDetection():
         #maskVerde2 = cv2.inRange(frameHSV, lowerGreen2, upperGreen2)
         maskamarillo = cv2.inRange(frameHSV, lowerYellow, upperYellow)
         maskRed1 = cv2.inRange(frameHSV, lowerRed, upperRed)
-        maskRed2 = cv2.inRange(frameHSV, lowerRed2, upperRed2)
-        maskred = cv2.add(maskRed1,maskRed2)
+        # maskRed2 = cv2.inRange(frameHSV, lowerRed2, upperRed2)
+        # maskred = cv2.add(maskRed1,maskRed2)
         #maskverde = cv2.add(maskVerde1,maskVerde2)
         maskverde = maskVerde1
         self.dibujar(maskAzul,(255,0,0), img2)
         img2 = self.dibujar(maskamarillo,(0,255,255), img2)
         img2 = self.dibujar(maskverde,(0,255,0), img2)
-        img2 = self.dibujar(maskred,(0,0,255), img2)
+        img2 = self.dibujar(maskRed1,(0,0,255), img2)
 
         self.get_objects(self.boxes, self.detections)
         return img2
@@ -159,12 +163,13 @@ class ColorDetection():
         # print("detect_color_pattern_cb")
         data = self.color_detections_data
         xTile = 0
+        # print(data)
 
         sz = len(data)
         if sz == 0:
             return xTile
 
-        x_last_max = data[len(data)-1][1]
+        x_last_max = data[0][1]
         point_x_min_id = 0
         color_seq = ""
 
@@ -188,16 +193,19 @@ class ColorDetection():
         #check if subsequence
         # print(color_seq)
         #Checa que detecte un minimo de # colores
-        if color_seq in self.static_color_seq and len(color_seq) >= 2:
+        # print(color_seq)
+        if color_seq in self.static_color_seq and len(color_seq) >= 3:
             #get square from closer point x and adjacents
             # print(data[point_x_min_id][0])
             x_square_label = color2Letter[ data[point_x_min_id][0] ]
             x_square_cont = ""
+            # print(x_square_label)
             if point_x_min_id > 0:
                 x_square_cont = color2Letter[ data[point_x_min_id - 1][0] ] + x_square_label
             else:
                 x_square_cont = x_square_label + color2Letter[ data[point_x_min_id + 1][0] ]
 
+            # print(x_square_cont)
             if x_square_label == "G" and x_square_cont == "GB":
                 xTile = 7
             elif x_square_label == "B" and (x_square_cont == "GB" or x_square_cont == "BY"):

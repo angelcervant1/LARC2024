@@ -224,7 +224,7 @@ class Arduino():
     def get_baud(self):
             ''' Get the current baud rate on the serial port.
             '''
-            cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x00) + struct.pack("B", 0x01)
+            cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x00) + struct.pack("i", 0x01)
             if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
                 val, = struct.unpack('I', self.payload_args)
                 return  self.SUCCESS, val 

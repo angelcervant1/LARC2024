@@ -3,7 +3,7 @@ import color_detection
 import arucos_detection
 import cv2
 import numpy as np
-import communication
+# import communication
 
 
 
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     color_detector = color_detection.ColorDetection()
     arucos_detector = arucos_detection.DetectorAruco()
     first_iteration = True
-    arduino = communication.Arduino()
+    # arduino = communication.Arduino()
     while True: 
         box = []
         ret, frame = cap.read()
@@ -44,14 +44,17 @@ if __name__ == '__main__':
             color_detector.boxes = []
             color_detector.detections = []
             if(color_detector.xTile != 0):
-                arduino.write("Tile")
-                arduino.write(str(color_detector.xTile))
+                print("Tile")
+                print(color_detector.xTile)
+                # arduino.write(str(color_detector.xTile))
+                pass
             else:
                  box = detect_closest_cube(color_detector.color_close, arucos_detector.aruco_detections_data)
                  if box != 0:
-                    arduino.write("Follow")
-                    arduino.write(box[5])
-                    arduino.read()
+                    # arduino.write("Follow")
+                    # arduino.write(box[5])
+                    # arduino.read()
+                    pass
             color_detector.color_close = []
             arucos_detector.aruco_detections_data = []
             if cv2.waitKey(1) & 0xFF == ord('q'):
