@@ -1,11 +1,8 @@
+
 #include "Raspy.h"
 
-Raspy::Raspy(BNO *bno, LineSensor *line, ColorSensor *color, Movement *robot, Gripper *gripper){
-    _bno = bno;
-    _line = line;
-    _color = color;
-    _robot = robot;
-    _gripper = gripper;
+Raspy::Raspy(){
+  // Serial.begin(baud);
 }
 
 void Raspy::readSerial() {
@@ -14,7 +11,6 @@ void Raspy::readSerial() {
     static uint8_t packet_size = 0;
     static uint8_t command = 0;
     static uint8_t check_sum = 0;
-    test = 0;
     
     while (Serial.available()) {
         buffer[index++] = Serial.read();
@@ -57,7 +53,6 @@ void Raspy::readSerial() {
     }
     // if serial is not available, start a counter to stop the robot if nothing is received in a time frame
     // unactive_time_ = millis();
-
 }
 
 void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer) {
@@ -74,42 +69,23 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
                 writeSerial(true, (uint8_t*)baud, sizeof(baud));
             }
             break;
-        case 0x01: //Color Detected
-            int angleAmount = 0; 
-            if (packet_size == 1) { // Check packet size
-                  
-                writeSerial(true, nullptr, 0);
-            }
-            break;
-        case 0x02: // rotate
-            if (packet_size == 5) { // Check packet size
-                double angleAmount;
-                memcpy(&angleAmount, buffer, sizeof(angleAmount));
-                _robot->setRobotAngle(angleAmount); // read from rasp. Angle gonna be increasing until found a color paper 
-                if(!_robot->angleOffsetReached){
-                    _robot->orientedMovement(0.0, 0.0, 0.0);
-                }
-                writeSerial(true, nullptr, 0);
-            }
-            break;
-        case 0x03:
-            if (packet_size == 3){
-                uint8_t start_x_pos;
+        case 0x01: // Send localization
+            if (packet_size == 3) { // Check packet size
+                uint8_t tile;
                 uint8_t color;
-                memcpy(&start_x_pos, buffer, sizeof(start_x_pos));
-                memcpy(&color, buffer + sizeof(start_x_pos), sizeof(color));
-                _robot->setGlobalPosX(start_x_pos);
-                //_robot->setColorTile(color);
+                writeSerial(true, (uint8_t*)tile, sizeof(tile));
+                writeSerial(true, (uint8_t*)color, sizeof(tile) + sizeof(color));
             }
-            writeSerial(true, nullptr, 0);
             break;
         case 0x08: // rotate
-            if (packet_size == 5) { // Check packet size
-              int t[] = {100};
-//            memcpy(&t, buffer, sizeof(t));
-              writeSerial(true, (uint8_t*)t, sizeof(t));
+            if (packet_size == 1) { // Check packet size
+                uint32_t t[] = {200};
+                // memcpy(&t, buffer, sizeof(t));
+                writeSerial(true, (uint8_t*)t, sizeof(t));
             }
             break;
+        default:
+        break;
     }
 }
 
@@ -125,26 +101,6 @@ void Raspy::writeSerial(bool success, uint8_t* payload, int elements) {
     Serial.write(payload[i]);
   }
 
-  //Serial.write(0x00); // Footer
+  Serial.write(0x00); // Footer
   Serial.flush();
-
-}
-
-void Raspy::detectedTilefromRaspi(){
-    double angleAmount = 0.0;
-    // for(int i = 0; i<4; i++){
-        
-        _robot->setRobotAngle(angleAmount); // read from rasp. Angle gonna be increasing until found a color paper 
-            if(!_robot->angleOffsetReached){
-                _robot->orientedMovement(0.0, 0.0, 0.0);
-            }
-            else if (_robot->detectedTilefromRaspi()){
-                _robot->stop();
-                _robot->setRobotAngle(angleAmount);
-                _robot->orientedMovement(0.0, 0.0, 0.0);
-            }          
-            else{
-                angleAmount += 90;
-            }
- //   }
 }
