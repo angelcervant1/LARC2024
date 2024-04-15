@@ -7,7 +7,7 @@ BNO::BNO() {
     //Serial.println("Oops no bno detected..");
     return;
   }
-  //Serial.begin(115200);
+  Serial.begin(115200);
   bno_.setExtCrystalUse(true);
   sensors_event_t event;
   bno_.getEvent(&event);

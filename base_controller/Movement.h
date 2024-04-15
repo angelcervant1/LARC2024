@@ -36,7 +36,11 @@ class Movement {
     Motor front_right_motor_;
     Motor front_left_motor_;
     bool angleOffsetReached;
+    bool start_search = false;
+    bool outOfColor;
     int kMotorCount = 4;
+    colorNum pastColor;
+    float past_check;
 
     // Initialize motor encoders.
     void initEncoders();
@@ -62,11 +66,11 @@ class Movement {
 
     void moveDirection(Direction direction, const double angleOffset);
 
-    void moveDirection(Direction direction, const double angleOffset, const double linear_x, const double linear_y, const double angular_z);
+    void moveDirection(Direction direction, const double angleOffset, double speed, bool flag);
 
     void moveDirection(Direction direction, const uint8_t squares, const double angleOffset);
 
-    void driveToTarget(float coord_x, Direction direction);
+    void driveToTarget(float coord_x);
 
     void driveToTarget(float coord_x, const double linear_x, const double linear_y, const double angular_z);
 
@@ -125,17 +129,19 @@ class Movement {
     static constexpr double kBnoKD = 0.0004;
     static constexpr double kBNO_time = 10;
     static constexpr double kMaxErrorSum = 100;
-    static constexpr double kMaxLinearY = 0.3;
-    static constexpr double kMaxLinearX = 0.3;
-    static constexpr double kMaxAngularZ = 1.2;
+    static constexpr double kMaxLinearY = 0.33;
+    static constexpr double kMaxLinearX = 0.33;
+    static constexpr double kMaxAngularZ = 1.1;
     uint8_t globalPosX_ = 0;
     Direction globalDirection_ = STOP;
-
+    uint8_t kCentered2Image = 10; //Error in pixels
+    uint8_t xError = 0;
     // Kinematics.
     Kinematics kinematics_;
     BNO *bno;
     LineSensor *lineSensor;
     ColorSensor *colorSensor;
+    ColorSensor::colorData rgbData;
     
     PID pidBno;
 
@@ -150,13 +156,13 @@ class Movement {
 
     // Angle
     float angle_error_ = 0;
-    float movementKp = 0.35;
+    float movementKp = 0.38;
     double robotAngle_ = 0;
     bool firstLineDetected = false;
     uint8_t squaresCount = 0;
     SignalSide prevSideDetected;
     SignalSide sideDetected_[4];
-    static constexpr double kAngleTolerance_ = 6;
+    static constexpr double kAngleTolerance_ = 5;
 };
 
 #endif

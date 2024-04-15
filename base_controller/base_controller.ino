@@ -5,27 +5,27 @@ BNO *bnoInstance = nullptr;
 LineSensor *myLineSensor = nullptr;
 ColorSensor *myColorSensor = nullptr;
 Gripper *myGripper = nullptr;
-Raspy *raspy = nullptr;
+Raspy raspy = nullptr;
 
 bool CHECK_PID = false;
 bool CHECK_ODOMETRY = false;
-bool CHECK_LINES = true;
-bool CHECK_GRASP = false;
+bool CHECK_LINES = false;
+bool CHECK_GRASP = true;
 
 /////////////////////////////////////remove after testing///////////////////////////////////////////////////  
 unsigned long curr_millis = 0;
 unsigned long prev_millis = 0;
 int iteration = 0;
-double angleOffset = 0.0;
-double squares = 1;
-float angleAmount = 0.0;
-uint8_t start_pos_x = 3;
-Direction movementVector[5] = {FORWARD, TORIGHT, BACKWARD, TOLEFT, STOP};
-String currentState = "", incomingState = "" ;
+double angleOffset = 180.0; //for tests
+double squares = 4; 
+float angleAmount = 0.0; //for state machne
+uint8_t start_pos_x = 4;
+Direction movementVector[5] = {FORWARD, TOLEFT, BACKWARD, TORIGHT, STOP};
+String currentState = "TESTS", incomingState = "" ;
 
-static bool fullScanCompleted = false;
-static bool startingScanFrom0 = false;
-static bool startingScanFrom6 = false;
+bool fullScanCompleted = false;
+bool startingScanFrom0 = false;
+bool startingScanFrom6 = false;
 
 ///////////////////////////////////// //////////////////////////////////////////////////////////////////////////////////////
 
@@ -59,7 +59,9 @@ void setup() {
     robot = new Movement(bnoInstance, myLineSensor, myColorSensor); 
     robot->initEncoders();
     robot->setGlobalPosX(start_pos_x);
-    raspy = new Raspy(bnoInstance, myLineSensor, myColorSensor, robot, myGripper);
+    robot->angleOffsetReached = false;
+
+    //raspy = new Raspy(bnoInstance, myLineSensor, myColorSensor, robot, myGripper);
 }
 
 /*
@@ -161,12 +163,11 @@ float releaseStartTime = 3000;
 bool gripping;
 bool releasing;
 bool reachedAngle;
-
 void loop() {
-    raspy->readSerial();
-    if(raspy->test){
-        currentState = "TESTS";
-    }
+//    raspy->readSerial();
+//    if(raspy->test){
+//        currentState = "TESTS";
+//    }
         // if (Serial.available() > 0) {
     //    incomingState = Serial.readString();
        //Serial.println(incomingState);
@@ -199,7 +200,6 @@ void loop() {
             //robot->getRobotAngle();
             if(robot->getSquareCounter() == squares){
                 iteration++;
-                //robot->setSquareCounter(0);
                 start_pos_x = robot->getCurrentPosX();
                 //reset movement once reached squares goal
             }
@@ -226,24 +226,25 @@ void loop() {
  
         }
         if (CHECK_GRASP) {
-            if (!gripping && !releasing) {
-                // If not currently gripping or releasing, initiate the gripping process
-                myGripper->grabCube();
-                gripping = true;  // Set the flag indicating that we are gripping
-                graspStartTime = millis();  // Record the start time of the gripping process
-                Serial.println("GRAB");
-            } else if (gripping && !releasing && millis() - graspStartTime >= 3000) {
-                // If currently gripping and 3000 milliseconds have elapsed, release the cube
-                myGripper->releaseCube();
-                releasing = true;  // Set the flag indicating that we are releasing
-                releaseStartTime = millis();  // Record the start time of the releasing process
-                Serial.println("RELEASE");
-            } else if (releasing && millis() - releaseStartTime >= 3000) {
-                // If currently releasing and 3000 milliseconds have elapsed, reset gripping and releasing flags
-                gripping = false;
-                releasing = false;
-                Serial.println("WAIT OVER");
-            }
+            // if (!gripping && !releasing) {
+            //     // If not currently gripping or releasing, initiate the gripping process
+            //     myGripper->grabCube();
+            //     gripping = true;  // Set the flag indicating that we are gripping
+            //     graspStartTime = millis();  // Record the start time of the gripping process
+            //     Serial.println("GRAB");
+            // } else if (gripping && !releasing && millis() - graspStartTime >= 3000) {
+            //     // If currently gripping and 3000 milliseconds have elapsed, release the cube
+            //     myGripper->releaseCube();
+            //     releasing = true;  // Set the flag indicating that we are releasing
+            //     releaseStartTime = millis();  // Record the start time of the releasing process
+            //     Serial.println("RELEASE");
+            // } else if (releasing && millis() - releaseStartTime >= 3000) {
+            //     // If currently releasing and 3000 milliseconds have elapsed, reset gripping and releasing flags
+            //     gripping = false;
+            //     releasing = false;
+            //     Serial.println("WAIT OVER");
+            // }
+            myGripper->StepperHome();
         }
 
 
@@ -257,6 +258,7 @@ void loop() {
                     robot->setRobotAngle(angleAmount);
                     robot->orientedMovement(0.0, 0.0, 0.0);
                     robot->setGlobalPosX(start_pos_x); //this is the data received by serial with the x_coord
+                    currentState = "FIND_EMPTY_PATH";
                 }          
                 else{
                     angleAmount += 90;
@@ -264,13 +266,29 @@ void loop() {
 
     } else if (currentState.equals("FIND_EMPTY_PATH")) {
 
-                if(robot->getCurrentPosX() > 3)
+                if(robot->getCurrentPosX() > 3 && !(robot->getCurrentPosX() == 6))
                     robot->moveDirection(TORIGHT, (6 - robot->getCurrentPosX()), angleAmount);
-                else
-                    robot->moveDirection(TOLEFT, robot->getCurrentPosX(), angleAmount);
+                else if(robot->getCurrentPosX() < 3 && !(robot->getCurrentPosX() == 0)){
+                        robot->moveDirection(TOLEFT, robot->getCurrentPosX(), angleAmount);
+                }
+                else{
+                    robot->stop();
+                    currentState = "DRIVE_TO_COLOR";
+                }
+                    
 
     } else if (currentState.equals("DRIVE_TO_COLOR")) {
         //send a direction to move and stop until detected the color
+            if(robot->start_search){
+                robot->stop();
+                currentState = "ROTATE_180";
+                robot->start_search = false;
+                //robot->angleOffsetReached = false;
+
+            }
+            
+            else{
+                robot->start_search = false;
                 switch(robot->getCurrentPosX()){
                     case 0:
                         robot->driveToColor(0, FORWARD, GREEN);
@@ -283,12 +301,16 @@ void loop() {
                     case 6:
                         robot->driveToColor(6, FORWARD, GREEN);
                     break;
-
                 }
-            
+            }
     } else if (currentState.equals("ROTATE_180")) {
-                robot->setRobotAngle(angleAmount + 180);
-                robot->orientedMovement(0.0, 0.0, 0.0);               
+                robot->setRobotAngle(angleAmount - 180);
+                if(robot->angleOffsetReached){
+                    currentState = "SEARCH_CUBE";
+                }
+                else{
+                    robot->orientedMovement(0.0, 0.0, 0.0);               
+                }
                 //rotate from previous position
     } else if (currentState.equals("SEARCH_CUBE")) {
     // Flag to track if the robot has completed a full scan
@@ -296,64 +318,77 @@ void loop() {
     // Check for cube detection
     if (robot->detectedCubefromRaspi()) { robot->stop(); } //need to change stops to hardStops;
         // Here continue to the next state
-    else {
-    // Move one square at a time based on the current position
-    switch(robot->getCurrentPosX()) {
-        case 0:
-            if(!startingScanFrom0){
-                startingScanFrom0 = true;
-                startingScanFrom6 = false;
-            }
-            if(startingScanFrom6){
-                robot->stop();
-            }
-            else
-                robot->moveDirection(TOLEFT, 1, robot->getRobotAngle());
-            break; 
-        case 1:
-        case 2:
-        case 4:
-        case 5:
-            if(startingScanFrom0)
-                robot->moveDirection(TOLEFT, 1, robot->getRobotAngle());
-            else if(startingScanFrom6)
-                robot->moveDirection(TORIGHT, 1, robot->getRobotAngle());
-            // Move to the next square
-            break;
-        
-        case 3:
-            if (!(startingScanFrom0 && startingScanFrom6)) {
-                // rOBOT , move to the LEFT to start scanning
-                while (robot->getCurrentPosX() != 0) 
-                    robot->moveDirection(TOLEFT, 1, robot->getRobotAngle());
-            } else if(startingScanFrom0){
-                    robot->moveDirection(TOLEFT, 1, robot->getRobotAngle());
-            } else if(startingScanFrom6){
-                    robot->moveDirection(TORIGHT, 1, robot->getRobotAngle());
+        else if(!fullScanCompleted){
+        // Move one square at a time based on the current position
+            switch(robot->getCurrentPosX()) {
+                case 0:
+                    if(!startingScanFrom0){
+                        startingScanFrom0 = true;
+                        startingScanFrom6 = false;
+                    }
+                    if(startingScanFrom6){
+                        robot->stop();
+                        fullScanCompleted = true;
+                    }
+                    else
+                        robot->moveDirection(TOLEFT, 1, robot->getRobotAngle());
+                    break; 
+                case 1:
+                case 2:
+                case 4:
+                case 5:
+                    if(startingScanFrom0)
+                        robot->moveDirection(TOLEFT, 1, robot->getRobotAngle());
+                    else if(startingScanFrom6)
+                        robot->moveDirection(TORIGHT, 1, robot->getRobotAngle());
+                    // Move to the next square
+                    break;
+                
+                case 3:
+                        // If not startingScanFromRight, continue scanning from the left
+                        if (!(startingScanFrom0 && startingScanFrom6)) {
+                            // Move to the left to start scanning
+                            while (robot->getCurrentPosX() != 0) 
+                                robot->moveDirection(TORIGHT, 3, robot->getRobotAngle());
+                        } else if (startingScanFrom0) {
+                            robot->moveDirection(TOLEFT, 1, robot->getRobotAngle());
+                        } else if (startingScanFrom6) {
+                            robot->moveDirection(TORIGHT, 1, robot->getRobotAngle());
+                        }
+                    
+                    break;
 
-            }
-            break;
-
-        case 6:
-            if(!startingScanFrom6){
-                startingScanFrom0 = false;
-                startingScanFrom6 = true;
-            }
-            if(startingScanFrom0){
-                robot->stop();
-            }
-            else
-                robot->moveDirection(TOLEFT, 1, robot->getRobotAngle());
-            break;
+                case 6:
+                    if(!startingScanFrom6){
+                        startingScanFrom0 = false;
+                        startingScanFrom6 = true;
+                    }
+                    if(startingScanFrom0){
+                        robot->stop();
+                    }
+                    else
+                        robot->moveDirection(TOLEFT, 1, robot->getRobotAngle());
+                    break;
+                }
         }
-    }
-
-                //The other side of this state is if not any cube detection.
-                //Robot must go to the init position to search from the other side.
+            else{
+                //If no cube detected from backwards, then move forward to start search on the other side
+                while(robot->getSquareCounter() != 5)
+                    robot->moveDirection(FORWARD, 1, robot->getRobotAngle());
+                    
+                robot->setRobotAngle(robot->getRobotAngle() - 180);
+                if(!robot->angleOffsetReached)
+                    robot->orientedMovement(0.0, 0.0, 0.0);
+                else{
+                    fullScanCompleted = false;
+                    robot->setSquareCounter(0);
+                }
+            }
+               
 
     } else if (currentState.equals("DRIVE_TO_CUBE")) {
-        //move onto a direction proportional to x_coord error. until cube right infront
-        //need to get odometry for the movement to reverse it when grabing the cube
+            uint8_t targetXCoord = robot->detectedCubefromRaspi(); //asum thisfunc send x coords
+            robot->driveToTarget(targetXCoord);
     } else if (currentState.equals("GRAB_CUBE")) {
 
     } else if (currentState.equals("ENTER_CLOSEST_SQUARE")) {
@@ -365,6 +400,9 @@ void loop() {
     } else {
 
     }
+
+    Serial.println(currentState);
+
 }
 
 
