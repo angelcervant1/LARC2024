@@ -9,7 +9,7 @@ class ColorDetection():
         self.cy = 0.0
         self.detections = []
         self.image = np.array([])
-
+        self.color_tile = 4
         self.x_pixels = 0
         self.y_pixels = 0
 
@@ -179,7 +179,12 @@ class ColorDetection():
             "azul": "B",
             "amarillo": "Y"
         }
-    
+        color2Number = {
+            "rojo" : 0,
+            "verde" : 1,
+            "azul" : 2,
+            "amarillo" : 3
+        }
         for i in range(sz):
             if abs(data[i][1] - x_last_max) >= 130:
                 continue
@@ -189,6 +194,7 @@ class ColorDetection():
             #Obtener que color esta en el medio de la imagen
             if( abs(data[i][3]) < abs(data[point_x_min_id][3])):
                 point_x_min_id = i
+                mid_color = color2Number[data[i][0]]
 
         #check if subsequence
         # print(color_seq)
@@ -220,7 +226,10 @@ class ColorDetection():
                 xTile = 2
             elif x_square_label == "G" and x_square_cont == "BG":
                 xTile = 1
+            else:
+                return 0
         self.xTile = xTile
+        self.color_tile = mid_color
     
     def setUp(self,img):
         y, x, _= img.shape

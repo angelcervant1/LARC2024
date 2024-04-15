@@ -232,9 +232,15 @@ class Arduino():
                 # print("ACK", self.payload_ack, self.payload_ack == b'\x00', self.execute(cmd_str)==1)
                 return self.FAIL, 0
 
-    def test(self, command): 
-
-        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x05, 0x08) + struct.pack("i", command) + struct.pack("B", 0x09)
+    def sendLocation(self, tile, color):
+        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x03, 0x03) + struct.pack("ii", tile, color) + struct.pack("B", 0x04)
+        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
+           return  self.SUCCESS
+        else:
+           return self.FAIL
+    
+    def rotateRobot(self, angle):
+        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x09, 0x02) + struct.pack("d", angle) + struct.pack("B", 0x03)
         if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
            return  self.SUCCESS
         else:
