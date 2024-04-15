@@ -6,6 +6,7 @@ Raspy::Raspy(BNO *bno, LineSensor *line, ColorSensor *color, Movement *robot, Gr
     _color = color;
     _robot = robot;
     _gripper = gripper;
+    test = 0; 
 }
 
 void Raspy::readSerial() {
@@ -102,6 +103,12 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
             }
             writeSerial(true, nullptr, 0);
             break;
+        case 0x08: // rotate
+            if (packet_size == 5) { // Check packet size
+                memcpy(&test, buffer, sizeof(test));
+            }
+            writeSerial(true, nullptr, 0);
+            break;
     }
 }
 
@@ -120,23 +127,4 @@ void Raspy::writeSerial(bool success, uint8_t* payload, int elements) {
   Serial.write(0x00); // Footer
   Serial.flush();
 
-}
-
-int detectedTilefromRaspi(){
-    double angleAmount = 0.0;
-    for(int i = 0; i<4; i++){
-        
-        robot->setRobotAngle(angleAmount); // read from rasp. Angle gonna be increasing until found a color paper 
-            if(!_robot->angleOffsetReached){
-                _robot->orientedMovement(0.0, 0.0, 0.0);
-            }
-            else if (_robot->detectedTilefromRaspi()){
-                _robot->stop();
-                _robot->setRobotAngle(angleAmount);
-                _robot->orientedMovement(0.0, 0.0, 0.0);
-            }          
-            else{
-                angleAmount += 90;
-            }
-    }
 }

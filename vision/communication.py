@@ -231,3 +231,11 @@ class Arduino():
             else:
                 # print("ACK", self.payload_ack, self.payload_ack == b'\x00', self.execute(cmd_str)==1)
                 return self.FAIL, 0
+
+    def test(self, command): 
+
+        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x05, 0x08) + struct.pack("i", command) + struct.pack("B", 0x09)
+        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
+           return  self.SUCCESS
+        else:
+           return self.FAIL
