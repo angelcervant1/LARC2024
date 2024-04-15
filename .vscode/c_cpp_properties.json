@@ -15,16 +15,14 @@
             ],
             "intelliSenseMode": "gcc-x64",
             "includePath": [
-                "${workspaceFolder}/**",
-                "/home/angelcervant/robocup-home/microcontroller/BaseController/lib/**",
+                "${workspaceFolder}/base_controller/libs/**",
+                "/home/angelcervant/LARC2024/base_controller/libs/**",
                 "/snap/arduino/85/hardware/arduino/avr/cores/arduino",
                 "/snap/arduino/85/hardware/arduino/avr/variants/standard",
                 "/snap/arduino/85/hardware/arduino/avr/libraries/**",
                 "/snap/arduino/85/hardware/tools/avr/lib/gcc/avr/7.3.0/include",
                 "/snap/arduino/85/hardware/tools/avr/lib/gcc/avr/7.3.0/include-fixed",
-                "/snap/arduino/85/hardware/tools/avr/avr/include",
-                "/snap/arduino/current/**",
-                "${workspaceFolder}/base_controller/libs/Adafruit_TCS34725-1.4.4"
+                "/snap/arduino/current/**"
             ],
             "forcedInclude": [
                 "/snap/arduino/85/hardware/arduino/avr/cores/arduino/Arduino.h"

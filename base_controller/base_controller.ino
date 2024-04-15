@@ -7,9 +7,9 @@ ColorSensor *myColorSensor = nullptr;
 Gripper *myGripper = nullptr;
 Raspy *raspy = nullptr;
 
-bool CHECK_PID = true;
+bool CHECK_PID = false;
 bool CHECK_ODOMETRY = false;
-bool CHECK_LINES = false;
+bool CHECK_LINES = true;
 bool CHECK_GRASP = false;
 
 /////////////////////////////////////remove after testing///////////////////////////////////////////////////  
@@ -50,6 +50,7 @@ void moveBackward(Movement *robot) {
 }
 
 void setup() {
+    //Wire.begin();
     Serial.begin(115200);
     bnoInstance = new BNO(); 
     myLineSensor = new LineSensor();
@@ -164,7 +165,7 @@ bool reachedAngle;
 void loop() {
     raspy->readSerial();
     if(raspy->test){
-        currentState = "TEST";
+        currentState = "TESTS";
     }
         // if (Serial.available() > 0) {
     //    incomingState = Serial.readString();

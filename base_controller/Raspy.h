@@ -10,7 +10,7 @@ class Raspy{
     void writeSerial(bool success, uint8_t* payload, int elements);
     void readSerial();
     void detectedTilefromRaspi();
-    uint8_t test; 
+    int test; 
   private:
     BNO *_bno;
     LineSensor *_line;

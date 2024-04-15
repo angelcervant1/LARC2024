@@ -14,6 +14,7 @@ void Raspy::readSerial() {
     static uint8_t packet_size = 0;
     static uint8_t command = 0;
     static uint8_t check_sum = 0;
+    test = 0;
     
     while (Serial.available()) {
         buffer[index++] = Serial.read();
@@ -104,9 +105,10 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
             break;
         case 0x08: // rotate
             if (packet_size == 5) { // Check packet size
-                memcpy(&test, buffer, sizeof(test));
+              int t[] = {100};
+//            memcpy(&t, buffer, sizeof(t));
+              writeSerial(true, (uint8_t*)t, sizeof(t));
             }
-            writeSerial(false, nullptr, 0);
             break;
     }
 }
