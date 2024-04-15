@@ -7,6 +7,7 @@ Raspy::Raspy(BNO *bno, LineSensor *line, ColorSensor *color, Movement *robot, Gr
     _robot = robot;
     _gripper = gripper;
     flag = "";
+    cube_offset = 0;
 }
 
 void Raspy::readSerial() {
@@ -111,12 +112,12 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
                 }
             }
             writeSerial(false, nullptr, 0);
-        // case 0x05:
-        //     if (packet_size == 2){
-        //         uint8_t cube_offset;
-
-        //         flag = "SEARCH_CUBE"
-        //     }
+        case 0x05:
+            if (packet_size == 2){
+                memcpy(&cube_offset, buffer, sizeof(cube_offset));
+                flag = "SEARCH_CUBE"
+            }
+            writeSerial(true, nullptr, 0);
     }
 }
 
@@ -135,9 +136,4 @@ void Raspy::writeSerial(bool success, uint8_t* payload, int elements) {
   //Serial.write(0x00); // Footer
   Serial.flush();
 
-}
-
-String Raspy::raspystate(){
-    Raspy::readSerial();
-    return flag;
 }

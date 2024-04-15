@@ -245,8 +245,16 @@ class Arduino():
            return  self.SUCCESS
         else:
            return self.FAIL
+    
     def angleOffsetReach(self):
         cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x04) + struct.pack("B", 0x05)
+        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
+           return  self.SUCCESS
+        else:
+           return self.FAIL
+    
+    def send_cube_offset(self, offset):
+        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x02, 0x05) + struct.pack("i", offset) +struct.pack("B", 0x06)
         if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
            return  self.SUCCESS
         else:

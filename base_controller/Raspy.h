@@ -9,8 +9,8 @@ class Raspy{
     void executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer);
     void writeSerial(bool success, uint8_t* payload, int elements);
     void readSerial();
-    String raspystate();
-    String flag; 
+    String flag;
+    uint8_t cube_offset;
   
   private:
     BNO *_bno;
