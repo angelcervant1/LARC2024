@@ -81,6 +81,8 @@ class Movement {
     uint8_t getCurrentPosX();
 
     uint8_t setGlobalPosX(uint8_t globalPosX);
+
+    colorNum setColorTile(colorNum colorId);
     
     uint8_t getSquareCounter();
     

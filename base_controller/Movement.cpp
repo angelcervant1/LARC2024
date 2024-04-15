@@ -90,10 +90,10 @@ void Movement::orientedMovement(const double linear_x, const double linear_y, do
     Serial.println(angular_speed);
     if (current_angle <= robotAngle_) {
       angular_z = -angular_speed; 
-      Serial.println("Turning counterclockwise");
+      //Serial.println("Turning counterclockwise");
     } else if (current_angle > robotAngle_) {
       angular_z = angular_speed; 
-      Serial.println("Turning clockwise");
+     // Serial.println("Turning clockwise");
     }
     
     rpm = kinematics_.getRPM(0, 0, angular_z); 
@@ -193,10 +193,9 @@ void Movement::moveDirection(Direction direction, const  double angleOffset){
             squaresCount = 0;
           break;
     }
-  
+  setGlobalPosX(globalPosX_);
   orientedMovement(linear_x_, linear_y_, angular_z_);
 }
-
 
 //When already at a known position, move given squares to a target
 void Movement::moveDirection(Direction direction, const uint8_t squares, const double angleOffset){
@@ -224,7 +223,7 @@ void Movement::moveDirection(Direction direction, const uint8_t squares, const d
           }
           else{
             linear_y_ = 0;
-            Serial.println("FORWARD");
+            //Serial.println("FORWARD");
 
           }
           if((sideDetected_[2] == Front) && firstLineDetected == false){
@@ -248,7 +247,7 @@ void Movement::moveDirection(Direction direction, const uint8_t squares, const d
           }
           else{
             linear_y_ = 0;
-            Serial.println("BACKWARD");
+            //Serial.println("BACKWARD");
 
           }
           if((sideDetected_[3] == Back) && firstLineDetected == false){
@@ -270,21 +269,21 @@ void Movement::moveDirection(Direction direction, const uint8_t squares, const d
           }
           else if(sideDetected_[3] == Back  && sideDetected_[2] == None){
               linear_x_ = movementKp * kMaxLinearX;
-              Serial.println("FORWARD");
+             // Serial.println("FORWARD");
           }
           else{
             linear_x_ = 0;
-            Serial.println("LEFT");
+            //Serial.println("LEFT");
 
           }
           if((sideDetected_[1] == Left) && firstLineDetected == false){
             firstLineDetected = true;
             prevSideDetected = sideDetected_[1];
-            Serial.print("Side Detected: "); Serial.println(prevSideDetected);
+           // Serial.print("Side Detected: "); Serial.println(prevSideDetected);
           }
           else if(firstLineDetected  && sideDetected_[0] == Right){
               squaresCount += 1;
-              Serial.println("Moved 1 square");
+              //Serial.println("Moved 1 square");
               firstLineDetected = false;
                 globalPosX_ = (robotAngle_ == angleOffset) ? (globalPosX_ - squaresCount) : (globalPosX_ + squaresCount);
                 if(globalPosX_ < 0)
@@ -292,8 +291,8 @@ void Movement::moveDirection(Direction direction, const uint8_t squares, const d
                 if(globalPosX_ > 6)
                   globalPosX_ = 6;
           }
-          Serial.println("LEFT");
-          //Serial.print("Current Pos X: "); Serial.println(globalPosX_);
+          //Serial.println("LEFT");
+         // Serial.print("Current Pos X: "); Serial.println(globalPosX_);
 
           break;
         case TORIGHT:
@@ -315,18 +314,15 @@ void Movement::moveDirection(Direction direction, const uint8_t squares, const d
             if(prevSideDetected == Right){   
               squaresCount += 1;
               firstLineDetected = false;
-                globalPosX_ = (robotAngle_ == (angleOffset + 180)) ? (globalPosX_ + squaresCount) : (globalPosX_ - squaresCount);
+                globalPosX_ = (robotAngle_ == (angleOffset + 180)) ? (globalPosX_ - squaresCount) : (globalPosX_ + squaresCount);
                 if(globalPosX_ < 0)
                   globalPosX_ = 0;
                 if(globalPosX_ > 6)
                   globalPosX_ = 6;
             }
           }
-          Serial.println("RIGHT");
+         // Serial.println("RIGHT");
           //Serial.print("Current Pos X: "); Serial.println(globalPosX_);
-          break;
-        default:
-
           break;
       }
   }   
@@ -335,8 +331,9 @@ void Movement::moveDirection(Direction direction, const uint8_t squares, const d
       stop();
       squaresCount = 0; //check if need to comment, add after testing
   }
-  Serial.print("Square Count: "); Serial.println(squaresCount);
-  Serial.print("Current Pos X: "); Serial.println(globalPosX_);
+  setGlobalPosX(globalPosX_);
+  //Serial.print("Square Count: "); Serial.println(squaresCount);
+  //Serial.print("Current Pos X: "); Serial.println(globalPosX_);
 
   orientedMovement(linear_x_, linear_y_, angular_z_);
 }
@@ -483,7 +480,7 @@ void Movement::GoToSquare(){
 }
 
 bool Movement::detectedTilefromRaspi(){
-  
+
 }
 
 bool Movement::detectedCubefromRaspi(){

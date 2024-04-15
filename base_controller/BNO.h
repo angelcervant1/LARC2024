@@ -11,7 +11,7 @@
 #include <utility/imumaths.h>
 
 class BNO {
-
+  
   public:
     //////////////////////////////////Constructor//////////////////////////////////////
     BNO();

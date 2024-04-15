@@ -1,10 +1,11 @@
 #include "Movement.h"
-
+#include "Raspy.h"
 Movement *robot = nullptr;
 BNO *bnoInstance = nullptr;
 LineSensor *myLineSensor = nullptr;
 ColorSensor *myColorSensor = nullptr;
 Gripper *myGripper = nullptr;
+Raspy *raspy = nullptr;
 
 bool CHECK_PID = true;
 bool CHECK_ODOMETRY = false;
@@ -16,11 +17,11 @@ unsigned long curr_millis = 0;
 unsigned long prev_millis = 0;
 int iteration = 0;
 double angleOffset = 0.0;
-double squares = 2;
+double squares = 1;
 float angleAmount = 0.0;
 uint8_t start_pos_x = 3;
-Direction movementVector[5] = {FORWARD, TOLEFT, BACKWARD, TORIGHT, STOP};
-String currentState = "TESTS", incomingState = "" ;
+Direction movementVector[5] = {FORWARD, TORIGHT, BACKWARD, TOLEFT, STOP};
+String currentState = "", incomingState = "" ;
 
 static bool fullScanCompleted = false;
 static bool startingScanFrom0 = false;
@@ -49,7 +50,7 @@ void moveBackward(Movement *robot) {
 }
 
 void setup() {
-    Serial.begin(57600);
+    Serial.begin(115200);
     bnoInstance = new BNO(); 
     myLineSensor = new LineSensor();
     myColorSensor = new ColorSensor();
@@ -57,6 +58,7 @@ void setup() {
     robot = new Movement(bnoInstance, myLineSensor, myColorSensor); 
     robot->initEncoders();
     robot->setGlobalPosX(start_pos_x);
+    raspy = new Raspy(bnoInstance, myLineSensor, myColorSensor, robot, myGripper);
 }
 
 /*
@@ -160,7 +162,11 @@ bool releasing;
 bool reachedAngle;
 
 void loop() {
-    // if (Serial.available() > 0) {
+    raspy->readSerial();
+    if(raspy->test){
+        currentState = "TEST";
+    }
+        // if (Serial.available() > 0) {
     //    incomingState = Serial.readString();
        //Serial.println(incomingState);
         if (incomingState.equals("FIND_ORIGIN")) {
@@ -189,10 +195,10 @@ void loop() {
 
     if (currentState.equals("TESTS")) {
         if (CHECK_PID) {
-            robot->getRobotAngle();
+            //robot->getRobotAngle();
             if(robot->getSquareCounter() == squares){
                 iteration++;
-                robot->setSquareCounter(0);
+                //robot->setSquareCounter(0);
                 start_pos_x = robot->getCurrentPosX();
                 //reset movement once reached squares goal
             }
@@ -287,8 +293,8 @@ void loop() {
     // Flag to track if the robot has completed a full scan
     
     // Check for cube detection
-    if (robot->detectedCubefromRaspi()) { robot->stop(); }
-
+    if (robot->detectedCubefromRaspi()) { robot->stop(); } //need to change stops to hardStops;
+        // Here continue to the next state
     else {
     // Move one square at a time based on the current position
     switch(robot->getCurrentPosX()) {
@@ -300,7 +306,8 @@ void loop() {
             if(startingScanFrom6){
                 robot->stop();
             }
-        
+            else
+                robot->moveDirection(TOLEFT, 1, robot->getRobotAngle());
             break; 
         case 1:
         case 2:
@@ -314,19 +321,28 @@ void loop() {
             break;
         
         case 3:
-            if (!fullScanCompleted) {
-                // Full scan not completed, move to the LEFT to start scanning
+            if (!(startingScanFrom0 && startingScanFrom6)) {
+                // rOBOT , move to the LEFT to start scanning
                 while (robot->getCurrentPosX() != 0) 
                     robot->moveDirection(TOLEFT, 1, robot->getRobotAngle());
-            } else 
-                robot->stop();
+            } else if(startingScanFrom0){
+                    robot->moveDirection(TOLEFT, 1, robot->getRobotAngle());
+            } else if(startingScanFrom6){
+                    robot->moveDirection(TORIGHT, 1, robot->getRobotAngle());
 
+            }
             break;
 
         case 6:
-            if(startingScan){
-                startingScan = false;
+            if(!startingScanFrom6){
+                startingScanFrom0 = false;
+                startingScanFrom6 = true;
             }
+            if(startingScanFrom0){
+                robot->stop();
+            }
+            else
+                robot->moveDirection(TOLEFT, 1, robot->getRobotAngle());
             break;
         }
     }

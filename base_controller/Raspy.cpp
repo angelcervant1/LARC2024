@@ -84,7 +84,7 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
             if (packet_size == 5) { // Check packet size
                 double angleAmount;
                 memcpy(&angleAmount, buffer, sizeof(angleAmount));
-                robot->setRobotAngle(angleAmount); // read from rasp. Angle gonna be increasing until found a color paper 
+                _robot->setRobotAngle(angleAmount); // read from rasp. Angle gonna be increasing until found a color paper 
                 if(!_robot->angleOffsetReached){
                     _robot->orientedMovement(0.0, 0.0, 0.0);
                 }
@@ -98,9 +98,15 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
                 memcpy(&start_x_pos, buffer, sizeof(start_x_pos));
                 memcpy(&color, buffer + sizeof(start_x_pos), sizeof(color));
                 _robot->setGlobalPosX(start_x_pos);
-                _robot->setColorTile(color);
+                //_robot->setColorTile(color);
             }
             writeSerial(true, nullptr, 0);
+            break;
+        case 0x08: // rotate
+            if (packet_size == 5) { // Check packet size
+                memcpy(&test, buffer, sizeof(test));
+            }
+            writeSerial(false, nullptr, 0);
             break;
     }
 }
@@ -117,16 +123,16 @@ void Raspy::writeSerial(bool success, uint8_t* payload, int elements) {
     Serial.write(payload[i]);
   }
 
-  Serial.write(0x00); // Footer
+  //Serial.write(0x00); // Footer
   Serial.flush();
 
 }
 
-int detectedTilefromRaspi(){
+void Raspy::detectedTilefromRaspi(){
     double angleAmount = 0.0;
-    for(int i = 0; i<4; i++){
+    // for(int i = 0; i<4; i++){
         
-        robot->setRobotAngle(angleAmount); // read from rasp. Angle gonna be increasing until found a color paper 
+        _robot->setRobotAngle(angleAmount); // read from rasp. Angle gonna be increasing until found a color paper 
             if(!_robot->angleOffsetReached){
                 _robot->orientedMovement(0.0, 0.0, 0.0);
             }
@@ -138,5 +144,5 @@ int detectedTilefromRaspi(){
             else{
                 angleAmount += 90;
             }
-    }
+ //   }
 }

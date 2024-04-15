@@ -5,9 +5,19 @@
 
 class Raspy{
   public: 
-  Raspy(BNO *bno, LineSensor *line, ColorSensor *color, Movement *robot);
-  executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer);
-  writeSerial(bool success, uint8_t* payload, int elements);
+    Raspy(BNO *bno, LineSensor *line, ColorSensor *color, Movement *robot, Gripper *gripper);
+    void executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer);
+    void writeSerial(bool success, uint8_t* payload, int elements);
+    void readSerial();
+    void detectedTilefromRaspi();
+    uint8_t test; 
+  private:
+    BNO *_bno;
+    LineSensor *_line;
+    ColorSensor *_color;
+    Movement *_robot;
+    Gripper *_gripper;
+        
 
 };
 

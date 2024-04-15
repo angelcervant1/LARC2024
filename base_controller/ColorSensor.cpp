@@ -7,7 +7,7 @@ ColorSensor::ColorSensor(){
 void ColorSensor::initColorSensor(){
   if (tcs.begin()) {
   } else {
-    Serial.println("No TCS34725 found ... check your connections");
+    // Serial.println("No TCS34725 found ... check your connections");
   }
 }
 

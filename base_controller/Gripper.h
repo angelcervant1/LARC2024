@@ -10,7 +10,7 @@ private:
     static constexpr uint8_t stepperDigitalPin = 1; 
     static constexpr uint8_t stepperDirectionPin = 3; 
     static constexpr uint8_t servoRAnalogPin = 28;
-    static constexpr uint8_t servoLAnalogPin = 27; //prev pin 27  
+    static constexpr uint8_t servoLAnalogPin = 30; //prev pin 27  
     static constexpr int stepsPerRevolution = 200;
     static constexpr int stepsPerLevel = 100; //example
     static constexpr int degreesToRelease = 115; //example 
