@@ -82,7 +82,7 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
             }
             break;
         case 0x02: // rotate
-            if (packet_size == 5) { // Check packet size
+            if (packet_size == 9) { // Check packet size
                 double angleAmount;
                 memcpy(&angleAmount, buffer, sizeof(angleAmount));
                 _robot->setRobotAngle(angleAmount); // read from rasp. Angle gonna be increasing until found a color paper 
@@ -104,6 +104,19 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
             }
             writeSerial(true, nullptr, 0);
             break;
+        case 0x04: // Angle Reach?
+            if (packet_size == 1){
+                if (_robot->angleOffsetReached){
+                    writeSerial(true, nullptr, 0);
+                }
+            }
+            writeSerial(false, nullptr, 0);
+        // case 0x05:
+        //     if (packet_size == 2){
+        //         uint8_t cube_offset;
+
+        //         flag = "SEARCH_CUBE"
+        //     }
     }
 }
 

@@ -22,6 +22,7 @@ class ColorDetection():
 
         self.static_color_seq = "GBYRYBG" # static color sequence
         self.mask  = None
+        self.mid_color = 4
     
     def dibujar(self, mask, color, img):
         frame = img
@@ -138,8 +139,9 @@ class ColorDetection():
         upperYellow =  np.array([ 30,178,228], np.uint8)
         
 
-        lowerGreen = np.array([ 25, 48,126], np.uint8)
-        upperGreen = np.array([ 85, 99,167], np.uint8)
+
+        lowerGreen = np.array([ 26, 61,105], np.uint8)
+        upperGreen = np.array([ 86,171,160], np.uint8)
 
         frameHSV = cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
         maskAzul = cv2.inRange(frameHSV, lowerBlue, upperBlue)
@@ -195,6 +197,7 @@ class ColorDetection():
             if( abs(data[i][3]) < abs(data[point_x_min_id][3])):
                 point_x_min_id = i
                 mid_color = color2Number[data[i][0]]
+                self.color_tile = mid_color
 
         #check if subsequence
         # print(color_seq)
@@ -229,7 +232,6 @@ class ColorDetection():
             else:
                 return 0
         self.xTile = xTile
-        self.color_tile = mid_color
     
     def setUp(self,img):
         y, x, _= img.shape
