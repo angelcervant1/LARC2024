@@ -233,7 +233,7 @@ class Arduino():
                 return self.FAIL, 0
 
     def sendLocation(self, tile, color):
-        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x03, 0x03) + struct.pack("ii", tile, color) + struct.pack("B", 0x04)
+        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x09, 0x03) + struct.pack("ii", tile, color) + struct.pack("B", 0x04)
         if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
            return  self.SUCCESS
         else:
@@ -253,9 +253,26 @@ class Arduino():
         else:
            return self.FAIL
     
-    def send_cube_offset(self, offset):
-        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x02, 0x05) + struct.pack("i", offset) +struct.pack("B", 0x06)
+    def send_cube_offset(self, offset, color):
+        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x09, 0x05) + struct.pack("fi", offset, color) +struct.pack("B", 0x06)
         if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
            return  self.SUCCESS
         else:
            return self.FAIL
+    
+    def send_test(self, number):
+
+        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x05, 0x06) + struct.pack("i", number) +struct.pack("B", 0x07)
+        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
+        #    afsdfasdf, = struct.unpack('f', self.payload_args)
+           return  self.SUCCESS
+        else:
+           return self.FAIL, -1
+
+    def elevator(self, command):
+        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x08)  + struct.pack("B", 0x09)
+        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
+            some, = struct.unpack('I', self.payload_args)
+            return  self.SUCCESS, some
+        else:
+            return self.FAIL, 0

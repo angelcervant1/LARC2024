@@ -45,10 +45,10 @@ void Raspy::readSerial() {
             }
             // Execute the command
             executeCommand(packet_size, command, &buffer[4]);
-            
             // Reset index and packet_size
             index = 0;
             packet_size = 0;
+            
         }
     }
     // if serial is not available, start a counter to stop the robot if nothing is received in a time frame
@@ -70,16 +70,17 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
             }
             break;
         case 0x01: // Send localization
-            if (packet_size == 3) { // Check packet size
-                uint8_t tile;
-                uint8_t color;
-                writeSerial(true, (uint8_t*)tile, sizeof(tile));
-                writeSerial(true, (uint8_t*)color, sizeof(tile) + sizeof(color));
+            if (packet_size == 9) { // Check packet size
+                writeSerial(true, (uint8_t*)this->tile, sizeof(this->tile));
+                writeSerial(true, (uint8_t*)this->color, sizeof(this->tile) + sizeof(this->color));
+                this->flag = "TESTS";
+                writeSerial(true, nullptr, 0);
             }
             break;
         case 0x08: // rotate
             if (packet_size == 1) { // Check packet size
                 uint32_t t[] = {200};
+                this->flag = "TESTS";
                 // memcpy(&t, buffer, sizeof(t));
                 writeSerial(true, (uint8_t*)t, sizeof(t));
             }
@@ -103,4 +104,9 @@ void Raspy::writeSerial(bool success, uint8_t* payload, int elements) {
 
   Serial.write(0x00); // Footer
   Serial.flush();
+}
+
+String Raspy::get_status(){
+    String a = this->flag;
+    return a;
 }

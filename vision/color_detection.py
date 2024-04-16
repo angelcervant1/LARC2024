@@ -115,8 +115,15 @@ class ColorDetection():
             # [label, xmin, xmax, pixel en x]
             res.append([str(detections[index]), float(boxes[index][1]), float(boxes[index][3]), midpoint])
             # [label, xmin, xmax, ymin, ymax,. xmid, ymid]
-            ores.append([str(detections[index]), float(boxes[index][1]), float(boxes[index][3]), float(boxes[index][0]), float(boxes[index][2]), midpoint, midpointy ])
+            color2Number = {
+            "rojo" : 0,
+            "verde" : 1,
+            "azul" : 2,
+            "amarillo" : 3
+            }
+            ores.append([str(color2Number[detections[index]]), float(boxes[index][1]), float(boxes[index][3]), float(boxes[index][0]), float(boxes[index][2]), midpoint, midpointy ])
         self.color_detections_data = res
+        
         self.color_close = ores
 
     def color_detection(self, img1, img2):

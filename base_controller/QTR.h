@@ -6,7 +6,7 @@
 
 enum SignalSide {
     Left, //QTR1 
-    Right, //QTR22
+    Right, //QTR2
     Back, //QTR3 
     Front, //QTR4
     None //5

@@ -2,6 +2,7 @@
 #define ColorSensor_h
 
 #define commonAnode true
+#define BUFFER_SIZE 4  
 
 #include "Adafruit_TCS34725.h"
 
@@ -13,21 +14,25 @@ class ColorSensor{
         Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
         
     public:
-        static constexpr float kRedTreshold = 0;
-        static constexpr float kGreenTreshold = 0;
-        static constexpr float kBlueTreshold = 0;
-        static constexpr float kYellowTreshold = 0;
+        static constexpr uint8_t kRedTreshold = 170;
+        static constexpr uint8_t kGreenTreshold = 110;
+        static constexpr uint8_t kBlueTreshold = 95;
+        static constexpr uint8_t kYellowTreshold_R = 120;
+        static constexpr uint8_t kYellowTreshold_G = 78;
+        static constexpr uint8_t kYellowTreshold_B = 0;
+        uint8_t bufferIndex = 0; // Initialize bufferIndex
+
 
         struct colorData{
             float red;
             float green;
             float blue;
-        };
+        }rgbBuffer[BUFFER_SIZE];;
 
         ColorSensor();
         colorData getRGBData();
         void initColorSensor();
-        float curr_millis, prev_millis;
+        float curr_millis = 0, prev_millis = 0;
         colorData RGBData; 
 };
 

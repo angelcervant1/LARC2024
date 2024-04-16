@@ -10,8 +10,10 @@ class Raspy{
     void writeSerial(bool success, uint8_t* payload, int elements);
     void readSerial();
     String flag;
+    uint8_t tile;
+    uint8_t color;
     uint8_t cube_offset;
-    String state();
+    String get_status();
   
   private:
     BNO *_bno;

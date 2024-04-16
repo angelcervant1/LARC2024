@@ -1,6 +1,7 @@
 #include "QTR.h"
 
 LineSensor::LineSensor() {
+    Serial.begin(115200);
     pinMode(muxD1, OUTPUT);
     pinMode(muxD2, OUTPUT);
     pinMode(muxD3, OUTPUT);
@@ -33,14 +34,14 @@ void LineSensor::readDataFromSide(SignalSide side) {
         digitalWrite(muxD2, combinations[side][sensorIndex][2]);
         digitalWrite(muxD1, combinations[side][sensorIndex][3]);
         sensorData[sensorIndex] = analogRead(lineDataPin);
-        //Serial.print("//////\nData from side: ");
-        //Serial.print(strSide);
-        //Serial.print(", Sensor ");
-        // Serial.print(sensorIndex + 1);
-        // Serial.print(": ");
-        // Serial.println(sensorData[sensorIndex]);
+        //  Serial.print("//////\nData from side: ");
+        //  Serial.print(strSide);
+        //  Serial.print(", Sensor ");
+        //  Serial.print(sensorIndex + 1);
+        //  Serial.print(": ");
+        //  Serial.println(sensorData[sensorIndex]);
     }   
-        sideDetected_ = lineDetectedFromSide();
+        //sideDetected_ = lineDetectedFromSide();
         //Serial.print("Line Detected from: "); Serial.println(sideDetected_);
 
 }
@@ -60,4 +61,3 @@ void LineSensor::readAllData() {
     readDataFromSide(Back);
     readDataFromSide(Right);
 }
-

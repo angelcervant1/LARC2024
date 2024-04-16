@@ -28,6 +28,7 @@ def detect_xtile():
             pass
         if(color_detector.xTile != 0 and color_detector.mid_color != 4 and done_rotating):
             flag_detect_pattern = False
+            print(color_detector.xTile)
             if(arduino.sendLocation(color_detector.xTile, color_detector.color_tile) == 0):
                 color_detector.xTile = 0 
                 color_detector.mid_color = 4
@@ -58,15 +59,13 @@ if __name__ == '__main__':
             img = arucos_detector.detectar_arucos(frame)
             img = color_detector.color_detection(frame, img)
             
-            cv2.imshow("frame", img)
+            # cv2.imshow("frame", img)
             if(flag_detect_pattern):
                  detect_xtile()
             else:
                  box = detect_closest_cube(color_detector.color_close, arucos_detector.aruco_detections_data)
                  if box != 0:
-                    # arduino.write("Follow")
-                    # arduino.write(box[5])
-                    # arduino.read()
+                    arduino.angleOffsetReach(box[5], box[0])
                     pass
             
             arucos_detector.boxes = []
