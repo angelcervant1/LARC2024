@@ -95,7 +95,7 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
                 memcpy(&t, buffer, sizeof(t));
                 // _robot->detected_cube = f;
                 // _robot->cube_offset = t;
-                // uint32_t s[] = {t};
+                uint32_t s[] = {t};
                 writeSerial(true, (uint8_t*)s, sizeof(s));
             }
             break;

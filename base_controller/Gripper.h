@@ -21,8 +21,9 @@ private:
     int Nema_Steep = 49;
     int Nema_Direction = 48;
     int Nivel= 0;
-    int Paso= 15000; // pasos para llegar a otro nivel del estante
+    int Paso= 4049; // pasos para llegar a otro nivel del estante
     int Ajuste=0;
+    bool isHome = false;
     
 public:
     Gripper(); // Constructor
