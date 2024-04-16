@@ -8,7 +8,7 @@ void ColorSensor::initColorSensor() {
   //Serial.begin(115200);
   if (tcs.begin()) {
   } else {
-    Serial.println("No TCS34725 found ... check your connections");
+    //Serial.println("No TCS34725 found ... check your connections");
   }
 }
 
@@ -46,9 +46,9 @@ ColorSensor::colorData ColorSensor::getRGBData() {
     // Update the previous millis
     prev_millis = curr_millis;
   }
-  Serial.print("R: "); Serial.print(int(RGBData.red));
-  Serial.print(" G: "); Serial.print(int(RGBData.green));
-  Serial.print(" B: "); Serial.print(int(RGBData.blue));
-  Serial.println();
+  //Serial.print("R: "); //Serial.print(int(RGBData.red));
+  //Serial.print(" G: "); //Serial.print(int(RGBData.green));
+  //Serial.print(" B: "); //Serial.print(int(RGBData.blue));
+  //Serial.println();
   return RGBData;
 }

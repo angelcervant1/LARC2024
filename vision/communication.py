@@ -12,7 +12,7 @@ import binascii
 
 
 class Arduino(): 
-    def __init__(self, port=Constants.serial_port, baudrate=Constants.baud_rate, timeout=0.5):
+    def __init__(self, port=Constants.serial_port, baudrate=Constants.baud_rate, timeout=1):
         self.port = port
         self.port_name = port
         self.baudrate = baudrate
@@ -232,8 +232,8 @@ class Arduino():
                 # print("ACK", self.payload_ack, self.payload_ack == b'\x00', self.execute(cmd_str)==1)
                 return self.FAIL, 0
 
-    def sendLocation(self, tile, color):
-        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x09, 0x01) + struct.pack("ii", tile, color) + struct.pack("B", 0x02)
+    def sendLocation(self, tile):
+        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x05, 0x01) + struct.pack("i", tile) + struct.pack("B", 0x02)
         if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
            return  self.SUCCESS
         else:
@@ -245,20 +245,13 @@ class Arduino():
            return  self.SUCCESS
         else:
            return self.FAIL
-    
-    def angleOffsetReach(self):
-        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x04) + struct.pack("B", 0x05)
+    def cube_found(self, xpoint): # Send if there is a cube detection
+        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x05, 0x04)  + struct.pack("i", xpoint) + struct.pack("B", 0x05)
         if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-           return  self.SUCCESS
+            some, = struct.unpack('I', self.payload_args)
+            return  self.SUCCESS, some
         else:
-           return self.FAIL
-    
-    def send_cube_offset(self, offset, color):
-        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x09, 0x05) + struct.pack("fi", offset, color) +struct.pack("B", 0x06)
-        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-           return  self.SUCCESS
-        else:
-           return self.FAIL
+            return self.FAIL, 0 
     
     def send_test(self):
         cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x08)  + struct.pack("B", 0x09)
