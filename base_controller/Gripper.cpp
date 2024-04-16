@@ -21,14 +21,20 @@ void Gripper::downLevel(const uint8_t level) {
 }
 
 void Gripper::upLevel(const uint8_t level) {
-
-    myStepper.move(100);
-    if (level < 3){
-        myStepper.moveTo(Paso*level-Ajuste);
-        myStepper.runToPosition();
-        myStepper.move(0);
+    // Calculate the target position based on the level
+    int targetPosition = Paso * level - Ajuste;
+    
+    // Move the stepper motor to the target position
+    //myStepper.move(100);
+    myStepper.runToPosition();
+    while (level < 19) {
+          myStepper.moveTo(targetPosition);
+          myStepper.runToPosition();
+          Serial.print("Move to 0 Pos");
+          myStepper.move(0);
       }
 }
+
 
 void Gripper::downSteps(int steps) {
 }
@@ -52,17 +58,15 @@ void Gripper::grabCube(){
 
 }
 void Gripper::StepperHome(){
-    if(digitalRead(limitSwitchPin)==LOW){
+    
+    while(digitalRead(limitSwitchPin)==LOW && !isHome){
         myStepper.move(-2000);
         myStepper.runToPosition();
         Ajuste=Ajuste+2000;
-        //Serial.print(Ajuste);
-    }else 
-    {
-        stop();
+        Serial.print("Going Home...");
     }
-    
-
+    isHome = true;
+    stop();
 }
 
 void Gripper::stop() {

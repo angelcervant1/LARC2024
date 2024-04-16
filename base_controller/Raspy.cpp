@@ -101,6 +101,6 @@ void Raspy::writeSerial(bool success, uint8_t* payload, int elements) {
     Serial.write(payload[i]);
   }
 
-  Serial.write(0x00); // Footer
+  //Serial.write(0x00); // Footer
   Serial.flush();
 }

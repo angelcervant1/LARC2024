@@ -82,18 +82,19 @@ class Movement {
 
     bool detectedCubefromRaspi();
 
-    uint8_t getCurrentPosX();
+    int getCurrentPosX();
 
-    uint8_t setGlobalPosX(uint8_t globalPosX);
+    void setGlobalPosX(int globalPosX);
 
     colorNum setColorTile(colorNum colorId);
     
-    uint8_t getSquareCounter();
+    int getSquareCounter();
     
-    uint8_t setSquareCounter(uint8_t squareCounter);
+    void setSquareCounter(int squareCounter);
 
     Direction getDirectionState();
-  
+
+    void setInitialRobotAngle(double angle);
 
   private:
     // Pins
@@ -129,10 +130,10 @@ class Movement {
     static constexpr double kBnoKD = 0.0004;
     static constexpr double kBNO_time = 10;
     static constexpr double kMaxErrorSum = 100;
-    static constexpr double kMaxLinearY = 0.33;
-    static constexpr double kMaxLinearX = 0.33;
+    static constexpr double kMaxLinearY = 0.40;
+    static constexpr double kMaxLinearX = 0.40;
     static constexpr double kMaxAngularZ = 1.1;
-    uint8_t globalPosX_ = 0;
+    int globalPosX_ = 0;
     Direction globalDirection_ = STOP;
     uint8_t kCentered2Image = 10; //Error in pixels
     uint8_t xError = 0;
@@ -142,6 +143,7 @@ class Movement {
     LineSensor *lineSensor;
     ColorSensor *colorSensor;
     ColorSensor::colorData rgbData;
+    double originAngle;
     
     PID pidBno;
 
@@ -156,10 +158,10 @@ class Movement {
 
     // Angle
     float angle_error_ = 0;
-    float movementKp = 0.38;
+    float movementKp = 0.45;
     double robotAngle_ = 0;
     bool firstLineDetected = false;
-    uint8_t squaresCount = 0;
+    int squaresCount = 0;
     SignalSide prevSideDetected;
     SignalSide sideDetected_[4];
     static constexpr double kAngleTolerance_ = 5;

@@ -36,6 +36,9 @@ void Movement::setRobotAngle(const double angle){
   robotAngle_ = angle;
 }
 
+void Movement::setInitialRobotAngle(double angle){
+  originAngle = angle;
+}
 //////////////////////////////////PWM//////////////////////////////////////
 void Movement::changePwm(const uint8_t pwm) {
   back_left_motor_.changePwm(pwm);
@@ -130,7 +133,7 @@ void Movement::orientedMovement(const double linear_x, const double linear_y, do
   Kinematics::output rpm;
 
   // Adjust the proportional term to make angular speed proportional to the error
-  float proportional_term = 0.2; // Adjust this value as needed
+  float proportional_term = 0.09; // Adjust this value as needed
 
   if (fabs(angle_error) > kAngleTolerance_){
     // Calculate the angular speed proportional to the error
@@ -243,165 +246,134 @@ void Movement::moveDirection(Direction direction, const  double angleOffset){
             squaresCount = 0;
           break;
     }
-  setGlobalPosX(globalPosX_);
   orientedMovement(linear_x_, linear_y_, angular_z_);
 }
 
-//When already at a known position, move given squares to a target
-void Movement::moveDirection(Direction direction, const uint8_t squares, const double angleOffset){
-  lineSensor->readDataFromSide(Right);
-  sideDetected_[0] = lineSensor->lineDetectedFromSide();
-  lineSensor->readDataFromSide(Left);
-  sideDetected_[1] = lineSensor->lineDetectedFromSide();
-  lineSensor->readDataFromSide(Front);
-  sideDetected_[2] = lineSensor->lineDetectedFromSide();
-  lineSensor->readDataFromSide(Back);
-  sideDetected_[3] = lineSensor->lineDetectedFromSide();
+void Movement::moveDirection(Direction direction, const uint8_t squares, const double angleOffset) {
+    // Read data from sensors
+    lineSensor->readDataFromSide(Right);
+    sideDetected_[0] = lineSensor->lineDetectedFromSide();
+    lineSensor->readDataFromSide(Left);
+    sideDetected_[1] = lineSensor->lineDetectedFromSide();
+    lineSensor->readDataFromSide(Front);
+    sideDetected_[2] = lineSensor->lineDetectedFromSide();
+    lineSensor->readDataFromSide(Back);
+    sideDetected_[3] = lineSensor->lineDetectedFromSide();
   
-  globalDirection_ = direction;
+    // Set the global movement direction
+    globalDirection_ = direction;
 
-  if(squaresCount != squares){
-    switch (direction){
-        case FORWARD:
-          //Change linear velocity sign (+/-) if Angle offset is given
-          linear_x_ = (robotAngle_ == angleOffset) ? kMaxLinearX : kMaxLinearX;
-          if(sideDetected_[0] == Right){
-              linear_y_ = movementKp * kMaxLinearY;
-              Serial.println("LEFT");
+    // Determine the sign for adjusting globalPosX based on the robot's angle offset
+    int posXChange;    // if (originAngle == angleOffset) {
+    //     posXAdjustment = 1; // Increment globalPosX
+    // } else if (originAngle == (angleOffset + 180)) {
+    //     posXAdjustment = -1; // Decrement globalPosX
+    // }
+    // Update linear_x_ and linear_y_ based on the movement direction and the robot's angle offset
+    if(!(squaresCount == squares)){
+        switch (direction) {
+          case FORWARD:
+              linear_x_ = kMaxLinearX;
+              if(sideDetected_[0] == Right){
+                  linear_y_ = movementKp * kMaxLinearY;
+                  Serial.println("LEFT");
 
-          }
-          else if(sideDetected_[1] == Left){
-              linear_y_ = -movementKp * kMaxLinearY;
-              Serial.println("RGHT");
+              }
+              else if(sideDetected_[1] == Left){
+                  linear_y_ = -movementKp * kMaxLinearY;
+                  Serial.println("RGHT");
 
-          }
-          else{
-            linear_y_ = 0;
-            Serial.println("FORWARD");
+              }
+              else{
+                linear_y_ = 0;
+                Serial.println("FORWARD");
 
-          }
-          if((sideDetected_[2] == Front) && firstLineDetected == false){
-            firstLineDetected = true;
-            prevSideDetected = sideDetected_[2];
-          }
-          else if(firstLineDetected && sideDetected_[3] == Back){
-              squaresCount += 1;
-              firstLineDetected = false;
-          }
-          Serial.print("Current Pos X: "); Serial.println(globalPosX_);
-
-          break;
-        case BACKWARD:
-          linear_x_ = (robotAngle_ == (angleOffset - 180)) ? -kMaxLinearX : -kMaxLinearX;
-          if(sideDetected_[0] == Right){
-              linear_y_ = movementKp * kMaxLinearY;
-          }
-          else if(sideDetected_[1] == Left){
-              linear_y_ = -movementKp * kMaxLinearY;
-          }
-          else{
-            linear_y_ = 0;
-            Serial.println("BACKWARD");
-
-          }
-          if((sideDetected_[3] == Back) && firstLineDetected == false){
-            firstLineDetected = true;
-            prevSideDetected = sideDetected_[3];
-          }
-          else if(firstLineDetected && sideDetected_[2] == Front){
-              squaresCount += 1;
-              firstLineDetected = false;
-          }
-          Serial.print("Current Pos X: "); Serial.println(globalPosX_);
-
-          break;
-        case TOLEFT:
-          linear_y_ = (robotAngle_ == angleOffset) ? kMaxLinearY : kMaxLinearY;
-          if(sideDetected_[2] == Front  && sideDetected_[3] == None){
-              linear_x_ = -movementKp * kMaxLinearX;
+              }
+          case BACKWARD:
+            linear_x_ = (robotAngle_ == (angleOffset - 180)) ? -kMaxLinearX : -kMaxLinearX;
+            if(sideDetected_[0] == Right){
+                linear_y_ = movementKp * kMaxLinearY;
+            }
+            else if(sideDetected_[1] == Left){
+                linear_y_ = -movementKp * kMaxLinearY;
+            }
+            else{
+              linear_y_ = 0;
               Serial.println("BACKWARD");
-          }
-          else if(sideDetected_[3] == Back  && sideDetected_[2] == None){
-              linear_x_ = movementKp * kMaxLinearX;
-              Serial.println("FORWARD");
-          }
-          else{
-            linear_x_ = 0;
-            Serial.println("LEFT");
 
-          }
-          if((sideDetected_[1] == Left) && firstLineDetected == false){
-            firstLineDetected = true;
-            prevSideDetected = sideDetected_[1];
-           //Serial.print("Side Detected: "); Serial.println(prevSideDetected);
-          }
-          else if(firstLineDetected  && sideDetected_[0] == Right){
-              squaresCount += 1;
-              //Serial.println("Moved 1 square");
-              firstLineDetected = false;
-                globalPosX_ = (robotAngle_ == (angleOffset)) ? (globalPosX_ - squaresCount) : (globalPosX_ + squaresCount);
-                if(globalPosX_ < 0)
-                  globalPosX_ = 0;
-                if(globalPosX_ > 6)
-                  globalPosX_ = 6;
-          }
-          Serial.println("LEFT");
-          Serial.print("Current Pos X: "); Serial.println(globalPosX_);
-
-          break;
-        case TORIGHT:
-          linear_y_ = (robotAngle_ == (angleOffset - 180)) ? -kMaxLinearY : -kMaxLinearY;
-          if(sideDetected_[2] == Front && sideDetected_[3] == None){
-              linear_x_ = -movementKp * kMaxLinearX;
+            }           
+             break;
+          case TOLEFT:
+            linear_y_ = kMaxLinearY;
+            if(sideDetected_[2] == Front  && sideDetected_[3] == None){
+                linear_x_ = -movementKp * kMaxLinearX;
+                Serial.println("BACKWARD");
             }
-          else if(sideDetected_[3] == Back && sideDetected_[2] == None){
-              linear_x_ = movementKp * kMaxLinearX;
-          }
-          else{
-            linear_x_ = 0;
-          }
-          if((sideDetected_[0] == Right) && firstLineDetected == false){
-            firstLineDetected = true;
-            prevSideDetected = sideDetected_[0];
-          }
-          else if(firstLineDetected == true && sideDetected_[1] == Left){
-            if(prevSideDetected == Right){   
-              squaresCount += 1;
-              firstLineDetected = false;
-                globalPosX_ = (robotAngle_ == angleOffset) ? (globalPosX_ + squaresCount) : (globalPosX_ = squaresCount);
-                if(globalPosX_ < 0)
-                  globalPosX_ = 0;
-                if(globalPosX_ > 6)
-                  globalPosX_ = 6;
+            else if(sideDetected_[3] == Back  && sideDetected_[2] == None){
+                linear_x_ = movementKp * kMaxLinearX;
+                Serial.println("FORWARD");
             }
-          }
-          Serial.println("RIGHT");
-          Serial.print("Current Pos X: "); Serial.println(globalPosX_);
-          break;
-      }
-  }   
-  else{
-      //stop if robot has reached squares amount target
-      stop();
-      squaresCount = 0; //check if need to comment, add after testing
-  }
-  setGlobalPosX(globalPosX_);
-  //Serial.print("Square Count: "); Serial.println(squaresCount);
-  //Serial.print("Current Pos X: "); Serial.println(globalPosX_);
+            else
+              linear_x_ = 0;
 
-  orientedMovement(linear_x_, linear_y_, angular_z_);
+              Serial.println("LEFT");              // Calculate the change in position based on the movement direction
+              posXChange = (originAngle == angleOffset) ? -1 : 1;
+              // Update globalPosX if the robot is moving left and a line is detected on the left side
+              if (sideDetected_[1] == Left && !firstLineDetected) {
+                  firstLineDetected = true;
+              } else if (firstLineDetected && sideDetected_[0] == Right) {
+                  globalPosX_ += posXChange;
+                  Serial.print("Moved left.  ");
+                  Serial.print("Global Pos X: "); 
+                  Serial.println(globalPosX_);
+                  firstLineDetected = false;
+              }
+              Serial.println("LEFT");
+              break;
+
+          case TORIGHT:
+            linear_y_ = (robotAngle_ == (angleOffset - 180)) ? -kMaxLinearY : -kMaxLinearY;
+            if(sideDetected_[2] == Front && sideDetected_[3] == None){
+                linear_x_ = -movementKp * kMaxLinearX;
+              }
+            else if(sideDetected_[3] == Back && sideDetected_[2] == None){
+                linear_x_ = movementKp * kMaxLinearX;
+            }
+            else{
+              linear_x_ = 0;
+            }              // Calculate the change in position based on the movement direction
+              posXChange = (originAngle == angleOffset) ? 1 : -1;
+
+              // Update globalPosX if the robot is moving right and a line is detected on the right side
+            if (sideDetected_[0] == Right && !firstLineDetected) {
+                  firstLineDetected = true;
+              } else if (firstLineDetected && sideDetected_[1] == Left) {
+                  globalPosX_ += posXChange;
+                  Serial.print("Moved left.  ");
+                  Serial.print("Global Pos X: "); 
+                  Serial.println(globalPosX_);
+                  firstLineDetected = false;
+              }
+              Serial.println("RIGHT");
+              break;
+        }
+    }
+    
+    orientedMovement(linear_x_, linear_y_, angular_z_);
+
 }
+
 
 void Movement::driveToColor(const double start_x_pos, Direction direction, colorNum color_id){
       
       rgbData = colorSensor->getRGBData();
       
-      Serial.print("R: "); Serial.print(int(rgbData.red));
-      Serial.print(" G: "); Serial.print(int(rgbData.green));
-      Serial.print(" B: "); Serial.print(int(rgbData.blue));
-      Serial.println();
+      // Serial.print("R: "); Serial.print(int(rgbData.red));
+      // Serial.print(" G: "); Serial.print(int(rgbData.green));
+      // Serial.print(" B: "); Serial.print(int(rgbData.blue));
+      // Serial.println();
 
-    setGlobalPosX(start_x_pos);
+    //setGlobalPosX(start_x_pos);
     bool shouldMoveBackward = false;
       switch (color_id) {
           case 0:
@@ -413,7 +385,7 @@ void Movement::driveToColor(const double start_x_pos, Direction direction, color
           case 2:
               shouldMoveBackward = rgbData.blue > ColorSensor::kBlueTreshold;
               break;
-         case 3:
+          case 3:
               shouldMoveBackward = rgbData.red > ColorSensor::kYellowTreshold_R && rgbData.blue > ColorSensor::kYellowTreshold_G;
               break;
     }
@@ -426,7 +398,6 @@ void Movement::driveToColor(const double start_x_pos, Direction direction, color
 
     // Check if the robot is on a black square
     bool isOnBlackSquare = sideDetected_[2] == Front;
-    Serial.println(shouldMoveBackward);
     //If shouldMoveBackward is true and the robot is on a black square, move backward
     if (shouldMoveBackward && !isOnBlackSquare) {
         moveDirection(BACKWARD, robotAngle_);
@@ -577,7 +548,7 @@ void Movement::updatePIDKinematics(double fl_speed, double fr_speed, double bl_s
   back_right_motor_.stableRPM(br_speed);
 }
 
-uint8_t Movement::getCurrentPosX(){
+int Movement::getCurrentPosX(){
   return globalPosX_;
 }
 
@@ -586,15 +557,15 @@ Direction Movement::getDirectionState(){
   return globalDirection_;
 }
 
-uint8_t Movement::getSquareCounter(){
+int Movement::getSquareCounter(){
   return squaresCount;
 }
 
-uint8_t Movement::setGlobalPosX(uint8_t globalPosX){
+void Movement::setGlobalPosX(int globalPosX){
   globalPosX_ = globalPosX; 
 }
 
-uint8_t Movement::setSquareCounter(uint8_t squares){
+void Movement::setSquareCounter(int squares){
   squaresCount = squares;
 }
 

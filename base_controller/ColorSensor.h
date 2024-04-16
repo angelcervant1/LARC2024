@@ -15,7 +15,7 @@ class ColorSensor{
         
     public:
         static constexpr uint8_t kRedTreshold = 170;
-        static constexpr uint8_t kGreenTreshold = 110;
+        static constexpr uint8_t kGreenTreshold = 108;
         static constexpr uint8_t kBlueTreshold = 95;
         static constexpr uint8_t kYellowTreshold_R = 120;
         static constexpr uint8_t kYellowTreshold_G = 78;
