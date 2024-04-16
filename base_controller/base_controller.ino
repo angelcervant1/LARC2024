@@ -165,7 +165,10 @@ bool releasing;
 bool reachedAngle;
 void loop() {
     raspy.readSerial();
-    currentState = raspy.get_status();
+    // currentState = raspy.get_status();
+    if (raspy.get_tile()){
+        currentState = "TESTS";
+    }
     //     // if (Serial.available() > 0) {
     // //    incomingState = Serial.readString();
     //    //Serial.println(incomingState);

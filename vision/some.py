@@ -6,5 +6,5 @@ if __name__ == "__main__":
     arduino.connect()
     # arduino.open()
     while True:
-        print(arduino.elevator(1))
+        print(arduino.sendLocation(1, 1))
         time.sleep(1)

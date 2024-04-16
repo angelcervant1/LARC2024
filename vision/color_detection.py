@@ -223,21 +223,21 @@ class ColorDetection():
 
             # print(x_square_cont)
             if x_square_label == "G" and x_square_cont == "GB":
-                xTile = 7
+                xTile = 0
             elif x_square_label == "B" and (x_square_cont == "GB" or x_square_cont == "BY"):
-                xTile = 6
-            elif x_square_label == "Y" and (x_square_cont == "BY" or x_square_cont == "YR"):
-                xTile = 5
-            elif x_square_label == "R":
-                xTile = 4
-            elif x_square_label == "Y" and (x_square_cont == "RY" or x_square_cont == "YB"):
-                xTile = 3
-            elif x_square_label == "B" and (x_square_cont == "YB" or x_square_cont == "BG"):
-                xTile = 2
-            elif x_square_label == "G" and x_square_cont == "BG":
                 xTile = 1
+            elif x_square_label == "Y" and (x_square_cont == "BY" or x_square_cont == "YR"):
+                xTile = 2
+            elif x_square_label == "R":
+                xTile = 3
+            elif x_square_label == "Y" and (x_square_cont == "RY" or x_square_cont == "YB"):
+                xTile = 4
+            elif x_square_label == "B" and (x_square_cont == "YB" or x_square_cont == "BG"):
+                xTile = 5
+            elif x_square_label == "G" and x_square_cont == "BG":
+                xTile = 6
             else:
-                return 0
+                return 7
         self.xTile = xTile
     
     def setUp(self,img):
