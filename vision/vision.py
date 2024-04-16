@@ -63,8 +63,11 @@ if __name__ == '__main__':
             cv2.imshow("frame", img)
             if(flag_detect_pattern):
                  color_detector.detect_color_pattern_cb()
+                 print(color_detector.xTile)
                  if (color_detector.xTile != 7):
-                      arduino.sendLocation(color_detector.xTile) 
+                      if(not arduino.sendLocation(color_detector.xTile)):
+                           flag_detect_pattern = False 
+                    pass
             else:
                  box = detect_closest_cube(color_detector.color_close, arucos_detector.aruco_detections_data)
                  if box != 0:

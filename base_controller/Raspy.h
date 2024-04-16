@@ -15,9 +15,8 @@ class Raspy{
     uint32_t tile;
     uint32_t color;
     uint8_t cube_offset;
-    String get_status();
-    int get_tile();
-    int get_color();
+    bool update;
+    
   private:
     BNO *_bno;
     LineSensor *_line;

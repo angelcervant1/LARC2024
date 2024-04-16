@@ -535,7 +535,7 @@ void Movement::GoToSquare(){
 }
 
 bool Movement::detectedTilefromRaspi(){
-  return true;
+  return detect_tile;
 }
 
 bool Movement::detectedCubefromRaspi(){

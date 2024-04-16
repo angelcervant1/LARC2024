@@ -2,12 +2,13 @@
 #include "Raspy.h"
 
 Raspy::Raspy(){
-    this->flag = "";
-    this->tile = 0;
-    this->color = 4;
+    flag = "";
+    tile = 7;
+    color = 4;
+    update = false;
 }
 void Raspy::import(Movement *robot){
-    this->_robot = robot;
+    _robot = robot;
 }
 
 void Raspy::readSerial() {
@@ -77,15 +78,19 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
         case 0x01: // Send localization
             if (packet_size == 5) { // Check packet size
                 this->flag = "FIND_ORIGIN";
-                memcpy(&this->tile, buffer, sizeof(this->tile));
-                _robot->setGlobalPosX(this->tile);
+                uint32_t t;
+                memcpy(&t, buffer, sizeof(t));
+                _robot->setGlobalPosX(t);
+                uint32_t s[] = {t};
                 _robot->detect_tile = true;
-                writeSerial(true, nullptr, 0);
+                this->update = true;
+                writeSerial(true, (uint8_t*)s, sizeof(s));
             }
             break;
         case 0x02: // Initialize origin finding 
             if (packet_size == 1){
                 this->flag = "FIND_ORIGIN";
+                this->update = true;
                 writeSerial(true, nullptr, 0);
             }
             break;
@@ -124,19 +129,4 @@ void Raspy::writeSerial(bool success, uint8_t* payload, int elements) {
 
   Serial.write(0x00); // Footer
   Serial.flush();
-}
-
-String Raspy::get_status(){
-    String a = this->flag;
-    return a;
-}
-
-int Raspy::get_tile(){
-    int tile = this->tile;
-    return tile;
-}
-
-int Raspy::get_color(){
-    int color = this->color;
-    return color;
 }

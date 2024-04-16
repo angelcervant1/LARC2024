@@ -16,12 +16,12 @@ bool CHECK_GRASP = false;
 unsigned long curr_millis = 0;
 unsigned long prev_millis = 0;
 int iteration = 0;
-double angleOffset = 180.0; //for tests
+double angleOffset = 0; //for tests
 double squares = 4; 
-float angleAmount = 270.0; //for state machne
-uint8_t start_pos_x = 4;
+float angleAmount = 0; //for state machne
+uint8_t start_pos_x = 1;
 Direction movementVector[5] = {FORWARD, TOLEFT, BACKWARD, TORIGHT, STOP};
-String currentState = "", incomingState = "" ;
+String currentState = " ", incomingState = "" ;
 
 bool fullScanCompleted = false;
 bool startingScanFrom0 = false;
@@ -63,6 +63,7 @@ void setup() {
     //myGripper->StepperHome();
     //raspy = new Raspy(bnoInstance, myLineSensor, myColorSensor, robot, myGripper);
     raspy.import(robot);
+    
 }
 
 /*
@@ -167,34 +168,42 @@ bool reachedAngle;
 int prev_pos_x = 0;
 void loop() {
     raspy.readSerial();
+    if (raspy.update){
+        currentState = raspy.flag;
+        raspy.update = false;
+    }
+    // currentState = raspy.flag;
+    // if (robot->detect_tile){
+    // if (true){
+    // }
 //     if(raspy->test){
 //         currentState = "TESTS";
 //    }
         // if (Serial.available() > 0) {
     //    incomingState = Serial.readString();
        //Serial.println(incomingState);
-        if (incomingState.equals("FIND_ORIGIN")) {
-            currentState = "FIND_ORIGIN";
-        } else if (incomingState.equals("FIND_EMPTY_PATH")) {
-            currentState = "FIND_EMPTY_PATH";
-        } else if (incomingState.equals("DRIVE_TO_COLOR")) {
-            currentState = "DRIVE_TO_COLOR";
-        } else if (incomingState.equals("ROTATE_180")) {
-            currentState = "ROTATE_180";
-        } else if (incomingState.equals("SEARCH_CUBE")) { //REMEMBER TO CHEC FROM SIDE TO SIDE FOR EASER APPROACH
-            currentState = "SEARCH_CUBE";
-        } else if (incomingState.equals("DRIVE_TO_CUBE")) {
-            currentState = "DRIVE_TO_CUBE";
-        } else if (incomingState.equals("GRAB_CUBE")) {
-            currentState = "GRAB_CUBE"; 
-        } else if (incomingState.equals("ENTER_CLOSEST_SQUARE")) {
-            currentState = "ENTER_CLOSEST_SQUARE";
-        } else if (incomingState.equals("ROTATE_SEARCH_COLOR")) {
-            currentState = "ROTATE_SEARCH_COLOR";
-        } else if (incomingState.equals("RELEASE_CUBE")) {
-            currentState = "RELEASE_CUBE";
-        } else {
-        }
+        // if (incomingState.equals("FIND_ORIGIN")) {
+        //     currentState = "FIND_ORIGIN";
+        // } else if (incomingState.equals("FIND_EMPTY_PATH")) {
+        //     currentState = "FIND_EMPTY_PATH";
+        // } else if (incomingState.equals("DRIVE_TO_COLOR")) {
+        //     currentState = "DRIVE_TO_COLOR";
+        // } else if (incomingState.equals("ROTATE_180")) {
+        //     currentState = "ROTATE_180";
+        // } else if (incomingState.equals("SEARCH_CUBE")) { //REMEMBER TO CHEC FROM SIDE TO SIDE FOR EASER APPROACH
+        //     currentState = "SEARCH_CUBE";
+        // } else if (incomingState.equals("DRIVE_TO_CUBE")) {
+        //     currentState = "DRIVE_TO_CUBE";
+        // } else if (incomingState.equals("GRAB_CUBE")) {
+        //     currentState = "GRAB_CUBE"; 
+        // } else if (incomingState.equals("ENTER_CLOSEST_SQUARE")) {
+        //     currentState = "ENTER_CLOSEST_SQUARE";
+        // } else if (incomingState.equals("ROTATE_SEARCH_COLOR")) {
+        //     currentState = "ROTATE_SEARCH_COLOR";
+        // } else if (incomingState.equals("RELEASE_CUBE")) {
+        //     currentState = "RELEASE_CUBE";
+        // } else {
+        // }
     //}         
 
     if (currentState.equals("TESTS")) {
