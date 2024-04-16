@@ -1,13 +1,8 @@
+
 #include "Raspy.h"
 
-Raspy::Raspy(BNO *bno, LineSensor *line, ColorSensor *color, Movement *robot, Gripper *gripper){
-    _bno = bno;
-    _line = line;
-    _color = color;
-    _robot = robot;
-    _gripper = gripper;
-    flag = "";
-    cube_offset = 0;
+Raspy::Raspy(){
+  // Serial.begin(baud);
 }
 
 void Raspy::readSerial() {
@@ -58,7 +53,6 @@ void Raspy::readSerial() {
     }
     // if serial is not available, start a counter to stop the robot if nothing is received in a time frame
     // unactive_time_ = millis();
-
 }
 
 void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer) {
@@ -75,49 +69,23 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
                 writeSerial(true, (uint8_t*)baud, sizeof(baud));
             }
             break;
-        case 0x01: //Color Detected
-            int angleAmount = 0; 
-            if (packet_size == 1) { // Check packet size
-                  
-                writeSerial(true, nullptr, 0);
-            }
-            break;
-        case 0x02: // rotate
-            if (packet_size == 9) { // Check packet size
-                double angleAmount;
-                memcpy(&angleAmount, buffer, sizeof(angleAmount));
-                _robot->setRobotAngle(angleAmount); // read from rasp. Angle gonna be increasing until found a color paper 
-                if(!_robot->angleOffsetReached){
-                    _robot->orientedMovement(0.0, 0.0, 0.0);
-                }
-                writeSerial(true, nullptr, 0);
-            }
-            break;
-        case 0x03: // Location 
-            if (packet_size == 3){
-                uint8_t start_x_pos;
+        case 0x01: // Send localization
+            if (packet_size == 3) { // Check packet size
+                uint8_t tile;
                 uint8_t color;
-                memcpy(&start_x_pos, buffer, sizeof(start_x_pos));
-                memcpy(&color, buffer + sizeof(start_x_pos), sizeof(color));
-                _robot->setGlobalPosX(start_x_pos);
-                _robot->initalTileColor = color;
-                flag = "TESTS"
+                writeSerial(true, (uint8_t*)tile, sizeof(tile));
+                writeSerial(true, (uint8_t*)color, sizeof(tile) + sizeof(color));
             }
-            writeSerial(true, nullptr, 0);
             break;
-        case 0x04: // Angle Reach?
-            if (packet_size == 1){
-                if (_robot->angleOffsetReached){
-                    writeSerial(true, nullptr, 0);
-                }
+        case 0x08: // rotate
+            if (packet_size == 1) { // Check packet size
+                uint32_t t[] = {200};
+                // memcpy(&t, buffer, sizeof(t));
+                writeSerial(true, (uint8_t*)t, sizeof(t));
             }
-            writeSerial(false, nullptr, 0);
-        case 0x05:
-            if (packet_size == 2){
-                memcpy(&cube_offset, buffer, sizeof(cube_offset));
-                flag = "SEARCH_CUBE"
-            }
-            writeSerial(true, nullptr, 0);
+            break;
+        default:
+        break;
     }
 }
 
@@ -133,7 +101,6 @@ void Raspy::writeSerial(bool success, uint8_t* payload, int elements) {
     Serial.write(payload[i]);
   }
 
-  //Serial.write(0x00); // Footer
+  Serial.write(0x00); // Footer
   Serial.flush();
-
 }
