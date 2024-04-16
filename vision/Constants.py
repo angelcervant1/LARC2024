@@ -1,5 +1,6 @@
 # Camara 
 camara_index = 0
+camara_index2 = 1
 file_name = "color_limits.txt"
 
 # UART communication

@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import Constants
 
-class ColorDetection():
+class ColorDetection:
     def __init__(self):
         self.boxes = []
         self.cx = 0.0
