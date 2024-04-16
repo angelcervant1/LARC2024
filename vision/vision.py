@@ -5,76 +5,52 @@ import arucos_detection
 import cv2
 import numpy as np
 import communication
+import camara
 
-flag_detect_pattern = True
-
-def detect_closest_cube(color, aruco):
-    if color == None or aruco == None or (len(color) == 0 and len(aruco) == 0):
-         return 0
-    total = color + aruco
-    closest = 0 
-    for index in range(len(total)):
-        if total[closest][6] < total[index][6]:
-             closest = index
-        elif total[closest][6] == total[index][6]:
-             if total[closest][2] < total[index][2]:
-                  closest = index
-    return total[closest]
-
-def detect_xtile():
-     for i in range(0,4):
-        color_detector.detect_color_pattern_cb()
-        while arduino.angleOffsetReach() != 0:
-            pass
-        if(color_detector.xTile != 0 and color_detector.mid_color != 4 and done_rotating):
-            flag_detect_pattern = False
-            if(arduino.sendLocation(color_detector.xTile, color_detector.color_tile) == 0):
-                color_detector.xTile = 0 
-                color_detector.mid_color = 4
-                return  1
-        else:
-            arduino.rotateRobot(90)
-            done_rotating = False
-        pass
-     return 0
+def scale_value(c1, c2):
+     if np.shape(c1.box) == ():
+           return []
+     y, x, _= c1.frame.shape
+     y, x2, _= c2.frame.shape
+     percentage = (c1.box[5] + x/2)/ x
+     value = percentage * x2 - x2/2
+     return value
 
 if __name__ == '__main__':
-    camara_index = Constants.camara_index
-    cap = cv2.VideoCapture(camara_index)
-    color_detector = color_detection.ColorDetection()
-    arucos_detector = arucos_detection.DetectorAruco()
-    first_iteration = True
-    arduino = communication.Arduino()
-    arduino.connect()
-    while True: 
-        box = []
-        ret, frame = cap.read()
-        if np.shape(frame) != ():
-            if first_iteration:
-                arucos_detector.setUp(frame)
-                color_detector.setUp(frame)
-                first_iteration = False
-            
-            img = arucos_detector.detectar_arucos(frame)
-            img = color_detector.color_detection(frame, img)
-            
-            cv2.imshow("frame", img)
-            if(flag_detect_pattern):
-                 detect_xtile()
-            else:
-                 box = detect_closest_cube(color_detector.color_close, arucos_detector.aruco_detections_data)
-                 if box != 0:
-                    # arduino.write("Follow")
-                    # arduino.write(box[5])
-                    # arduino.read()
+     # Camara 1
+     colors1 = color_detection.ColorDetection()
+     arucos1 = arucos_detection.DetectorAruco()
+     camara1 = camara.Camara(Constants.camara_index, colors1, arucos1)
+
+     # Camara 2
+     colors2 = color_detection.ColorDetection()
+     arucos2 = arucos_detection.DetectorAruco()
+     camara2 = camara.Camara(Constants.camara_index2, colors2, arucos2)
+     
+     # Setup 
+     camara1.camara_setup()
+     camara2.camara_setup()
+     
+     # Comunication
+     arduino = communication.Arduino()
+     arduino.connect()
+
+     #Flags
+     flag_detect_pattern = True
+     while True:
+          # Refresher
+          camara1.camara_refresh() 
+          camara2.camara_refresh() 
+          
+          if(flag_detect_pattern):
+               xTile = camara1.detect_color_pattern()
+               if xTile != 7: 
+                    #Send message with arduino
                     pass
-            
-            arucos_detector.boxes = []
-            arucos_detector.detections = []
-            color_detector.boxes = []
-            color_detector.detections = []
-            color_detector.color_close = []
-            arucos_detector.aruco_detections_data = []
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                    break
+               else: 
+                    camara1.detect_closest_cube()
+                    camara2.find_specific_cube(camara1.box[0], scale_value(camara1, camara2))
+          
+               if cv2.waitKey(1) & 0xFF == ord('q'):
+                         break
         

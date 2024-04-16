@@ -5,9 +5,9 @@ import numpy as np
 import time
 
 class Camara:
-    def __init__(self, camara):
-        self.colors = color_detection.ColorDetection
-        self.arucos = arucos_detection.DetectorAruco
+    def __init__(self, camara , colors, arucos):
+        self.colors = colors
+        self.arucos = arucos
         self.cap = cv2.VideoCapture(camara)
         self.box = []
         self.total_boxes = []
@@ -56,7 +56,7 @@ class Camara:
                 if total[closest][2] < total[index][2]:
                     closest = index
         # Save it to focus variable
-        self.box =  total[closest]
+        self.box = total[closest]
     
     def find_specific_cube(self, id, xmid):
         self.join_arucos_and_color()
@@ -85,11 +85,12 @@ class Camara:
         self.total_boxes = color + aruco
     
     def detect_color_pattern(self):
+        # Ver como integrarlo con el arduino. Ya que el arduino no espera
         start = time.time()
         while time.time() - start < 4:
             self.camara_refresh()
             self.colors.detect_color_pattern_cb()
             if self.colors.xTile:
-                return self.colors.xTile, self.colors.color_tile
+                return self.colors.xTile
             else:
-                return 0, 0 
+                return 7 
