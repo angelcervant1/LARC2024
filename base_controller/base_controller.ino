@@ -166,36 +166,8 @@ bool releasing;
 bool reachedAngle;
 void loop() {
     raspy.readSerial();
-    // currentState = raspy.get_status();
-    // if (raspy.get_tile()){
-    //     currentState = "TESTS";
-    // }
-    //     // if (Serial.available() > 0) {
-    // //    incomingState = Serial.readString();
-    //    //Serial.println(incomingState);
-    //     if (incomingState.equals("FIND_ORIGIN")) {
-    //         currentState = "FIND_ORIGIN";
-    //     } else if (incomingState.equals("FIND_EMPTY_PATH")) {
-    //         currentState = "FIND_EMPTY_PATH";
-    //     } else if (incomingState.equals("DRIVE_TO_COLOR")) {
-    //         currentState = "DRIVE_TO_COLOR";
-    //     } else if (incomingState.equals("ROTATE_180")) {
-    //         currentState = "ROTATE_180";
-    //     } else if (incomingState.equals("SEARCH_CUBE")) { //REMEMBER TO CHEC FROM SIDE TO SIDE FOR EASER APPROACH
-    //         currentState = "SEARCH_CUBE";
-    //     } else if (incomingState.equals("DRIVE_TO_CUBE")) {
-    //         currentState = "DRIVE_TO_CUBE";
-    //     } else if (incomingState.equals("GRAB_CUBE")) {
-    //         currentState = "GRAB_CUBE"; 
-    //     } else if (incomingState.equals("ENTER_CLOSEST_SQUARE")) {
-    //         currentState = "ENTER_CLOSEST_SQUARE";
-    //     } else if (incomingState.equals("ROTATE_SEARCH_COLOR")) {
-    //         currentState = "ROTATE_SEARCH_COLOR";
-    //     } else if (incomingState.equals("RELEASE_CUBE")) {
-    //         currentState = "RELEASE_CUBE";
-    //     } else {
-    //     }
-    //}         
+    currentState = raspy.get_status();
+       
 
     if (currentState.equals("TESTS")) {
         if (CHECK_PID) {

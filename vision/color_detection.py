@@ -13,7 +13,7 @@ class ColorDetection():
         self.x_pixels = 0
         self.y_pixels = 0
 
-        self.xTile = 0
+        self.xTile = 7
         self.color_detections_data = []
         self.color_close = []
         # Flags 

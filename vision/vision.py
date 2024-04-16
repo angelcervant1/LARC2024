@@ -4,7 +4,7 @@ import color_detection
 import arucos_detection
 import cv2
 import numpy as np
-# import communication
+import communication
 
 flag_detect_pattern = True
 
@@ -24,19 +24,19 @@ def detect_closest_cube(color, aruco):
 def detect_xtile():
      for i in range(0,4):
         color_detector.detect_color_pattern_cb()
-        # while arduino.angleOffsetReach() != 0:
-        #     pass
-        # if(color_detector.xTile != 0 and color_detector.mid_color != 4 and done_rotating):
-        #     flag_detect_pattern = False
-        #     print(color_detector.xTile)
-        #     if(arduino.sendLocation(color_detector.xTile, color_detector.color_tile) == 0):
-        #         color_detector.xTile = 0 
-        #         color_detector.mid_color = 4
-        #         return  1
-        # else:
-        #     arduino.rotateRobot(90)
-        #     done_rotating = False
-        print(color_detector.xTile)
+     #    while arduino.angleOffsetReach() != 0:
+     #        pass
+     #    if(color_detector.xTile != 0 and color_detector.mid_color != 4 and done_rotating):
+     #        flag_detect_pattern = False
+     #        print(color_detector.xTile)
+     #        if(arduino.sendLocation(color_detector.xTile, color_detector.color_tile) == 0):
+     #            color_detector.xTile = 0 
+     #            color_detector.mid_color = 4
+     #            return  1
+     #    else:
+     #        arduino.rotateRobot(90)
+     #        done_rotating = False
+     #    print(color_detector.xTile)
         pass
      return 0
 
@@ -46,8 +46,8 @@ if __name__ == '__main__':
     color_detector = color_detection.ColorDetection()
     arucos_detector = arucos_detection.DetectorAruco()
     first_iteration = True
-    # arduino = communication.Arduino()
-    # arduino.connect()
+    arduino = communication.Arduino()
+    arduino.connect()
     while True: 
         box = []
         ret, frame = cap.read()
@@ -62,7 +62,9 @@ if __name__ == '__main__':
             
             cv2.imshow("frame", img)
             if(flag_detect_pattern):
-                 detect_xtile()
+                 color_detector.detect_color_pattern_cb()
+                 if (color_detector.xTile != 7):
+                      arduino.sendLocation(color_detector.xTile) 
             else:
                  box = detect_closest_cube(color_detector.color_close, arucos_detector.aruco_detections_data)
                  if box != 0:
