@@ -60,8 +60,8 @@ void setup() {
     robot->initEncoders();
     robot->setGlobalPosX(start_pos_x);
     robot->angleOffsetReached = false;
-
-    //raspy = new Raspy(bnoInstance, myLineSensor, myColorSensor, robot, myGripper);
+    // raspy = new Raspy(robot);
+    raspy.import(robot);
 }
 
 /*
@@ -254,13 +254,13 @@ void loop() {
                 if(!robot->angleOffsetReached){
                     robot->orientedMovement(0.0, 0.0, 0.0);
                 }
-                else if (robot->detectedTilefromRaspi()){
+                else if (robot->detectedTilefromRaspi()){ 
                     robot->stop();
                     robot->setRobotAngle(angleAmount);
                     robot->orientedMovement(0.0, 0.0, 0.0);
-                    robot->setGlobalPosX(start_pos_x); //this is the data received by serial with the x_coord
+                    // robot->setGlobalPosX(start_pos_x); //this is the data received by serial with the x_coord
                     currentState = "FIND_EMPTY_PATH";
-                }          
+                }         
                 else{
                     angleAmount += 90;
                 }  

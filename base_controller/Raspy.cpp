@@ -2,11 +2,13 @@
 #include "Raspy.h"
 
 Raspy::Raspy(){
-  this->flag = "";
-  this->tile = 0;
-  this->color = 4;
+    this->flag = "";
+    this->tile = 0;
+    this->color = 4;
 }
-
+void Raspy::import(Movement *robot){
+    this->_robot = robot;
+}
 void Raspy::readSerial() {
     static uint8_t buffer[18];
     static uint8_t index = 0;
@@ -72,18 +74,31 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
             }
             break;
         case 0x01: // Send localization
-            if (packet_size == 9) { // Check packet size
-                this->flag = "TESTS";
+            if (packet_size == 5) { // Check packet size
+                this->flag = "FIND_ORIGIN";
                 memcpy(&this->tile, buffer, sizeof(this->tile));
-                memcpy(&this->color, buffer + sizeof(this->tile), sizeof(this->color));
+                _robot->setGlobalPosX(this->tile);
+                _robot->detect_tile = true;
             }
             writeSerial(true, nullptr, 0);
             break;
         case 0x02: // Initialize origin finding 
             if (packet_size == 1){
-                this->flag = "FIND_ORIGIN"
+                this->flag = "FIND_ORIGIN";
             }
             writeSerial(true, nullptr, 0);
+            break;
+        case 0x03: // Cube detection
+            if (packet_size == 6){
+                float t; 
+                bool f; 
+                memcpy(&t, buffer, sizeof(t));
+                memcpy(&f, buffer + sizeof(t), sizeof(f));
+                _robot->detected_cube = f;
+                _robot->cube_offset = t;
+                float s[] = {t};
+                writeSerial(true, (uint8_t*)s, sizeof(s));
+            }
             break;
         case 0x08: // test
             if (packet_size == 1) { // Check packet size

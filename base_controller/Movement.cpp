@@ -21,6 +21,9 @@ Movement::Movement(BNO *bno, LineSensor *lineSensor, ColorSensor *colorSensor) :
                             kDigitalPinsFrontRightMotor[1], kAnalogPinFrontRightMotor, 
                             kEncoderPinsFrontRightMotor);
   this->past_check = millis();
+  this->detect_tile = false;
+  this->cube_offset = 0;
+  this->detected_cube = false;
 }
 
 //////////////////////////////////Encoders//////////////////////////////////////
@@ -563,10 +566,16 @@ void Movement::GoToSquare(){
 }
 
 bool Movement::detectedTilefromRaspi(){
-  return true;
+  if(this->detect_tile){
+    return true;
+  }
+  return false;
 }
 
 bool Movement::detectedCubefromRaspi(){
+  if(this->detected_cube){
+    return true;
+  }
   return false;
 }
 

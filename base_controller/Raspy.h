@@ -6,6 +6,7 @@
 class Raspy{
   public: 
     Raspy();
+    void import(Movement *robot);
     void executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer);
     void writeSerial(bool success, uint8_t* payload, int elements);
     void readSerial();
