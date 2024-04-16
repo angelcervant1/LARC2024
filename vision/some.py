@@ -6,5 +6,5 @@ if __name__ == "__main__":
     arduino.connect()
     # arduino.open()
     while True:
-        print(arduino.cube_found(1.00, True))
+        print(arduino.sendLocation(0))
         time.sleep(1)

@@ -12,7 +12,7 @@ import binascii
 
 
 class Arduino(): 
-    def __init__(self, port=Constants.serial_port, baudrate=Constants.baud_rate, timeout=0.5):
+    def __init__(self, port=Constants.serial_port, baudrate=Constants.baud_rate, timeout=1):
         self.port = port
         self.port_name = port
         self.baudrate = baudrate
@@ -245,19 +245,18 @@ class Arduino():
            return  self.SUCCESS
         else:
            return self.FAIL
-    def cube_found(self, xpoint, found): # Send if there is a cube detection
-        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x06, 0x03) + struct.pack("f?", xpoint, found) + struct.pack("B", 0x04)
+    def cube_found(self, xpoint): # Send if there is a cube detection
+        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x05, 0x04)  + struct.pack("i", xpoint) + struct.pack("B", 0x05)
         if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-        #    print(self.payload_args)
-           another, = struct.unpack('e', self.payload_ack)
-           return  self.SUCCESS, another
+            some, = struct.unpack('I', self.payload_args)
+            return  self.SUCCESS, some
         else:
-           return self.FAIL, 0 
+            return self.FAIL, 0 
     
     def send_test(self):
         cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x08)  + struct.pack("B", 0x09)
         if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-            some, = struct.unpack('f', self.payload_args)
+            some, = struct.unpack('I', self.payload_args)
             return  self.SUCCESS, some
         else:
             return self.FAIL, 0

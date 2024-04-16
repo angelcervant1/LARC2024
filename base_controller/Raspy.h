@@ -3,6 +3,7 @@
 
 #include "Movement.h"
 #include "Arduino.h"
+
 class Raspy{
   public: 
     Raspy();
@@ -11,8 +12,8 @@ class Raspy{
     void writeSerial(bool success, uint8_t* payload, int elements);
     void readSerial();
     String flag;
-    int tile;
-    int color;
+    uint32_t tile;
+    uint32_t color;
     uint8_t cube_offset;
     String get_status();
     int get_tile();

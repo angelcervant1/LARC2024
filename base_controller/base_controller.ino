@@ -1,5 +1,6 @@
 #include "Movement.h"
 #include "Raspy.h"
+
 Movement *robot = nullptr;
 BNO *bnoInstance = nullptr;
 LineSensor *myLineSensor = nullptr;
@@ -166,9 +167,9 @@ bool reachedAngle;
 void loop() {
     raspy.readSerial();
     // currentState = raspy.get_status();
-    if (raspy.get_tile()){
-        currentState = "TESTS";
-    }
+    // if (raspy.get_tile()){
+    //     currentState = "TESTS";
+    // }
     //     // if (Serial.available() > 0) {
     // //    incomingState = Serial.readString();
     //    //Serial.println(incomingState);
@@ -402,7 +403,7 @@ void loop() {
 
     }
 
-    Serial.println(currentState);
+    // Serial.println(currentState);
 
 }
 
