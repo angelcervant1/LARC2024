@@ -388,14 +388,13 @@ void Movement::moveDirection(Direction direction, const uint8_t squares, const d
 
 void Movement::driveToColor(const double start_x_pos, Direction direction, colorNum color_id){
       
-      rgbData = colorSensor->getRGBData();
+      colorSensor->getRGBData(rgbData);
       
-      // Serial.print("R: "); Serial.print(int(rgbData.red));
-      // Serial.print(" G: "); Serial.print(int(rgbData.green));
-      // Serial.print(" B: "); Serial.print(int(rgbData.blue));
-      // Serial.println();
+      Serial.println(" R: "); Serial.print(rgbData.red);
+      Serial.print(" G: "); Serial.print(rgbData.green);
+      Serial.print(" B: "); Serial.print(rgbData.blue);
+      Serial.println();
 
-    //setGlobalPosX(start_x_pos);
     bool shouldMoveBackward = false;
       switch (color_id) {
           case 0:

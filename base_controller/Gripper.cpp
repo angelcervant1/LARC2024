@@ -11,6 +11,7 @@ Gripper::Gripper() {
     myStepper.setMaxSpeed(10000);
     myStepper.setAcceleration(5000);
     Nivel=0;
+    // last_time = prev_millis;
     
     // Assuming the first pin in the array is for the servo
 // Assuming the first pin in the array is for the servo
@@ -23,7 +24,6 @@ void Gripper::downLevel(const uint8_t level) {
 void Gripper::upLevel(const uint8_t level) {
     // Calculate the target position based on the level
     int targetPosition = Paso * level - Ajuste;
-    
     // Move the stepper motor to the target position
     //myStepper.move(100);
     myStepper.runToPosition();
@@ -75,3 +75,31 @@ void Gripper::stop() {
     digitalWrite(Nema_Direction,LOW);
     myStepper.setMaxSpeed(0);
   }
+
+void Gripper::sequenceUp(unsigned long curr_milis){
+  current_time = curr_milis;
+
+  if (!gripping && !releasing) {
+        upLevel(0);
+        grabCube();
+        gripping = true; 
+        graspStartTime = current_time;  
+        Serial.println("GRAB");
+    } else if (gripping && !releasing && current_time - graspStartTime >= 3000) {
+        releaseCube();
+        releasing = true;  
+        releaseStartTime = current_time;  
+        Serial.println("RELEASE");
+    } else if (releasing && current_time - releaseStartTime >= 3000) {
+        gripping = false;
+        releasing = false;
+        upLevel(6);
+        Serial.println("WAIT OVER");
+    }
+}
+
+
+void Gripper::sequenceDown(unsigned long curr_millis){
+  current_time = curr_millis;
+
+}

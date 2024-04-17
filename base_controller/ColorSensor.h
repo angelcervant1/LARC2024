@@ -2,7 +2,7 @@
 #define ColorSensor_h
 
 #define commonAnode true
-#define BUFFER_SIZE 4  
+#define BUFFER_SIZE 5
 
 #include "Adafruit_TCS34725.h"
 
@@ -15,7 +15,7 @@ class ColorSensor{
         
     public:
         static constexpr uint8_t kRedTreshold = 170;
-        static constexpr uint8_t kGreenTreshold = 108;
+        static constexpr uint8_t kGreenTreshold = 105;
         static constexpr uint8_t kBlueTreshold = 95;
         static constexpr uint8_t kYellowTreshold_R = 120;
         static constexpr uint8_t kYellowTreshold_G = 78;
@@ -30,10 +30,9 @@ class ColorSensor{
         }rgbBuffer[BUFFER_SIZE];;
 
         ColorSensor();
-        colorData getRGBData();
+        void getRGBData(colorData &data); // Updated function signature        
         void initColorSensor();
         float curr_millis = 0, prev_millis = 0;
-        colorData RGBData; 
 };
 
 #endif
