@@ -11,31 +11,30 @@ Gripper::Gripper() {
     pinMode(limitSwitchPin, INPUT);
     //digitalWrite(limitSwitchPin, 0);
     myStepper.setMaxSpeed(10000);
-    myStepper.setAcceleration(5000);
-    Nivel=0;
+    myStepper.setAcceleration(5500);
     // last_time = prev_millis;
     
     // Assuming the first pin in the array is for the servo
     // Assuming the first pin in the array is for the servo
 }
 
-void Gripper::downLevel(const uint8_t level) {
+void Gripper::downLevel(uint8_t level) {
   
 }
 
-void Gripper::upLevel(const uint8_t level) {
-    // Calculate the target position based on the level
+void Gripper::upLevel(uint8_t level) {
+    digitalWrite(Nema_Direction, HIGH);
     int targetPosition = Paso * level - Ajuste;
-    // Move the stepper motor to the target position
-    //myStepper.move(100);
-    myStepper.runToPosition();
-    while (level < 19) {
-          myStepper.moveTo(targetPosition);
-          myStepper.runToPosition();
-          // Serial.print("Move to 0 Pos");
-          myStepper.move(0);
-      }
+    if (level < 19) {
+        while (myStepper.currentPosition() < targetPosition) {
+            myStepper.moveTo(targetPosition);
+            myStepper.run();
+        }
+    }
 }
+
+
+
 
 
 void Gripper::downSteps(int steps) {
@@ -68,11 +67,12 @@ void Gripper::StepperHome(){
         // Serial.print("Going Home...");
     }
     isHome = true;
-    stop();
+    //myStepper.setMaxSpeed(0);
+    digitalWrite(Nema_Direction,LOW);
 }
 
-void Gripper::stop() {
-        // Stop the stepper motor
+void Gripper::stop(){
+    // Stop the stepper motor
     pinMode(Nema_Direction,OUTPUT);
     digitalWrite(Nema_Direction,LOW);
     myStepper.setMaxSpeed(0);
@@ -82,7 +82,7 @@ void Gripper::sequenceUp(unsigned long curr_milis){
   current_time = curr_milis;
 
   if (!gripping && !releasing) {
-        upLevel(0);
+        upLevel(6);
         grabCube();
         gripping = true; 
         graspStartTime = current_time;  
@@ -95,7 +95,7 @@ void Gripper::sequenceUp(unsigned long curr_milis){
     } else if (releasing && current_time - releaseStartTime >= 3000) {
         gripping = false;
         releasing = false;
-        upLevel(6);
+        upLevel(0);
         // Serial.println("WAIT OVER");
     }
 }
@@ -103,5 +103,22 @@ void Gripper::sequenceUp(unsigned long curr_milis){
 
 void Gripper::sequenceDown(unsigned long curr_millis){
   current_time = curr_millis;
-
+  
+  if (!gripping && !releasing) {
+        upLevel(0);
+        grabCube();
+        gripping = true; 
+        graspStartTime = current_time;  
+        // Serial.println("GRAB");
+    } else if (gripping && !releasing && current_time - graspStartTime >= 3000) {
+        //releaseCube();
+        releasing = true;  
+        releaseStartTime = current_time;  
+        // Serial.println("RELEASE");
+    } else if (releasing && current_time - releaseStartTime >= 3000) {
+        gripping = false;
+        releasing = false;
+        upLevel(6);
+        // Serial.println("WAIT OVER");
+    }
 }

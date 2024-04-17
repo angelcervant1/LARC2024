@@ -444,14 +444,10 @@ void Movement::driveToColor(const double start_x_pos, Direction direction, color
     } 
 }
 
-
-
-
-
 void Movement::driveToTarget(float coord_x){
 //The idea is to move to leftmost or rghtmost based on globalPosX varable from 0 to 7 representng the map range
 //Then while moving chec if corrd_x s receved from a color detecton model. 
-//Once detected the color. Move based on the error proportonal if the coord_x is right in the middle (0)
+//Once detected the ccolor. Move based on the error proportonal if the coord_x is right in the middle (0)
 
     int xError = 0 - coord_x;
 
@@ -463,7 +459,7 @@ void Movement::driveToTarget(float coord_x){
     if (!(xError < kCentered2Image)) {
         direction = (coord_x < 0) ? TOLEFT : TORIGHT;
         moveDirection(direction, robotAngle_, speed, false);
-    } else if(digitalRead(distanceSensorPin)){
+    } else if(!digitalRead(distanceSensorPin)){
         moveDirection(FORWARD, robotAngle_, speed, false);
     }
     else{
@@ -566,16 +562,16 @@ void Movement::GoToSquare(Direction direction, const double angleOffset){
   sideDetected_[0] = lineSensor->lineDetectedFromSide();
   lineSensor->readDataFromSide(Left);
   sideDetected_[1] = lineSensor->lineDetectedFromSide();
-  lineSensor->readDataFromSide(Right);
+  lineSensor->readDataFromSide(Front);
   sideDetected_[2] = lineSensor->lineDetectedFromSide();
-  lineSensor->readDataFromSide(Left);
+  lineSensor->readDataFromSide(Back);
   sideDetected_[3] = lineSensor->lineDetectedFromSide();
-  bool whichDirection;
-
+  
   switch(direction){
     case TOLEFT:
       whichDirection = (originAngle == angleOffset) ? true : false;
-      if(sideDetected_[1] != Left){
+      if(sideDetected_[0] != Right && sideDetected_[1] != Left && !firstLineDetected && !moveBac){
+        firstLineDetected = true;
         if(whichDirection){
           linear_y_ = -movementKp * kMaxLinearY;
         } else{
@@ -585,14 +581,25 @@ void Movement::GoToSquare(Direction direction, const double angleOffset){
         if(whichDirection){
           linear_x_ = -movementKp * kMaxLinearX;     //move back   
           } else{
-          linear_x_ = movementKp * kMaxLinearY;
-        }  
-        } else { hardStop(); }
+          linear_x_ = movementKp * kMaxLinearX;
+        } 
+ 
+        }  else if(firstLineDetected && sideDetected_[0] == Right) { hardStop(); moveBac = true; firstLineDetected = false; }
+           else if(!firstLineDetected && moveBac && sideDetected_[2] != Front && sideDetected_[3] != Back){
+                firstLineDetected = true;
+                if(whichDirection){
+                    linear_x_ = movementKp * kMaxLinearX;
+                } else{
+                    linear_x_ = -movementKp * kMaxLinearX;
+                  }
+            moveBac = false;
+            closestSquare = true;
+           }  
 
-    break;
+      break;
     case TORIGHT:
       whichDirection = (originAngle == (angleOffset + 180)) ? true : false;
-      if(sideDetected_[2] != Right){
+      if(sideDetected_[1] != Left && sideDetected_[0] != Right && !firstLineDetected){
         if(whichDirection){
           linear_y_ = movementKp * kMaxLinearY;
         } else{
@@ -604,9 +611,9 @@ void Movement::GoToSquare(Direction direction, const double angleOffset){
           } else{
           linear_x_ = -movementKp * kMaxLinearY;
         }
-      } else { hardStop(); }
+      } else if(firstLineDetected && sideDetected_[0] == Right) { hardStop(); }
 
-    break;
+      break;
   }
 
   orientedMovement(linear_x_, linear_y_, angular_z_);
@@ -617,7 +624,7 @@ bool Movement::detectedTilefromRaspi(){
   if(this->detect_tile){
     return true;
   }
-  return true; //change to false after testing
+    return true; //change to false after testing
   }
 
 bool Movement::detectedCubefromRaspi(){
@@ -673,5 +680,5 @@ float Movement::getRobotAngle(){
   // bno->updateBNO();
   // float angle = bno->getYaw();
   //Serial.println(robotAngle_);
-  return robotAngle_;
+  //return robotAngle_;
 }

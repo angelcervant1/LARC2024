@@ -31,6 +31,8 @@ class Movement {
     bool detect_tile;
     float cube_offset;
     bool detected_cube;
+    bool whichDirection;
+    bool moveBac;
     //////////////////////////////////Constructor//////////////////////////////////////
     Movement(BNO *bno, LineSensor *lineSensor, ColorSensor *colorSensor);
     //////////////////////////////////Motors//////////////////////////////////////
@@ -45,7 +47,7 @@ class Movement {
     colorNum pastColor;
     float past_check;
     bool inFrontOfCube = false;
-
+    bool closestSquare;
     // Initialize motor encoders.
     void initEncoders();
 
@@ -175,7 +177,7 @@ class Movement {
 
     // Angle
     float angle_error_ = 0;
-    float movementKp = 0.85;
+    float movementKp = 0.70;
     double robotAngle_ = 0;
     bool firstLineDetected = false;
     int squaresCount = 0;

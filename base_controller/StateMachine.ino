@@ -149,14 +149,14 @@ void findEmptyPath(){
         } else if(robot->getCurrentPosX() < 3 && !(robot->getCurrentPosX() == 0)){
                 robot->moveDirection(TOLEFT, robot->getCurrentPosX(), angleAmount);
         } else {
-            robot->stop();
+            robot->hardStop();
             currentState = DRIVE_TO_COLOR;
         }
 }
 
 void driveToColor(){
     if(robot->start_search){
-        robot->stop();
+        robot->hardStop();
         currentState = ROTATE_180;
         prev_pos_x = robot->getCurrentPosX(); 
         robot->start_search = false;
@@ -202,7 +202,7 @@ void rotate_180(){
 
 void searchCube(){
  if (robot->detectedCubefromRaspi()) {  
-        robot->stop(); 
+        robot->hardStop(); 
         currentState = DRIVE_TO_CUBE;
         prev_pos_x = robot->getCurrentPosX(); 
     } 
@@ -290,23 +290,33 @@ void driveToCube(){
 
 void grabCube(){
     myGripper->sequenceUp(curr_millis);
+    //set closese square to False after grabbng the cube
 }
 
 
 void enterClosestSquare(){
-    if(prev_pos_x < 3){
+    if(prev_pos_x < 3 && !robot->closestSquare){
         robot->GoToSquare(TOLEFT, robot->getRobotAngle());
-    } else if(prev_pos_x > 3){
+    } else if(prev_pos_x > 3 && !robot->closestSquare){
         robot->GoToSquare(TORIGHT, robot->getRobotAngle());
+    } else{
+        robot->hardStop();
+        currentState = GO_TO_POSITION;
     }
+    
 }
 
 void goToPosition(){
+//how to go to a color position when grabbed the cube? ?
+//we also need the respective cube color to know where 
+//the robot should do
+
+//check if raspy can handle the set pos X on each case
 
 }
 
 void releaseCube(){
-    myGripper->sequenceDown(curr_millis);
+    myGripper->sequenceDown();
 }
 
 void tests(){
@@ -328,7 +338,7 @@ void tests(){
                     robot->setRobotAngle(angleOffset);
                     robot->moveDirection(movementVector[iteration], squares, angleOffset);
                 }
-            }
+            }   
         }
 
         if (CHECK_LINES) {

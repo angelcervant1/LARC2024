@@ -1,13 +1,28 @@
 
 #include "Raspy.h"
+enum States {
+    TESTS,
+    FIND_ORIGIN,
+    FIND_EMPTY_PATH,
+    DRIVE_TO_COLOR,
+    ROTATE_180,
+    SEARCH_CUBE,
+    DRIVE_TO_CUBE,
+    GRAB_CUBE,
+    ENTER_CLOSEST_SQUARE,
+    ROTATE_SEARCH_COLOR,
+    RELEASE_CUBE,
+    DEFAULT_STATE
+}state;
 
 Raspy::Raspy(){
-    this->flag = "";
-    this->tile = 0;
-    this->color = 4;
+    state = TESTS;
+    tile = 7;
+    color = 4;
+    update = false;
 }
 void Raspy::import(Movement *robot){
-    this->_robot = robot;
+    _robot = robot;
 }
 
 void Raspy::readSerial() {
@@ -76,16 +91,20 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
             break;
         case 0x01: // Send localization
             if (packet_size == 5) { // Check packet size
-                this->flag = "FIND_ORIGIN";
-                memcpy(&this->tile, buffer, sizeof(this->tile));
-                _robot->setGlobalPosX(this->tile);
+                state = FIND_ORIGIN;
+                uint32_t t;
+                memcpy(&t, buffer, sizeof(t));
+                _robot->setGlobalPosX(t);
+                uint32_t s[] = {t};
                 _robot->detect_tile = true;
-                writeSerial(true, nullptr, 0);
+                this->update = true;
+                writeSerial(true, (uint8_t*)s, sizeof(s));
             }
             break;
         case 0x02: // Initialize origin finding 
             if (packet_size == 1){
                 this->flag = "FIND_ORIGIN";
+                this->update = true;
                 writeSerial(true, nullptr, 0);
             }
             break;
@@ -102,6 +121,7 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
         case 0x08: // tests
             if (packet_size == 1) { // Check packet size
                 uint32_t t[] = {200};
+                state = TESTS;
                 writeSerial(true, (uint8_t*)t, sizeof(t));
             }
             break;
@@ -126,17 +146,6 @@ void Raspy::writeSerial(bool success, uint8_t* payload, int elements) {
   Serial.flush();
 }
 
-String Raspy::get_status(){
-    String a = this->flag;
-    return a;
-}
-
-int Raspy::get_tile(){
-    int tile = this->tile;
-    return tile;
-}
-
-int Raspy::get_color(){
-    int color = this->color;
-    return color;
+int Raspy::get_State(){
+    return state;
 }
