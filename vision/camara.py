@@ -19,10 +19,10 @@ class Camara:
     
     def camara_setup(self):
         self.ret, self.frame = self.cap.read()
-        if self.filter:
-            self.orient_camara()
-        self.y, self.x, _= self.frame.shape
         if self.ret:
+            if self.filter:
+                self.orient_camara()
+            self.y, self.x, _= self.frame.shape
             self.arucos.setUp(self.frame)
             self.colors.setUp(self.frame)
         self.reset_values()
@@ -34,89 +34,107 @@ class Camara:
         self.colors.detections = []
         self.colors.color_close = []
         self.arucos.aruco_detections_data = []
+        self.box = []
+        self.total_boxes = []
 
     def camara_refresh(self):
+        # Reset values
+        self.reset_values()
         # Capture image
         self.ret, self.frame = self.cap.read()
-        if self.filter:
-            self.orient_camara()
         #Verify frame read
         if self.ret:
+            if self.filter:
+                self.orient_camara()
             #Join both arucos and colors images 
             self.image = self.arucos.detectar_arucos(self.frame)
             self.image = self.colors.color_detection(self.frame, self.image)
 
             #Show image
             cv2.imshow("frame", self.image)
-        # Reset values
-        self.reset_values()
     
     def detect_closest_cube(self):
         #Joins al boxes
-        self.join_arucos_and_color()
-        total = self.total_boxes
-        closest = 0 
-        for index in range(len(total)):
-            if total[closest][6] < total[index][6]:
-                closest = index
-            elif total[closest][6] == total[index][6]:
-                if total[closest][2] < total[index][2]:
-                    closest = index
-        # Save it to focus variable
-        self.box = total[closest]
+        if self.ret:
+            if (self.colors.color_close != []):
+                total = self.colors.color_close
+                closest = 0 
+                for index in range(0, len(total)):
+                    if total[closest][6] < total[index][6]:
+                        closest = index
+                    elif total[closest][6] == total[index][6]:
+                        if total[closest][2] < total[index][2]:
+                            closest = index
+                # Save it to focus variable
+                self.box = total[closest]
     
-    def find_specific_cube(self, id, xmid):
-        self.join_arucos_and_color()
-        total = self.total_boxes
-        box = 0
-        flag = True
-        for index in range(len(total)):
-            if total[index][0] == id:
-                if flag:
-                    box = index
-                    flag = False
-                elif abs(total[index][5] - xmid) < abs(total[box][5] - xmid):
-                    box = index
-        if not flag:
-            self.box = box
-        return box
+    def find_specific_cube(self, id, xmid, ymid, mar):
+        if self.ret:
+            total = self.colors.color_close
+            if total != []:
+                box = 0
+                flag = True
+                margin = mar
+                for index in range(len(total)):
+                    if total[index][0] == id:
+                        if flag:
+                            box = index
+                            flag = False
+                        elif abs(total[index][5] - xmid) < abs(total[box][5] - xmid):
+                            box = index
+                if int(total[box][5]) in range(int(xmid - margin), int(xmid + margin)) and int(total[box][6]) in range(int(ymid - margin), int(ymid + margin)): # inside x limits and y limit
+                    self.box = total[box]
+                    # print("assdfasdf'")
+                    return True, total[box]
+
+                # print("mid " + str(total[box][5]) + " min " + str(int(xmid - margin))+ " max " + str(int(xmid + margin)))
+                # print("mid " + str(total[box][6]) + " min " + str(int(ymid - margin))+ " max " + str(int(ymid + margin)))
+                return False, []
 
     def join_arucos_and_color(self):
-        color = self.colors.color_close
-        aruco = self.arucos.aruco_detections_data
-        
-        # Check that there is something in either of color or aruco
-        if color == None and aruco == None or (len(color) == 0 and len(aruco) == 0):
-            return 0
-        
-        # Joins arrays of data to sort equally
-        self.total_boxes = color + aruco
+        if self.ret:
+            color = self.colors.color_close
+            aruco = self.arucos.aruco_detections_data
+            # Check that there is something in either of color or aruco
+            if color == None and aruco == None or (len(color) == 0 and len(aruco) == 0):
+                return 0
+            
+            # Joins arrays of data to sort equally
+            self.total_boxes = color + aruco
     
     def detect_color_pattern(self):
-        # Ver como integrarlo con el arduino. Ya que el arduino no espera
-        start = time.time()
-        while time.time() - start < 4:
-            self.camara_refresh()
-            self.colors.detect_color_pattern_cb()
-            if self.colors.xTile:
-                return self.colors.xTile
-            else:
-                return 7 
+        if self.ret:
+            # Ver como integrarlo con el arduino. Ya que el arduino no espera
+            start = time.time()
+            while time.time() - start < 4:
+                self.camara_refresh()
+                self.colors.detect_color_pattern_cb()
+                if self.colors.xTile:
+                    return self.colors.xTile
+                else:
+                    return 7 
     
     def orient_camara(self):
         self.frame = cv2.rotate(self.frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
     
     def lock_object(self):
-        self.lock_object = self.box
-        self.lock = True
+        if self.ret and self.box != []:
+            self.lock_box = self.box
+            self.lock = True
     
-    def track_object_vertical(self, box):
-        lock_box_new = self.find_specific_cube(box[0], box[5])
-        margin = 0.2 * self.y
-        if (lock_box_new[4] + margin > self.lock_box[4]):
-            # Block lost
-            return 0, self.lock_box
-        else:
-            self.lock_box = lock_box_new
-            return 1, 1
+    def track_object(self):
+        if self.ret and self.lock_box != []:
+            try:
+                lost, lock_box_new = self.find_specific_cube(self.lock_box[0], self.lock_box[5], self.lock_box[6], 100)
+                print(lost)
+                if (lost):
+                    # print("ASDASDASDA")
+                    self.lock_box = lock_box_new
+                    return True, self.lock_box 
+                else:
+                    # print("out" + str(lost))
+                    return False, []
+            except:
+                pass
+    
             

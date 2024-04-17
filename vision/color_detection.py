@@ -81,7 +81,6 @@ class ColorDetection:
         #sort boxes full content by first parameter, then second, and save in new obj
         sorted_boxes = []
         sorted_detections = []
-
         for box in boxes:
             appended = False
             for i in range(len(sorted_boxes)):
@@ -118,6 +117,7 @@ class ColorDetection:
             ores.append([str(detections[index]), float(boxes[index][1]), float(boxes[index][3]), float(boxes[index][0]), float(boxes[index][2]), midpoint, midpointy ])
         self.color_detections_data = res
         self.color_close = ores
+        # print(ores)
 
     def color_detection(self, img1, img2):
         frame = img1
@@ -129,29 +129,28 @@ class ColorDetection:
         upperRed = np.array([180,255,142], np.uint8)
         # lowerRed2 = np.array([155,162,150], np.uint8)
         # upperRed2 = np.array([179,255,255], np.uint8)
-        
 
-        lowerBlue = np.array([ 75,122,110], np.uint8)
-        upperBlue = np.array([130,255,255], np.uint8)
-
+        lowerBlue = np.array([111,126,41], np.uint8)
+        upperBlue = np.array([121,209,102], np.uint8)
 
         lowerYellow = np.array([  7, 99,166], np.uint8)
         upperYellow =  np.array([ 30,178,228], np.uint8)
         
 
-
         lowerGreen = np.array([ 26, 61,105], np.uint8)
         upperGreen = np.array([ 86,171,160], np.uint8)
+        lowerGreen2 = np.array([61,43,75], np.uint8)
+        upperGreen2 = np.array([124,195,140], np.uint8)
 
         frameHSV = cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
         maskAzul = cv2.inRange(frameHSV, lowerBlue, upperBlue)
         maskVerde1 = cv2.inRange(frameHSV, lowerGreen, upperGreen)
-        #maskVerde2 = cv2.inRange(frameHSV, lowerGreen2, upperGreen2)
+        maskVerde2 = cv2.inRange(frameHSV, lowerGreen2, upperGreen2)
         maskamarillo = cv2.inRange(frameHSV, lowerYellow, upperYellow)
         maskRed1 = cv2.inRange(frameHSV, lowerRed, upperRed)
         # maskRed2 = cv2.inRange(frameHSV, lowerRed2, upperRed2)
         # maskred = cv2.add(maskRed1,maskRed2)
-        #maskverde = cv2.add(maskVerde1,maskVerde2)
+        maskverde = cv2.add(maskVerde1,maskVerde2)
         maskverde = maskVerde1
         self.dibujar(maskAzul,(255,0,0), img2)
         img2 = self.dibujar(maskamarillo,(0,255,255), img2)

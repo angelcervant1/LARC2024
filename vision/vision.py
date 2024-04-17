@@ -7,9 +7,13 @@ import numpy as np
 import communication
 import camara
 
-def scale_value(c1, c2, pixel):
-     percentage = (pixel + c1.x / 2) / c1.x
-     value = percentage * c2.x - c2.x / 2
+def scale_value(c1, c2, pixel, f):
+     if (f): # x
+          percentage = (pixel + c1.x / 2) / c1.x
+          value = percentage * c2.x - c2.x / 2
+     else: # y value scale
+          percentage = (pixel + c1.y / 2) / c1.y
+          value = percentage * c2.y - c2.y / 2
      return value
 
 if __name__ == '__main__':
@@ -34,7 +38,7 @@ if __name__ == '__main__':
      #Flags
      flag_detect_pattern = False
      flag_lock = False
-     find_object = False
+     find_object = True
      while True:
           # Refresher
           camara1.camara_refresh() 
@@ -46,22 +50,29 @@ if __name__ == '__main__':
                     #Send message with arduino
                     pass
           if(find_object): 
-               # Find closest cube
-               camara1.detect_closest_cube()
-
-               # Lock closest cube
-               camara1.lock_box()
-               # camera2.lock_box()
-               
-               # Find most similar cube
-               lost, following_box = camara1.track_object_vertical(camara1.lock_box)
-               # camara2.find_specific_cube(following_box[0], scale_value(camara1, camara2, following_box[5]))
-               if(not lost):
-                    # Check box area
-                    pass
-               #Send cube data to arduino
-
-
+               if(not camara1.lock): # base on camara2 
+                    # Find closest cube
+                    camara1.detect_closest_cube()
+                    # Lock closest cube
+                    camara1.lock_object()
+                    # xmid = scale_value(camara1, camara2, camara1.lock_box[5], True)
+                    # ymid = scale_value(camara1, camara2, camara1.lock_box[6], False)
+                    # try:
+                    #      flag2, camara2.box  = camera2.find_specific_cube(camera1.lock_box[0], xmid, ymid, 100) # Find same cube on with the bottom camara
+                    #      if (flag2):
+                    #         camara2.lock_object()
+                    # except:
+                    #      pass
+               else: 
+                    # Find most similar cube
+                    try:
+                         lost, following_box = camara1.track_object() # this needs to be camara 2
+                         if(not lost): # only use camara 2
+                              # grab
+                              # print("camara 2 ")
+                              pass
+                    except:
+                         pass
           
           if cv2.waitKey(1) & 0xFF == ord('q'):
                break

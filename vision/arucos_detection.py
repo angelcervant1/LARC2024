@@ -41,27 +41,30 @@ class DetectorAruco:
         tempo = []
         if ids is not None:
             if corners:
-                for i, marker_corners in enumerate(corners):
-                    corner = corners[i][0]
-                    xmayor = np.amax(corner[:, 0])
-                    ymayor = np.amax(corner[:, 1])
-                    xmenor = np.amin(corner[:, 0])
-                    ymenor = np.amin(corner[:, 1])
-                    #get x and y centroid
-                    self.cx = (xmayor + xmenor)/2 / img.shape[1]
-                    self.cy = (ymayor + ymenor)/2 / img.shape[0]
+                aruco_area = cv2.contourArea(corners[0])
+                if aruco_area > 1000:
+                    # print(aruco_area)
+                    for i, marker_corners in enumerate(corners):
+                        corner = corners[i][0]
+                        xmayor = np.amax(corner[:, 0])
+                        ymayor = np.amax(corner[:, 1])
+                        xmenor = np.amin(corner[:, 0])
+                        ymenor = np.amin(corner[:, 1])
+                        #get x and y centroid
+                        self.cx = (xmayor + xmenor)/2 / img.shape[1]
+                        self.cy = (ymayor + ymenor)/2 / img.shape[0]
 
-                    # draw a point on the centroid
-                    cv2.circle(img, (int(self.cx * img.shape[1]), int(self.cy * img.shape[0])), 5, (0, 0, 255), -1)
-                    #print(f"Xmayor: {xmayor:.2f}, Xmenor: {xmenor:.2f}, Ymayor: {ymayor:.2f}, Ymenor: {ymenor:.2f}")    
-                    tempo =  ymenor, xmenor, ymayor, xmayor
-                    bb.append(tempo)
+                        # draw a point on the centroid
+                        cv2.circle(img, (int(self.cx * img.shape[1]), int(self.cy * img.shape[0])), 5, (0, 0, 255), -1)
+                        #print(f"Xmayor: {xmayor:.2f}, Xmenor: {xmenor:.2f}, Ymayor: {ymayor:.2f}, Ymenor: {ymenor:.2f}")    
+                        tempo =  ymenor, xmenor, ymayor, xmayor
+                        bb.append(tempo)
 
-                    #Remove brackets from ids
-                    tmp_d = str(ids[i]).strip('[]')
-                    detections.append(tmp_d)
-                    #ids[i][j] Es el id del aruco
-                    #corners Es la bounding box del aruco
+                        #Remove brackets from ids
+                        tmp_d = str(ids[i]).strip('[]')
+                        detections.append(tmp_d)
+                        #ids[i][j] Es el id del aruco
+                        #corners Es la bounding box del aruco
             self.get_objects(bb, detections)
         return img
 
