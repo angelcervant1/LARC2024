@@ -42,6 +42,8 @@ class Motor {
     // Change motor state to stop.
     void stop();
 
+    void hardStop();
+
     //////////////////////////////////Velocity//////////////////////////////////////
     // Calculate target Rps according to a velocity in meters per second.
     void RpmToPwm(const double rpm);

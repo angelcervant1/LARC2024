@@ -58,6 +58,17 @@ void Movement::stop() {
   angular_z_ = 0;
 }
 
+void Movement::hardStop(){
+  back_left_motor_.hardStop();
+  front_left_motor_.hardStop();
+  back_right_motor_.hardStop();
+  front_right_motor_.hardStop();
+  
+  linear_x_ = 0; 
+  linear_y_ = 0;
+  angular_z_ = 0;
+}
+
 //////////////////////////////////PID//////////////////////////////////////
 void Movement::cmdVelocity(const double linear_x, const double linear_y, const double angular_z){
   Kinematics::output rpm = kinematics_.getRPM(linear_x, linear_y, angular_z);
@@ -390,10 +401,10 @@ void Movement::driveToColor(const double start_x_pos, Direction direction, color
       
       colorSensor->getRGBData(rgbData);
       
-      Serial.println(" R: "); Serial.print(rgbData.red);
-      Serial.print(" G: "); Serial.print(rgbData.green);
-      Serial.print(" B: "); Serial.print(rgbData.blue);
-      Serial.println();
+      // Serial.println(" R: "); Serial.print(rgbData.red);
+      // Serial.print(" G: "); Serial.print(rgbData.green);
+      // Serial.print(" B: "); Serial.print(rgbData.blue);
+      // Serial.println();
 
     bool shouldMoveBackward = false;
       switch (color_id) {
@@ -421,7 +432,8 @@ void Movement::driveToColor(const double start_x_pos, Direction direction, color
     bool isOnBlackSquare = sideDetected_[2] == Front;
     //If shouldMoveBackward is true and the robot is on a black square, move backward
     if (shouldMoveBackward && !isOnBlackSquare) {
-        moveDirection(BACKWARD, robotAngle_);
+          moveDirection(BACKWARD, robotAngle_);
+          
         outOfColor = true;
     } 
     // If outOfColor is true and shouldMoveBackward becomes false, set start_search to true
@@ -444,21 +456,23 @@ void Movement::driveToTarget(float coord_x){
 //Then while moving chec if corrd_x s receved from a color detecton model. 
 //Once detected the color. Move based on the error proportonal if the coord_x is right in the middle (0)
 
-    
     int xError = 0 - coord_x;
 
     Direction direction;
-    if (!(xError < kCentered2Image)) {
-        direction = (coord_x < 0) ? TOLEFT : TORIGHT; 
-    } else {
-        stop();
-    }
-
-    float speedFactor = 0.1; // Adjust this value as needed
+    float speedFactor = 0.09; // Adjust this value as needed
     float speed = abs(xError) * speedFactor;
+    speed = constrain(speed, -kMaxLinearX, kMaxLinearX);
 
-    moveDirection(direction, robotAngle_, speed, false);
-
+    if (!(xError < kCentered2Image)) {
+        direction = (coord_x < 0) ? TOLEFT : TORIGHT;
+        moveDirection(direction, robotAngle_, speed, false);
+    } else if(digitalRead(distanceSensorPin)){
+        moveDirection(FORWARD, robotAngle_, speed, false);
+    }
+    else{
+      stop();
+      inFrontOfCube = true;
+    }
 }
 
 void Movement::moveDirection(Direction direction, const double angleOffset, double speed, bool flag){
@@ -469,7 +483,7 @@ void Movement::moveDirection(Direction direction, const double angleOffset, doub
           lineSensor->readDataFromSide(Left);
           sideDetected_[1] = lineSensor->lineDetectedFromSide();
           // Change linear velocity sign (+/-) if Angle offset is given
-          linear_x_ = (robotAngle_ == angleOffset) ? speed : speed;
+          linear_x_ = (originAngle == angleOffset) ? speed : speed;
           // Set linear_y_ based on side detection
           if(sideDetected_[0] == Right){
               linear_y_ = movementKp * kMaxLinearY;
@@ -487,7 +501,7 @@ void Movement::moveDirection(Direction direction, const double angleOffset, doub
           sideDetected_[0] = lineSensor->lineDetectedFromSide();
           lineSensor->readDataFromSide(Left);
           sideDetected_[1] = lineSensor->lineDetectedFromSide();
-          linear_x_ = (robotAngle_ == (angleOffset + 180)) ? -speed : -speed;
+          linear_x_ = (originAngle == (angleOffset + 180)) ? -speed : -speed;
           // Set linear_y_ based on side detection
           if(sideDetected_[0] == Right){
               linear_y_ = movementKp * kMaxLinearY;
@@ -505,7 +519,7 @@ void Movement::moveDirection(Direction direction, const double angleOffset, doub
           sideDetected_[2] = lineSensor->lineDetectedFromSide();
           lineSensor->readDataFromSide(Back);
           sideDetected_[3] = lineSensor->lineDetectedFromSide();
-          linear_y_ = (robotAngle_ == angleOffset) ? speed : speed;
+          linear_y_ = (originAngle == angleOffset) ? speed : speed;
           // Set linear_x_ based on side detection
           if(sideDetected_[2] == Front && sideDetected_[3] == None){
               linear_x_ = movementKp * kMaxLinearX;
@@ -527,7 +541,7 @@ void Movement::moveDirection(Direction direction, const double angleOffset, doub
           sideDetected_[2] = lineSensor->lineDetectedFromSide();
           lineSensor->readDataFromSide(Back);
           sideDetected_[3] = lineSensor->lineDetectedFromSide();
-          linear_y_ = (robotAngle_ == (angleOffset + 180)) ? -speed : -speed;
+          linear_y_ = (originAngle == (angleOffset + 180)) ? -speed : -speed;
           // Set linear_x_ based on side detection
           if(sideDetected_[2] == Front && sideDetected_[3] == None){
               linear_x_ = -movementKp * kMaxLinearX;
@@ -550,7 +564,55 @@ void Movement::moveDirection(Direction direction, const double angleOffset, doub
 }
 
 
-void Movement::GoToSquare(){
+void Movement::GoToSquare(Direction direction, const double angleOffset){
+  lineSensor->readDataFromSide(Right);
+  sideDetected_[0] = lineSensor->lineDetectedFromSide();
+  lineSensor->readDataFromSide(Left);
+  sideDetected_[1] = lineSensor->lineDetectedFromSide();
+  lineSensor->readDataFromSide(Right);
+  sideDetected_[2] = lineSensor->lineDetectedFromSide();
+  lineSensor->readDataFromSide(Left);
+  sideDetected_[3] = lineSensor->lineDetectedFromSide();
+  bool whichDirection;
+  
+  switch(direction){
+    case TOLEFT:
+      whichDirection = (originAngle == angleOffset) ? true : false;
+      if(sideDetected_[1] != Left){
+        if(whichDirection){
+          linear_y_ = -movementKp * kMaxLinearY;
+        } else{
+          linear_y_ = movementKp * kMaxLinearY;
+        }
+      } else if(sideDetected_[1] == Left && sideDetected_[0] == Right){
+        if(whichDirection){
+          linear_x_ = -movementKp * kMaxLinearX;     //move back   
+          } else{
+          linear_x_ = movementKp * kMaxLinearY;
+        }  
+        } else { hardStop(); }
+
+    break;
+    case TORIGHT:
+      whichDirection = (originAngle == (angleOffset + 180)) ? true : false;
+      if(sideDetected_[2] != Right){
+        if(whichDirection){
+          linear_y_ = movementKp * kMaxLinearY;
+        } else{
+          linear_y_ = -movementKp * kMaxLinearY;
+        }
+      } else if(sideDetected_[1] == Left && sideDetected_[0] == Right) {
+        if(whichDirection){
+          linear_x_ = movementKp * kMaxLinearX;    //move forward     
+          } else{
+          linear_x_ = -movementKp * kMaxLinearY;
+        }
+      } else { hardStop(); }
+
+    break;
+  }
+
+  orientedMovement(linear_x_, linear_y_, angular_z_);
 
 }
 
@@ -566,6 +628,12 @@ bool Movement::detectedCubefromRaspi(){
 //     return true;
 //   }
   return false;
+}
+
+int Movement::getCubeCoordFromRaspi(){
+  int coord_x =  0; //add func to get data from raspi 
+
+  return coord_x;
 }
 
 void Movement::updatePIDKinematics(double fl_speed, double fr_speed, double bl_speed, double br_speed) {

@@ -44,6 +44,7 @@ class Movement {
     int kMotorCount = 4;
     colorNum pastColor;
     float past_check;
+    bool inFrontOfCube = false;
 
     // Initialize motor encoders.
     void initEncoders();
@@ -79,7 +80,9 @@ class Movement {
 
     void driveToColor(const double start_x_pos, Direction direction, colorNum color_id);
 
-    void GoToSquare();
+    void GoToSquare(Direction direction, const double angleOffset);
+
+    void hardStop();
 
     bool detectedTilefromRaspi();
 
@@ -103,6 +106,9 @@ class Movement {
 
     void setInitialRobotAngle(double angle);
 
+    int getCubeCoordFromRaspi();
+
+
   private:
     // Pins
     static constexpr uint8_t kDigitalPinsFrontLeftMotor[2] = {44, 43};
@@ -120,7 +126,7 @@ class Movement {
     static constexpr uint8_t kDigitalPinsBackRightMotor[2] = {38,37};
     static constexpr uint8_t kAnalogPinBackRightMotor = 9;
     static constexpr uint8_t kEncoderPinsBackRightMotor = 18;
-
+    static constexpr uint8_t distanceSensorPin = 0; //change pin
     // Velocity maximums
     static constexpr double kWheelBase = 0.120;
     static constexpr double kWheelTrack = 0.235;
@@ -165,6 +171,7 @@ class Movement {
     double linear_y_ = 0.0;
     double angular_z_ = 0.0;
     float current_angle = 0.0;
+
 
     // Angle
     float angle_error_ = 0;

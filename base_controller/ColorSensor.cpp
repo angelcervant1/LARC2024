@@ -18,7 +18,6 @@ void ColorSensor::getRGBData(colorData &data) {
         //tcs.setInterrupt(false);  // turn on LED
         tcs.getRGB(&data.red, &data.green, &data.blue);
         //tcs.setInterrupt(true);   // turn off LED
-        // Store the RGB readings in the circular buffer
         rgbBuffer[bufferIndex++] = data;
         if (bufferIndex >= BUFFER_SIZE) {
             bufferIndex = 0;
@@ -37,10 +36,9 @@ void ColorSensor::getRGBData(colorData &data) {
         avgGreen /= BUFFER_SIZE;
         avgBlue /= BUFFER_SIZE;
 
-        // Update the data with the average values
-        data.red = int(avgRed);
-        data.green = int(avgGreen);
-        data.blue = int(avgBlue);
+        data.red = uint8_t(avgRed);
+        data.green = uint8_t(avgGreen);
+        data.blue = uint8_t(avgBlue);
 
         // Update the previous millis
         prev_millis = curr_millis;
