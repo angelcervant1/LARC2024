@@ -134,16 +134,15 @@ class ColorDetection():
 
         lowerRed = np.array([145,154,113], np.uint8)
         upperRed = np.array([180,255,142], np.uint8)
-        # lowerRed2 = np.array([155,162,150], np.uint8)
-        # upperRed2 = np.array([179,255,255], np.uint8)
-        
+        lowerRed2 = np.array([0,180,103], np.uint8)
+        upperRed2 = np.array([179,229,152], np.uint8)
 
         lowerBlue = np.array([ 75,122,110], np.uint8)
         upperBlue = np.array([130,255,255], np.uint8)
 
 
-        lowerYellow = np.array([  7, 99,166], np.uint8)
-        upperYellow =  np.array([ 30,178,228], np.uint8)
+        lowerYellow = np.array([21,116,98], np.uint8)
+        upperYellow = np.array([29,203,169], np.uint8)
         
 
 
@@ -156,14 +155,14 @@ class ColorDetection():
         #maskVerde2 = cv2.inRange(frameHSV, lowerGreen2, upperGreen2)
         maskamarillo = cv2.inRange(frameHSV, lowerYellow, upperYellow)
         maskRed1 = cv2.inRange(frameHSV, lowerRed, upperRed)
-        # maskRed2 = cv2.inRange(frameHSV, lowerRed2, upperRed2)
-        # maskred = cv2.add(maskRed1,maskRed2)
+        maskRed2 = cv2.inRange(frameHSV, lowerRed2, upperRed2)
+        maskred = cv2.add(maskRed1,maskRed2)
         #maskverde = cv2.add(maskVerde1,maskVerde2)
         maskverde = maskVerde1
         self.dibujar(maskAzul,(255,0,0), img2)
         img2 = self.dibujar(maskamarillo,(0,255,255), img2)
         img2 = self.dibujar(maskverde,(0,255,0), img2)
-        img2 = self.dibujar(maskRed1,(0,0,255), img2)
+        img2 = self.dibujar(maskred,(0,0,255), img2)
 
         self.get_objects(self.boxes, self.detections)
         return img2
