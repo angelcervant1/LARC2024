@@ -2,7 +2,12 @@
 #include "Raspy.h"
 
 Raspy::Raspy(){
-  // Serial.begin(baud);
+    this->flag = "";
+    this->tile = 0;
+    this->color = 4;
+}
+void Raspy::import(Movement *robot){
+    this->_robot = robot;
 }
 
 void Raspy::readSerial() {
@@ -70,17 +75,33 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
             }
             break;
         case 0x01: // Send localization
-            if (packet_size == 3) { // Check packet size
-                uint8_t tile;
-                uint8_t color;
-                writeSerial(true, (uint8_t*)tile, sizeof(tile));
-                writeSerial(true, (uint8_t*)color, sizeof(tile) + sizeof(color));
+            if (packet_size == 5) { // Check packet size
+                this->flag = "FIND_ORIGIN";
+                memcpy(&this->tile, buffer, sizeof(this->tile));
+                _robot->setGlobalPosX(this->tile);
+                _robot->detect_tile = true;
+                writeSerial(true, nullptr, 0);
             }
             break;
-        case 0x08: // rotate
+        case 0x02: // Initialize origin finding 
+            if (packet_size == 1){
+                this->flag = "FIND_ORIGIN";
+                writeSerial(true, nullptr, 0);
+            }
+            break;
+        case 0x04: // Cube detection
+            if (packet_size == 5){
+                uint32_t t; 
+                memcpy(&t, buffer, sizeof(t));
+                // _robot->detected_cube = f;
+                // _robot->cube_offset = t;
+                uint32_t s[] = {t};
+                writeSerial(true, (uint8_t*)s, sizeof(s));
+            }
+            break;
+        case 0x08: // tests
             if (packet_size == 1) { // Check packet size
                 uint32_t t[] = {200};
-                // memcpy(&t, buffer, sizeof(t));
                 writeSerial(true, (uint8_t*)t, sizeof(t));
             }
             break;
@@ -101,6 +122,21 @@ void Raspy::writeSerial(bool success, uint8_t* payload, int elements) {
     Serial.write(payload[i]);
   }
 
-  //Serial.write(0x00); // Footer
+  Serial.write(0x00); // Footer
   Serial.flush();
+}
+
+String Raspy::get_status(){
+    String a = this->flag;
+    return a;
+}
+
+int Raspy::get_tile(){
+    int tile = this->tile;
+    return tile;
+}
+
+int Raspy::get_color(){
+    int color = this->color;
+    return color;
 }

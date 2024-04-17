@@ -7,13 +7,17 @@
 class Raspy{
   public: 
     Raspy();
+    void import(Movement *robot);
     void executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer);
     void writeSerial(bool success, uint8_t* payload, int elements);
     void readSerial();
     String flag;
+    uint32_t tile;
+    uint32_t color;
     uint8_t cube_offset;
-    String state();
-  
+    String get_status();
+    int get_tile();
+    int get_color();
   private:
     BNO *_bno;
     LineSensor *_line;

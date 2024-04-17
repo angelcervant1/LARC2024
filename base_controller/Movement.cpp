@@ -85,7 +85,7 @@ void Movement::cmdVelocity(const double linear_x, const double linear_y, const d
 //   Kinematics::output rpm;
 
 //   // Adjust the proportional term to make angular speed proportional to the error
-//   float proportional_term = 0.02; // Adjust this value as needed
+//   float proportional_term = 0.01; // Adjust this value as needed
 
 //   if(abs(angle_error) > kAngleTolerance_){
 //     // Calculate the angular speed proportional to the error
@@ -126,14 +126,14 @@ void Movement::orientedMovement(const double linear_x, const double linear_y, do
     angle_error -= 360;
   }
 
-  Serial.print("Setpoint: "); Serial.print(robotAngle_); 
-  Serial.print(" Current: "); Serial.println(current_angle);
-  Serial.print("Angle Error: "); Serial.println(angle_error);
+  // Serial.print("Setpoint: "); Serial.print(robotAngle_); 
+  // Serial.print(" Current: "); Serial.println(current_angle);
+  // Serial.print("Angle Error: "); Serial.println(angle_error);
   
   Kinematics::output rpm;
 
   // Adjust the proportional term to make angular speed proportional to the error
-  float proportional_term = 0.09; // Adjust this value as needed
+  float proportional_term = 0.1; // Adjust this value as needed
 
   if (fabs(angle_error) > kAngleTolerance_){
     // Calculate the angular speed proportional to the error
@@ -261,7 +261,7 @@ void Movement::moveDirection(Direction direction, const uint8_t squares, const d
     sideDetected_[3] = lineSensor->lineDetectedFromSide();
   
     // Set the global movement direction
-    globalDirection_ = direction;
+    //globalDirection_ = direction;
 
     // Determine the sign for adjusting globalPosX based on the robot's angle offset
     int posXChange;    // if (originAngle == angleOffset) {
@@ -273,7 +273,7 @@ void Movement::moveDirection(Direction direction, const uint8_t squares, const d
     if(!(squaresCount == squares)){
         switch (direction) {
           case FORWARD:
-              linear_x_ = kMaxLinearX;
+              linear_x_ = -kMaxLinearX;
               if(sideDetected_[0] == Right){
                   linear_y_ = movementKp * kMaxLinearY;
                   Serial.println("LEFT");
@@ -289,8 +289,19 @@ void Movement::moveDirection(Direction direction, const uint8_t squares, const d
                 Serial.println("FORWARD");
 
               }
+              posXChange = (originAngle == angleOffset) ? -1 : 1;
+              // Update globalPosX if the robot is moving left and a line is detected on the left side
+              if (sideDetected_[2] == Front && !firstLineDetected) {
+                  firstLineDetected = true;
+              } else if (firstLineDetected && sideDetected_[3] == Back) {
+                  globalPosY_ += posXChange;
+                  Serial.print("Moved Forward.  ");
+                  Serial.print("Global Pos Y: "); 
+                  Serial.println(globalPosY_);
+                  firstLineDetected = false;
+              }
           case BACKWARD:
-            linear_x_ = (robotAngle_ == (angleOffset - 180)) ? -kMaxLinearX : -kMaxLinearX;
+            linear_x_ = kMaxLinearX;
             if(sideDetected_[0] == Right){
                 linear_y_ = movementKp * kMaxLinearY;
             }
@@ -301,7 +312,18 @@ void Movement::moveDirection(Direction direction, const uint8_t squares, const d
               linear_y_ = 0;
               Serial.println("BACKWARD");
 
-            }           
+            }
+              posXChange = (originAngle == angleOffset) ? 1 : -1;
+
+            if (sideDetected_[3] == Back && !firstLineDetected) {
+                  firstLineDetected = true;
+              } else if (firstLineDetected && sideDetected_[2] == Front) {
+                  globalPosY_ += posXChange;
+                  Serial.print("Moved Forward.  ");
+                  Serial.print("Global Pos Y: "); 
+                  Serial.println(globalPosY_);
+                  firstLineDetected = false;
+              }           
              break;
           case TOLEFT:
             linear_y_ = kMaxLinearY;
@@ -534,10 +556,16 @@ void Movement::GoToSquare(){
 }
 
 bool Movement::detectedTilefromRaspi(){
-  return true;
-}
+  if(this->detect_tile){
+    return true;
+  }
+  return true; //change to false after testing
+  }
 
 bool Movement::detectedCubefromRaspi(){
+//  if(this->detected_cube){
+//     return true;
+//   }
   return false;
 }
 
@@ -567,6 +595,14 @@ void Movement::setGlobalPosX(int globalPosX){
 
 void Movement::setSquareCounter(int squares){
   squaresCount = squares;
+}
+
+int Movement::getCurrentPosY(){
+  return globalPosY_;
+}
+
+void Movement::setGlobalPosY(int globalPosY){
+  globalPosY_ = globalPosY;
 }
 
 float Movement::getRobotAngle(){

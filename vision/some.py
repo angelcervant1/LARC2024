@@ -1,6 +1,6 @@
-import communication
-
-if __name__ == "__main__":
-    arduino = communication.Arduino()
-    arduino.connect()
-    print(arduino.test(int(1)))
+arduino.connect()
+    # arduino.open()
+    while True:
+        print(arduino.sendLocation(0))
+        print(arduino.sendLocation(1))
+        time.sleep(1)

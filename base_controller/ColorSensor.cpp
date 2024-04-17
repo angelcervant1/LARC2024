@@ -14,8 +14,8 @@ void ColorSensor::initColorSensor() {
 
 ColorSensor::colorData ColorSensor::getRGBData() {
   curr_millis = millis();
-  if ((curr_millis - prev_millis) > 10) {
-    //tcs.setInterrupt(false);  // turn on LED
+  if ((curr_millis - prev_millis) > 100) {
+    tcs.setInterrupt(false);  // turn on LED
     tcs.getRGB(&RGBData.red, &RGBData.green, &RGBData.blue);
     //tcs.setInterrupt(true);   // turn off LED
     // Store the RGB readings in the circular buffer
