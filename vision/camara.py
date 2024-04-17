@@ -1,25 +1,31 @@
-import color_detection
-import arucos_detection
 import cv2
 import numpy as np
 import time
 
 class Camara:
-    def __init__(self, camara , colors, arucos):
+    def __init__(self, camara , colors, arucos, filter):
         self.colors = colors
         self.arucos = arucos
         self.cap = cv2.VideoCapture(camara)
         self.box = []
+        self.lock_box = []
+        self.lock = False
         self.total_boxes = []
-        self.ret, self.frame = None
+        self.ret = False  
+        self.frame = np.array([])
         self.image = np.array([])
+        self.filter = filter
+        
     
     def camara_setup(self):
         self.ret, self.frame = self.cap.read()
+        if self.filter:
+            self.orient_camara()
+        self.y, self.x, _= self.frame.shape
         if self.ret:
             self.arucos.setUp(self.frame)
             self.colors.setUp(self.frame)
-        self.reset_values(self)
+        self.reset_values()
 
     def reset_values(self):
         self.arucos.boxes = []
@@ -30,12 +36,10 @@ class Camara:
         self.arucos.aruco_detections_data = []
 
     def camara_refresh(self):
-        # Reset values
-        self.reset_values()
-        
         # Capture image
         self.ret, self.frame = self.cap.read()
-        
+        if self.filter:
+            self.orient_camara()
         #Verify frame read
         if self.ret:
             #Join both arucos and colors images 
@@ -43,9 +47,12 @@ class Camara:
             self.image = self.colors.color_detection(self.frame, self.image)
 
             #Show image
-            # cv2.imshow("frame", self.image)
+            cv2.imshow("frame", self.image)
+        # Reset values
+        self.reset_values()
     
     def detect_closest_cube(self):
+        #Joins al boxes
         self.join_arucos_and_color()
         total = self.total_boxes
         closest = 0 
@@ -72,6 +79,7 @@ class Camara:
                     box = index
         if not flag:
             self.box = box
+        return box
 
     def join_arucos_and_color(self):
         color = self.colors.color_close
@@ -94,3 +102,21 @@ class Camara:
                 return self.colors.xTile
             else:
                 return 7 
+    
+    def orient_camara(self):
+        self.frame = cv2.rotate(self.frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
+    
+    def lock_object(self):
+        self.lock_object = self.box
+        self.lock = True
+    
+    def track_object_vertical(self, box):
+        lock_box_new = self.find_specific_cube(box[0], box[5])
+        margin = 0.2 * self.y
+        if (lock_box_new[4] + margin > self.lock_box[4]):
+            # Block lost
+            return 0, self.lock_box
+        else:
+            self.lock_box = lock_box_new
+            return 1, 1
+            
