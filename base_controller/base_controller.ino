@@ -39,22 +39,22 @@ bool fromOtherSide = false;
 
 void moveForward(Movement *robot) {
     robot->orientedMovement(0.0, 0.35, 0.0);
-    Serial.println("Moving Forward");
+    //Serial.println("Moving Forward");
 }
 
 void moveLeft(Movement *robot) {
     robot->orientedMovement(0.35, 0.0, 0.0);
-    Serial.println("Moving Left");
+    //Serial.println("Moving Left");
 }
  
 void moveRight(Movement *robot) { 
     robot->orientedMovement(0.0, -0.35, 0.0);
-    Serial.println("Moving Right");
+    //Serial.println("Moving Right");
 }
 
 void moveBackward(Movement *robot) {
     robot->orientedMovement(-0.35, 0.0, 0.0);
-    Serial.println("Moving Backwards");
+    //Serial.println("Moving Backwards");
 }
 
 
@@ -88,7 +88,7 @@ void setup() {
     robot->setGlobalPosX(start_pos_x);
     robot->angleOffsetReached = false;
     //myGripper->StepperHome();
-    Serial.print("Starting");
+    //Serial.print("Starting");
     raspy.import(robot);
     currentState = FIND_ORIGIN; //chhange based on raspy instruction
     //currentState = TESTS;
@@ -226,9 +226,9 @@ void loop() {
         // In case nothing is received from raspy
     }
 
-    Serial.println(currentState);
-    Serial.print("Global Pos X: "); Serial.println(robot->getCurrentPosX());
-    Serial.print("Global Angle: "); Serial.print(robot->getRobotAngle());
+    //Serial.println(currentState);
+    //Serial.print("Global Pos X: "); //Serial.println(robot->getCurrentPosX());
+    //Serial.print("Global Angle: "); Serial.print(robot->getRobotAngle());
 }
 
 

@@ -67,7 +67,6 @@ if __name__ == '__main__':
                  if (color_detector.xTile != 7):
                       if(not arduino.sendLocation(color_detector.xTile)):
                            flag_detect_pattern = False 
-                    pass
             else:
                  box = detect_closest_cube(color_detector.color_close, arucos_detector.aruco_detections_data)
                  if box != 0:
