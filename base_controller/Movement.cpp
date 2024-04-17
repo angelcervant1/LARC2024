@@ -356,6 +356,7 @@ void Movement::moveDirection(Direction direction, const uint8_t squares, const d
                   firstLineDetected = true;
               } else if (firstLineDetected && sideDetected_[0] == Right) {
                   globalPosX_ += posXChange;
+                  squaresCount += posXChange;
                   //Serial.print("Moved left.  ");
                   //Serial.print("Global Pos X: "); 
                   //Serial.println(globalPosX_);
@@ -382,7 +383,7 @@ void Movement::moveDirection(Direction direction, const uint8_t squares, const d
                   firstLineDetected = true;
               } else if (firstLineDetected && sideDetected_[1] == Left) {
                   globalPosX_ += posXChange;
-                  //Serial.print("Moved left.  ");
+                  squaresCount += posXChange;
                   //Serial.print("Global Pos X: "); 
                   //Serial.println(globalPosX_);
                   firstLineDetected = false;
@@ -391,6 +392,8 @@ void Movement::moveDirection(Direction direction, const uint8_t squares, const d
               break;
         }
     }
+    else
+      squaresCount = 0;
     
     orientedMovement(linear_x_, linear_y_, angular_z_);
 
@@ -617,11 +620,8 @@ void Movement::GoToSquare(Direction direction, const double angleOffset){
 }
 
 bool Movement::detectedTilefromRaspi(){
-  if(this->detect_tile){
-    return true;
-  }
-  return true; //change to false after testing
-  }
+  return this->detect_tile;
+}
 
 bool Movement::detectedCubefromRaspi(){
 //  if(this->detected_cube){
@@ -656,7 +656,7 @@ int Movement::getSquareCounter(){
   return squaresCount;
 }
 
-void Movement::setGlobalPosX(int globalPosX){
+void Movement::setGlobalPosX(uint32_t globalPosX){
   globalPosX_ = globalPosX; 
 }
 

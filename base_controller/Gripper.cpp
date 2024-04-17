@@ -4,6 +4,8 @@ Gripper::Gripper() {
     // Initialize servo motor
     myServoR.attach(servoRAnalogPin); 
     myServoL.attach(servoLAnalogPin); 
+    myServoR.write(0);
+    myServoL.write(0);
     releaseCube();
     myStepper = AccelStepper(1, Nema_Steep, Nema_Direction);
     pinMode(limitSwitchPin, INPUT);
