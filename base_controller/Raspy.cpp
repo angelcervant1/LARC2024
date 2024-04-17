@@ -1,8 +1,22 @@
 
 #include "Raspy.h"
+enum States {
+    TESTS,
+    FIND_ORIGIN,
+    FIND_EMPTY_PATH,
+    DRIVE_TO_COLOR,
+    ROTATE_180,
+    SEARCH_CUBE,
+    DRIVE_TO_CUBE,
+    GRAB_CUBE,
+    ENTER_CLOSEST_SQUARE,
+    ROTATE_SEARCH_COLOR,
+    RELEASE_CUBE,
+    DEFAULT_STATE
+}states;
 
 Raspy::Raspy(){
-    flag = "";
+    state = TESTS;
     tile = 7;
     color = 4;
     update = false;
@@ -77,7 +91,7 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
             break;
         case 0x01: // Send localization
             if (packet_size == 5) { // Check packet size
-                this->flag = "FIND_ORIGIN";
+                state = FIND_ORIGIN;
                 uint32_t t;
                 memcpy(&t, buffer, sizeof(t));
                 _robot->setGlobalPosX(t);
@@ -129,4 +143,8 @@ void Raspy::writeSerial(bool success, uint8_t* payload, int elements) {
 
   Serial.write(0x00); // Footer
   Serial.flush();
+}
+
+int Raspy::get_State(){
+    return state
 }

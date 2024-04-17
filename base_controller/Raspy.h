@@ -16,6 +16,7 @@ class Raspy{
     uint32_t color;
     uint8_t cube_offset;
     bool update;
+    int get_State();
     
   private:
     BNO *_bno;

@@ -28,9 +28,9 @@ enum colorNum{
 
 class Movement {
   public:
-    ///////////////////////////////////Comunication///////////////////////////////////
     bool detect_tile;
-  
+    float cube_offset;
+    bool detected_cube;
     //////////////////////////////////Constructor//////////////////////////////////////
     Movement(BNO *bno, LineSensor *lineSensor, ColorSensor *colorSensor);
     //////////////////////////////////Motors//////////////////////////////////////
@@ -88,6 +88,10 @@ class Movement {
     int getCurrentPosX();
 
     void setGlobalPosX(int globalPosX);
+    
+    int getCurrentPosY();
+
+    void setGlobalPosY(int globalPosX);
 
     colorNum setColorTile(colorNum colorId);
     
@@ -133,10 +137,13 @@ class Movement {
     static constexpr double kBnoKD = 0.0004;
     static constexpr double kBNO_time = 10;
     static constexpr double kMaxErrorSum = 100;
-    static constexpr double kMaxLinearY = 0.40;
-    static constexpr double kMaxLinearX = 0.40;
+    static constexpr double kMaxLinearY = 0.3;
+    static constexpr double kMaxLinearX = 0.3;
     static constexpr double kMaxAngularZ = 1.1;
     int globalPosX_ = 0;
+    int globalPosY_ = 0;
+    int counterY = 0;
+
     Direction globalDirection_ = STOP;
     uint8_t kCentered2Image = 10; //Error in pixels
     uint8_t xError = 0;
@@ -161,7 +168,7 @@ class Movement {
 
     // Angle
     float angle_error_ = 0;
-    float movementKp = 0.45;
+    float movementKp = 0.85;
     double robotAngle_ = 0;
     bool firstLineDetected = false;
     int squaresCount = 0;
@@ -169,5 +176,6 @@ class Movement {
     SignalSide sideDetected_[4];
     static constexpr double kAngleTolerance_ = 5;
 };
+
 
 #endif
