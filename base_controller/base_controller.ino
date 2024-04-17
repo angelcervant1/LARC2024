@@ -19,7 +19,7 @@ unsigned long curr_millis = 0;
 unsigned long prev_millis = 0;
 int iteration = 0;
 double angleOffset = 0.0; //for tests
-double squares = 4; 
+double squares = 0; 
 float angleAmount = 0.0;  //for state machne
 uint8_t start_pos_x = 0; //for tests 
 Direction movementVector[5] = {FORWARD, TOLEFT, BACKWARD, TORIGHT, STOP};
@@ -29,7 +29,7 @@ float releaseStartTime = 3000;
 bool gripping;
 bool releasing;
 bool reachedAngle;
-int prev_pos_x = 2;
+int prev_pos_x = 0;
 bool fullScanCompleted = false;
 bool startingScanFrom0 = false;
 bool startingScanFrom6 = false;
@@ -40,22 +40,22 @@ bool fromOtherSide = false;
 
 void moveForward(Movement *robot) {
     robot->orientedMovement(0.0, 0.35, 0.0);
-    Serial.println("Moving Forward");
+    //serial.println("Moving Forward");
 }
 
 void moveLeft(Movement *robot) {
     robot->orientedMovement(0.35, 0.0, 0.0);
-    Serial.println("Moving Left");
+    //serial.println("Moving Left");
 }
  
 void moveRight(Movement *robot) { 
     robot->orientedMovement(0.0, -0.35, 0.0);
-    Serial.println("Moving Right");
+    //serial.println("Moving Right");
 }
 
 void moveBackward(Movement *robot) {
     robot->orientedMovement(-0.35, 0.0, 0.0);
-    Serial.println("Moving Backwards");
+    //serial.println("Moving Backwards");
 }
 
 
@@ -85,10 +85,11 @@ void setup() {
     myGripper = new Gripper(); 
     robot = new Movement(bnoInstance, myLineSensor, myColorSensor); 
     robot->initEncoders();
-    robot->setGlobalPosX(start_pos_x);
+    // robot->setGlobalPosX(5);
     robot->angleOffsetReached = false;
     //myGripper->StepperHome();
-    Serial.print("Starting");
+    raspy.import(robot);
+    //serial.print("Starting");
     
     //currentState = FIND_ORIGIN; //chhange based on raspy instruction
     //currentState = ENTER_CLOSEST_SQUARE;
@@ -98,7 +99,11 @@ void setup() {
 void loop() {
 
     raspy.readSerial();
-    if(raspy.update);
+    if(raspy.update){
+        currentState = raspy.get_State();
+        raspy.update = false;
+    }
+
     curr_millis = millis();
 
     if (currentState == TESTS) {
@@ -128,13 +133,7 @@ void loop() {
         // In case nothing is received from raspy
     }
 
-    Serial.println(currentState);
-    Serial.print("Global Pos X: "); Serial.println(robot->getCurrentPosX());
-    Serial.print("Global Angle: "); Serial.print(robot->getRobotAngle());
+    // Serial.println(currentState);
+    // Serial.print("Global Pos X: "); Serial.println(robot->getCurrentPosX());
+    // Serial.print("Global Angle: "); Serial.print(robot->getRobotAngle());
 }
-
-
-
-
-
-    

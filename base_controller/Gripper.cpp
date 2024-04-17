@@ -4,6 +4,8 @@ Gripper::Gripper() {
     // Initialize servo motor
     myServoR.attach(servoRAnalogPin); 
     myServoL.attach(servoLAnalogPin); 
+    myServoR.write(0);
+    myServoL.write(0);
     releaseCube();
     myStepper = AccelStepper(1, Nema_Steep, Nema_Direction);
     pinMode(limitSwitchPin, INPUT);
@@ -14,11 +16,11 @@ Gripper::Gripper() {
     // last_time = prev_millis;
     
     // Assuming the first pin in the array is for the servo
-// Assuming the first pin in the array is for the servo
+    // Assuming the first pin in the array is for the servo
 }
 
 void Gripper::downLevel(const uint8_t level) {
- 
+  
 }
 
 void Gripper::upLevel(const uint8_t level) {
@@ -30,7 +32,7 @@ void Gripper::upLevel(const uint8_t level) {
     while (level < 19) {
           myStepper.moveTo(targetPosition);
           myStepper.runToPosition();
-          Serial.print("Move to 0 Pos");
+          // Serial.print("Move to 0 Pos");
           myStepper.move(0);
       }
 }
@@ -63,7 +65,7 @@ void Gripper::StepperHome(){
         myStepper.move(-2000);
         myStepper.runToPosition();
         Ajuste=Ajuste+2000;
-        Serial.print("Going Home...");
+        // Serial.print("Going Home...");
     }
     isHome = true;
     stop();
@@ -84,17 +86,17 @@ void Gripper::sequenceUp(unsigned long curr_milis){
         grabCube();
         gripping = true; 
         graspStartTime = current_time;  
-        Serial.println("GRAB");
+        // Serial.println("GRAB");
     } else if (gripping && !releasing && current_time - graspStartTime >= 3000) {
         releaseCube();
         releasing = true;  
         releaseStartTime = current_time;  
-        Serial.println("RELEASE");
+        // Serial.println("RELEASE");
     } else if (releasing && current_time - releaseStartTime >= 3000) {
         gripping = false;
         releasing = false;
         upLevel(6);
-        Serial.println("WAIT OVER");
+        // Serial.println("WAIT OVER");
     }
 }
 
