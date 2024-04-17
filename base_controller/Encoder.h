@@ -3,6 +3,7 @@
 #define Encoder_h
 
 #include "Motor.h"
+
 namespace Encoder{
     //////////////////////////////////Main Function//////////////////////////////////////
     // Count ticks for specific motor. Sign Variable to indicate direction.

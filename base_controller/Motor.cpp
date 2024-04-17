@@ -91,6 +91,22 @@ void Motor::stop() {
   current_state_ = MotorState::Stop;
 }
 
+void Motor::hardStop() {
+  analogWrite(analog_one_, LOW);
+
+  if(current_state_ == MotorState::Stop) {
+    return;
+  }
+
+  digitalWrite(digital_one_, HIGH);
+  digitalWrite(digital_two_, HIGH);
+  
+  pid_.reset();
+  
+  current_state_ = MotorState::Stop;
+}
+
+
 
 //////////////////////////////////Velocity//////////////////////////////////////
 void  Motor::RpmToPwm(const double rpm){

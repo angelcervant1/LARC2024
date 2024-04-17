@@ -13,7 +13,7 @@ enum States {
     ROTATE_SEARCH_COLOR,
     RELEASE_CUBE,
     DEFAULT_STATE
-}states;
+}state;
 
 Raspy::Raspy(){
     state = TESTS;
@@ -121,6 +121,7 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
         case 0x08: // tests
             if (packet_size == 1) { // Check packet size
                 uint32_t t[] = {200};
+                state = TESTS;
                 writeSerial(true, (uint8_t*)t, sizeof(t));
             }
             break;
@@ -146,5 +147,5 @@ void Raspy::writeSerial(bool success, uint8_t* payload, int elements) {
 }
 
 int Raspy::get_State(){
-    return state
+    return state;
 }

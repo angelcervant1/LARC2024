@@ -4,7 +4,7 @@
 BNO::BNO() {
   bno_ = Adafruit_BNO055(55, 0x28);
   if (!bno_.begin()) {
-    //Serial.println("Oops no bno detected..");
+    //serial.println("Oops no bno detected..");
     return;
   }
   Serial.begin(115200);

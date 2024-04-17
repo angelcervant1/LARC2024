@@ -90,7 +90,7 @@ class Movement {
 
     int getCurrentPosX();
 
-    void setGlobalPosX(int globalPosX);
+    void setGlobalPosX(uint32_t globalPosX);
     
     int getCurrentPosY();
 
@@ -143,10 +143,10 @@ class Movement {
     static constexpr double kBnoKD = 0.0004;
     static constexpr double kBNO_time = 10;
     static constexpr double kMaxErrorSum = 100;
-    static constexpr double kMaxLinearY = 0.3;
-    static constexpr double kMaxLinearX = 0.3;
+    static constexpr double kMaxLinearY = 0.35;
+    static constexpr double kMaxLinearX = 0.35;
     static constexpr double kMaxAngularZ = 1.1;
-    int globalPosX_ = 0;
+    uint32_t globalPosX_ = 0;
     int globalPosY_ = 0;
     int counterY = 0;
 
