@@ -131,11 +131,10 @@ void findOrigin(){
         robot->orientedMovement(0.0, 0.0, 0.0);
     }
     else if (robot->detectedTilefromRaspi()){
-        robot->stop();
+        robot->hardStop();
         robot->setRobotAngle(angleAmount);
         robot->orientedMovement(0.0, 0.0, 0.0);
-        robot->setSquareCounter(0);
-        //robot->setGlobalPosX(start_pos_x); //this is the data received by serial with the x_coord
+        robot->setGlobalPosX(start_pos_x); //this is the data received by serial with the x_coord
         currentState = FIND_EMPTY_PATH;
         robot->setInitialRobotAngle(angleAmount);
     }          
@@ -145,20 +144,19 @@ void findOrigin(){
 }
 
 void findEmptyPath(){
-      Serial.print("Lo que sea ");
       if(robot->getCurrentPosX() > 3 && !(robot->getCurrentPosX() == 6)){
             robot->moveDirection(TORIGHT, (6 - robot->getCurrentPosX()), angleAmount);
         } else if(robot->getCurrentPosX() < 3 && !(robot->getCurrentPosX() == 0)){
                 robot->moveDirection(TOLEFT, robot->getCurrentPosX(), angleAmount);
         } else {
-            robot->stop();
+            robot->hardStop();
             currentState = DRIVE_TO_COLOR;
         }
 }
 
 void driveToColor(){
     if(robot->start_search){
-        robot->stop();
+        robot->hardStop();
         currentState = ROTATE_180;
         prev_pos_x = robot->getCurrentPosX(); 
         robot->start_search = false;
@@ -169,17 +167,17 @@ void driveToColor(){
         switch(robot->getCurrentPosX()){
             case 0:
                 robot->driveToColor(0, FORWARD, GREEN);
-                //serial.println("GREEN");
+                // Serial.println("GREEN");
             break; 
 
             case 3:
                 robot->driveToColor(3, FORWARD, RED);
-                //serial.println("RED");
+                // Serial.println("RED");
             break;
             
             case 6:
                 robot->driveToColor(6, FORWARD, GREEN);
-                //serial.println("GREEN");
+                // Serial.println("GREEN");
 
             break;
         }
@@ -188,8 +186,8 @@ void driveToColor(){
 
 void rotate_180(){
     robot->setRobotAngle(fmod(angleAmount + 180, 360));
-    //serial.print("Angle  Offset: ");
-    //serial.println(robot->getRobotAngle());
+    // Serial.print("Angle  Offset: ");
+    Serial.println(robot->getRobotAngle());
     if(robot->angleOffsetReached){
         currentState = SEARCH_CUBE;
         //robot->setSquareCounter(0);
@@ -203,14 +201,14 @@ void rotate_180(){
 }
 
 void searchCube(){
- if (robot->detectedCubefromRaspi()) {  
-        robot->stop(); 
+    if (robot->detectedCubefromRaspi()) {  
+        robot->hardStop(); 
         currentState = DRIVE_TO_CUBE;
         prev_pos_x = robot->getCurrentPosX(); 
+        robot->detected_cube = false;
     } 
-    
-    else if (!fullScanCompleted) {
 
+    else if (!fullScanCompleted) {
         // Move one square at a time based on the current position
         switch (robot->getCurrentPosX()) {
             case 0:
@@ -224,7 +222,7 @@ void searchCube(){
                         robot->moveDirection(TORIGHT, 1, robot->getRobotAngle());
                 } else {
                     // If startingScanFrom6 is true, stop the robot and mark fullScanCompleted as true
-                    robot->stop();
+                    robot->hardStop();
                     // fullScanCompleted = true;
                 }
                 break;
@@ -243,7 +241,6 @@ void searchCube(){
                     while (robot->getCurrentPosX() != 0)
                         robot->moveDirection(TORIGHT, 1, robot->getRobotAngle());
 
-
                 } else if (startingScanFrom0) {
                     robot->moveDirection(TOLEFT, 1, robot->getRobotAngle());
                 } else if (startingScanFrom6) {
@@ -260,7 +257,7 @@ void searchCube(){
                     else
                         robot->moveDirection(TOLEFT, 1, robot->getRobotAngle());                } else {
                     // If startingScanFrom6 is true, stop the robot and mark fullScanCompleted as true
-                    robot->stop();
+                    robot->hardStop();
                     // fullScanCompleted = true;
                 }
                 break;
@@ -286,7 +283,7 @@ void driveToCube(){
         currentState = GRAB_CUBE;
     }
     else{
-        int targetXCoord = robot->getCubeCoordFromRaspi(); //send midpoint from image
+        uint32_t targetXCoord = robot->getCubeCoordFromRaspi(); //send midpoint from image
         robot->driveToTarget(targetXCoord);
     }
 
@@ -294,25 +291,33 @@ void driveToCube(){
 
 void grabCube(){
     myGripper->sequenceUp(curr_millis);
+    //set closese square to False after grabbng the cube
 }
 
 
 void enterClosestSquare(){
-    
-    if(prev_pos_x < 3){
+    if(prev_pos_x < 3 && !robot->closestSquare){
         robot->GoToSquare(TOLEFT, robot->getRobotAngle());
-    } else if(prev_pos_x > 3){
+    } else if(prev_pos_x > 3 && !robot->closestSquare){
         robot->GoToSquare(TORIGHT, robot->getRobotAngle());
+    } else{
+        robot->hardStop();
+        currentState = GO_TO_POSITION;
     }
+    
 }
 
 void goToPosition(){
+//how to go to a color position when grabbed the cube? ?
+//we also need the respective cube color to know where 
+//the robot should do
+
+//check if raspy can handle the set pos X on each case
 
 }
 
 void releaseCube(){
-    myGripper->sequenceDown(curr_millis);
-
+    myGripper->sequenceDown(millis());
 }
 
 void tests(){
@@ -334,7 +339,7 @@ void tests(){
                     robot->setRobotAngle(angleOffset);
                     robot->moveDirection(movementVector[iteration], squares, angleOffset);
                 }
-            }
+            }   
         }
 
         if (CHECK_LINES) {

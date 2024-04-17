@@ -21,7 +21,7 @@ int iteration = 0;
 double angleOffset = 0.0; //for tests
 double squares = 0; 
 float angleAmount = 0.0;  //for state machne
-uint8_t start_pos_x = 0; //for tests 
+uint8_t start_pos_x = 2; //for tests 
 Direction movementVector[5] = {FORWARD, TOLEFT, BACKWARD, TORIGHT, STOP};
 
 float graspStartTime = 3000;
@@ -29,7 +29,7 @@ float releaseStartTime = 3000;
 bool gripping;
 bool releasing;
 bool reachedAngle;
-int prev_pos_x = 0;
+int prev_pos_x = 1;
 bool fullScanCompleted = false;
 bool startingScanFrom0 = false;
 bool startingScanFrom6 = false;
@@ -85,24 +85,27 @@ void setup() {
     myGripper = new Gripper(); 
     robot = new Movement(bnoInstance, myLineSensor, myColorSensor); 
     robot->initEncoders();
-    // robot->setGlobalPosX(5);
+    robot->setGlobalPosX(start_pos_x);
     robot->angleOffsetReached = false;
-    //myGripper->StepperHome();
+//    myGripper->StepperHome();
+//    myGripper->upLevel(6);
+
     raspy.import(robot);
     //serial.print("Starting");
     
-    // currentState = FIND_ORIGIN; //chhange based on raspy instruction
+    currentState = ENTER_CLOSEST_SQUARE; //chhange based on raspy instruction
     //currentState = ENTER_CLOSEST_SQUARE;
     //currentState = DRIVE_TO_COLOR;
 }
 
 void loop() {
 
-    raspy.readSerial();
-    if(raspy.update){
-        currentState = raspy.get_State();
-        raspy.update = false;
-    }
+    //  raspy.readSerial();
+    //  if(raspy.update){
+    //      currentState = raspy.get_State();
+    //      raspy.update = false;
+    //  }
+
     curr_millis = millis();
 
     if (currentState == TESTS) {
