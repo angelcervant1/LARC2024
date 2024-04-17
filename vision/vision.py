@@ -60,15 +60,14 @@ if __name__ == '__main__':
             img = arucos_detector.detectar_arucos(frame)
             img = color_detector.color_detection(frame, img)
             
-            cv2.imshow("frame", img)
+          #   cv2.imshow("frame", img)
             if(flag_detect_pattern):
                  color_detector.detect_color_pattern_cb()
-                 print(color_detector.xTile)
                  if (color_detector.xTile != 7):
-                      if(not arduino.sendLocation(color_detector.xTile)):
-                           flag_detect_pattern = False 
+                    print(arduino.sendLocation(color_detector.xTile))
+                    flag_detect_pattern = False 
             else:
-                 box = detect_closest_cube(color_detector.color_close, arucos_detector.aruco_detections_data)
+               #   box = detect_closest_cube(color_detector.color_close, arucos_detector.aruco_detections_data)
                  if box != 0:
                     # arduino.angleOffsetReach(box[5], box[0])
                     pass

@@ -235,7 +235,8 @@ class Arduino():
     def sendLocation(self, tile):
         cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x05, 0x01) + struct.pack("i", tile) + struct.pack("B", 0x02)
         if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-           return  self.SUCCESS
+           some, = struct.unpack('I', self.payload_args)
+           return  self.SUCCESS, some
         else:
            return self.FAIL
     
