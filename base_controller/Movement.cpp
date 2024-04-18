@@ -154,10 +154,10 @@ void Movement::orientedMovement(const double linear_x, const double linear_y, do
     // Determine the direction of rotation
     if (angle_error > 0) {
       angular_z = -angular_speed; // Rotate clockwise
-      Serial.println("Turning clockwise");
+      // Serial.println("Turning clockwise");
     } else {
       angular_z = angular_speed; // Rotate counterclockwise
-      Serial.println("Turning counterclockwise");
+      // Serial.println("Turning counterclockwise");
     }
     
     rpm = kinematics_.getRPM(0, 0, angular_z); 
@@ -353,16 +353,17 @@ void Movement::moveDirection(Direction direction, const uint8_t squares, const d
                   firstLineDetected = true;
               } else if (firstLineDetected && sideDetected_[0] == Right) {
                   globalPosX_ += posXChange;
+                  squaresCount += posXChange;
                   // Serial.print("Moved left.  ");
                   // Serial.print("Global Pos X: "); 
                   // Serial.println(globalPosX_);
                   firstLineDetected = false;
               }
-              // Serial.println("LEFT");
+               //Serial.println("LEFT");
               break;
 
           case TORIGHT:
-            linear_y_ = (robotAngle_ == (angleOffset - 180)) ? -kMaxLinearY : -kMaxLinearY;
+            linear_y_ = (originAngle == (angleOffset - 180)) ? -kMaxLinearY : -kMaxLinearY;
             if(sideDetected_[2] == Front && sideDetected_[3] == None){
                 linear_x_ = -movementKp * kMaxLinearX;
               }
@@ -379,14 +380,18 @@ void Movement::moveDirection(Direction direction, const uint8_t squares, const d
                   firstLineDetected = true;
               } else if (firstLineDetected && sideDetected_[1] == Left) {
                   globalPosX_ += posXChange;
+                  squaresCount += posXChange;
                   // Serial.print("Moved left.  ");
                   // Serial.print("Global Pos X: "); 
                   // Serial.println(globalPosX_);
                   firstLineDetected = false;
               }
-              // Serial.println("RIGHT");
+              //Serial.println("RIGHT");
               break;
         }
+    }
+    else{
+      squaresCount = 0;
     }
     
     orientedMovement(linear_x_, linear_y_, angular_z_);
@@ -449,22 +454,23 @@ void Movement::driveToTarget(float coord_x){
 //Then while moving chec if corrd_x s receved from a color detecton model. 
 //Once detected the ccolor. Move based on the error proportonal if the coord_x is right in the middle (0)
 
-    int xError = 0 - coord_x;
+    int xError = (int)coord_x;
 
     Direction direction;
-    float speedFactor = 0.09; // Adjust this value as needed
-    float speed = abs(xError) * speedFactor;
+    float speedFactor = 0.02; // Adjust this value as needed
+    float speed = xError * speedFactor;
     speed = constrain(speed, -kMaxLinearX, kMaxLinearX);
+  
 
     if (!(xError < kCentered2Image)) {
-        direction = (coord_x < 0) ? TOLEFT : TORIGHT;
-        moveDirection(direction, robotAngle_, speed, false);
+      direction = ((int)coord_x < 0) ? TORIGHT : TOLEFT;
+      moveDirection(direction, robotAngle_, speed, false);
     } else if(!digitalRead(distanceSensorPin)){
         moveDirection(FORWARD, robotAngle_, speed, false);
     }
     else{
-      stop();
-      inFrontOfCube = true;
+      // stop();
+      // inFrontOfCube = true;
     }
 }
 
@@ -621,23 +627,23 @@ void Movement::GoToSquare(Direction direction, const double angleOffset){
 }
 
 bool Movement::detectedTilefromRaspi(){
-  if(this->detect_tile){
-    return true;
-  }
-    return false; //change to false after testing
+  return true; //change to false after testing
   }
 
 bool Movement::detectedCubefromRaspi(){
   if(this->detected_cube){
-    return true;
+    return false;
   }
   return false;
 }
 
-int Movement::getCubeCoordFromRaspi(){
-  // int coord_x =  0; //add func to get data from raspi 
+float Movement::getCubeCoordFromRaspi(){
+  // int coord_x =  x; //add func to get data from raspi 
+  return coord_x;
+}
+void Movement::setCubeCoordFromRaspi(float x ){
+  coord_x =  x; //add func to get data from raspi 
 
-  //return coord_x;
 }
 
 void Movement::updatePIDKinematics(double fl_speed, double fr_speed, double bl_speed, double br_speed) {

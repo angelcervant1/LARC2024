@@ -134,7 +134,7 @@ void findOrigin(){
         robot->hardStop();
         robot->setRobotAngle(angleAmount);
         robot->orientedMovement(0.0, 0.0, 0.0);
-        robot->setGlobalPosX(start_pos_x); //this is the data received by serial with the x_coord
+        // robot->setGlobalPosX(start_pos_x); //this is the data received by serial with the x_coord
         currentState = FIND_EMPTY_PATH;
         robot->setInitialRobotAngle(angleAmount);
     }          
@@ -187,7 +187,7 @@ void driveToColor(){
 void rotate_180(){
     robot->setRobotAngle(fmod(angleAmount + 180, 360));
     // Serial.print("Angle  Offset: ");
-    Serial.println(robot->getRobotAngle());
+    // Serial.println(robot->getRobotAngle());
     if(robot->angleOffsetReached){
         currentState = SEARCH_CUBE;
         //robot->setSquareCounter(0);
@@ -279,13 +279,13 @@ void searchCube(){
 
 void driveToCube(){
  
-    if(robot->inFrontOfCube){
-        currentState = GRAB_CUBE;
-    }
-    else{
-        uint32_t targetXCoord = robot->getCubeCoordFromRaspi(); //send midpoint from image
-        robot->driveToTarget(targetXCoord);
-    }
+    // float targetXCoord = robot->getCubeCoordFromRaspi(); //send midpoint from image
+    robot->driveToTarget(100);
+    // if(robot->inFrontOfCube){
+    //     currentState = GRAB_CUBE;
+    // }
+    // else{
+    // }
 
 }
 
@@ -302,7 +302,7 @@ void enterClosestSquare(){
         robot->GoToSquare(TORIGHT, robot->getRobotAngle());
     } else{
         robot->hardStop();
-        currentState = GO_TO_POSITION;
+        currentState = ROTATE_SEARCH_COLOR;
     }
     
 }

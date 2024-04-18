@@ -21,7 +21,7 @@ int iteration = 0;
 double angleOffset = 0.0; //for tests
 double squares = 0; 
 float angleAmount = 0.0;  //for state machne
-uint8_t start_pos_x = 2; //for tests 
+uint8_t start_pos_x = 0; //for tests 
 Direction movementVector[5] = {FORWARD, TOLEFT, BACKWARD, TORIGHT, STOP};
 
 float graspStartTime = 3000;
@@ -29,7 +29,7 @@ float releaseStartTime = 3000;
 bool gripping;
 bool releasing;
 bool reachedAngle;
-int prev_pos_x = 1;
+int prev_pos_x = 0;
 bool fullScanCompleted = false;
 bool startingScanFrom0 = false;
 bool startingScanFrom6 = false;
@@ -69,8 +69,9 @@ enum States {
     DRIVE_TO_CUBE,
     GRAB_CUBE,
     ENTER_CLOSEST_SQUARE,
-    GO_TO_POSITION,
-    RELEASE_CUBE
+    ROTATE_SEARCH_COLOR,
+    RELEASE_CUBE,
+    DEFAULT_STATE
 };
 
 States currentState;
@@ -85,26 +86,27 @@ void setup() {
     myGripper = new Gripper(); 
     robot = new Movement(bnoInstance, myLineSensor, myColorSensor); 
     robot->initEncoders();
-    robot->setGlobalPosX(start_pos_x);
+    //robot->setGlobalPosX(start_pos_x);
     robot->angleOffsetReached = false;
+    //robot->setSquareCounter(0);
 //    myGripper->StepperHome();
 //    myGripper->upLevel(6);
 
     raspy.import(robot);
     //serial.print("Starting");
     
-    currentState = ENTER_CLOSEST_SQUARE; //chhange based on raspy instruction
+    //currentState = FIND_ORIGIN; //chhange based on raspy instruction
     //currentState = ENTER_CLOSEST_SQUARE;
-    //currentState = DRIVE_TO_COLOR;
+    //  currentState = DRIVE_TO_CUBE;
 }
 
 void loop() {
 
-    //  raspy.readSerial();
-    //  if(raspy.update){
-    //      currentState = raspy.get_State();
-    //      raspy.update = false;
-    //  }
+     raspy.readSerial();
+     if(raspy.update){
+         currentState = raspy.get_State();
+         raspy.update = false;
+     }
 
     curr_millis = millis();
 
@@ -126,7 +128,7 @@ void loop() {
         grabCube();
     } else if (currentState == ENTER_CLOSEST_SQUARE) {
         enterClosestSquare();
-    } else if (currentState == GO_TO_POSITION) {
+    } else if (currentState == ROTATE_SEARCH_COLOR) {
         goToPosition();
     } else if (currentState == RELEASE_CUBE) {
         releaseCube();
@@ -135,7 +137,7 @@ void loop() {
         // In case nothing is received from raspy
     }
 
-    // Serial.println(currentState);
+    //Serial.ptln(currentState);
     // Serial.print("Global Pos X: "); Serial.println(robot->getCurrentPosX());
     // Serial.print("Global Angle: "); Serial.print(robot->getRobotAngle());
 }
