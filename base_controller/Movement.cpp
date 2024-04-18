@@ -397,10 +397,10 @@ void Movement::driveToColor(const double start_x_pos, Direction direction, color
       
       colorSensor->getRGBData(rgbData);
       
-      // Serial.println(" R: "); Serial.print(rgbData.red);
-      // Serial.print(" G: "); Serial.print(rgbData.green);
-      // Serial.print(" B: "); Serial.print(rgbData.blue);
-      // Serial.println();
+      Serial.println(" R: "); Serial.print(rgbData.red);
+      Serial.print(" G: "); Serial.print(rgbData.green);
+      Serial.print(" B: "); Serial.print(rgbData.blue);
+      Serial.println();
 
     bool shouldMoveBackward = false;
       switch (color_id) {

@@ -14,12 +14,12 @@ class ColorSensor{
         Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
         
     public:
-        static constexpr uint8_t kRedTreshold = 170;
-        static constexpr uint8_t kGreenTreshold = 105;
-        static constexpr uint8_t kBlueTreshold = 95;
-        static constexpr uint8_t kYellowTreshold_R = 120;
-        static constexpr uint8_t kYellowTreshold_G = 78;
-        static constexpr uint8_t kYellowTreshold_B = 0;
+        static constexpr uint8_t kRedTreshold = 195;
+        static constexpr uint8_t kGreenTreshold = 103;
+        static constexpr uint8_t kBlueTreshold = 102;
+        static constexpr uint8_t kYellowTreshold_R = 123;
+        static constexpr uint8_t kYellowTreshold_G = 79;
+        static constexpr uint8_t kYellowTreshold_B = 40;
         uint8_t bufferIndex = 0; // Initialize bufferIndex
 
 

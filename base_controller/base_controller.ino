@@ -24,10 +24,6 @@ float angleAmount = 0.0;  //for state machne
 uint8_t start_pos_x = 1; //for tests 
 Direction movementVector[5] = {FORWARD, TOLEFT, BACKWARD, TORIGHT, STOP};
 
-float graspStartTime = 3000;
-float releaseStartTime = 3000;
-bool gripping;
-bool releasing;
 bool reachedAngle;
 int prev_pos_x = 0;
 bool fullScanCompleted = false;
@@ -75,7 +71,7 @@ enum States {
 };
 
 States currentState;
-
+ColorSensor::colorData myData;
 
 void setup() {
     //Wire.begin();
@@ -89,24 +85,24 @@ void setup() {
     // robot->setGlobalPosX(start_pos_x);
     robot->angleOffsetReached = false;
     //robot->setSquareCounter(0);
-//    myGripper->StepperHome();
-//    myGripper->upLevel(6);
+    myGripper->StepperHome();
+    // myGripper->upLevel(6);
 
     raspy.import(robot);
 //     //serial.print("Starting");
     
     //   currentState = DRIVE_TO_CUBE;
 //     //currentState = ENTER_CLOSEST_SQUARE;
-//     //  currentState = GRAB_CUBE;
+        currentState = DRIVE_TO_COLOR;
 }
 
 void loop() {
 
-    raspy.readSerial();
-    if(raspy.update){
-       currentState = DRIVE_TO_CUBE;
-        raspy.update = false;
-    }
+    // raspy.readSerial();
+    // if(raspy.update){
+    //    currentState = DRIVE_TO_CUBE;
+    //     raspy.update = false;
+    // }
 
     curr_millis = millis();
 
