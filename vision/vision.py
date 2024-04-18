@@ -21,7 +21,7 @@ if __name__ == '__main__':
      # Camara 1
      colors1 = color_detection.ColorDetection()
      arucos1 = arucos_detection.DetectorAruco()
-     cam = camara.Camara(0, colors1, arucos1, False)
+     cam = camara.Camara(2, colors1, arucos1, False)
      # for i in range(10):
      #      try:
      #           cam = camara.Camara(i, colors1, arucos1, False)
@@ -41,8 +41,6 @@ if __name__ == '__main__':
      find_object = True
      ss = time.time()
      while True:
-          # Refresher
-          cam.camara_refresh() 
           
           if(flag_detect_pattern):
                xTile = cam.detect_color_pattern()
@@ -70,6 +68,8 @@ if __name__ == '__main__':
                     except:
                          pass
           
+          # Refresher
+          cam.camara_refresh() 
           if cv2.waitKey(1) & 0xFF == ord('q'):
                break
         
