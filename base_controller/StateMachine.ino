@@ -197,6 +197,7 @@ void rotate_180(){
 }
 
 void searchCube(){
+    robot->searching_cube = true;
     if (robot->detectedCubefromRaspi()) {  
         robot->hardStop(); 
         currentState = DRIVE_TO_CUBE;

@@ -261,6 +261,23 @@ class Arduino():
         else:
             return self.FAIL, 0
     
+    def get_searching_for_cube(self):
+        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x06)  + struct.pack("B", 0x07)
+        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
+            some, = struct.unpack('?', self.payload_args)
+            return  self.SUCCESS, some
+        else:
+            return self.FAIL, 0
+    
+    def in_front_of_cube(self):
+        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x07)  + struct.pack("B", 0x08)
+        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
+            some, = struct.unpack('?', self.payload_args)
+            return  self.SUCCESS, some
+        else:
+            return self.FAIL, 0
+
+
     def send_test(self):
         cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x08)  + struct.pack("B", 0x09)
         if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':

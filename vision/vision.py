@@ -26,8 +26,8 @@ if __name__ == '__main__':
      cam.camara_setup()
      
      # Comunication
-     # arduino = communication.Arduino()
-     # arduino.connect()
+     arduino = communication.Arduino()
+     arduino.connect()
 
      #Flags
      flag_detect_pattern = True
@@ -37,7 +37,9 @@ if __name__ == '__main__':
      iteration = 0
      rotate = False
      angle = 0
+     in_front_of_cube = False
      while True:
+          _, find_object = arduino.get_searching_for_cube()
           if(rotate):
                # print(arduino.rotate_90()) 
                print("rotating")
@@ -59,7 +61,7 @@ if __name__ == '__main__':
                     # print(arduino.sendLocation(xTile))
                     print(xTile)
                     flag_detect_pattern = False
-                    find_object = True
+                    # find_object = True
                     pass
           elif(find_object): 
                if(not cam.lock): # base on camara2 
@@ -70,15 +72,19 @@ if __name__ == '__main__':
                     # print("name" + str(cam.lock_box[0]))
 
                else: 
+                    _, in_front_of_cube = arduino.in_front_of_cube()
                     # print('else')
-                    try:
-                         lost, following_box = cam.track_object()
-                         # print('trying')
-                         # print(arduino.cube_found(int(cam.lock_box[5])))
-                         if(not lost): # only use camara 2
+                    if  ( not in_front_of_cube):
+                         try:
+                              lost, following_box = cam.track_object()
+                              # print('trying')
+                              # print(arduino.cube_found(int(cam.lock_box[5])))
+                              if(not lost): # only use camara 2
+                                   pass
+                         except:
                               pass
-                    except:
-                         pass
+                    else: 
+                         print("hook")
           
           # Refresher
           cam.camara_refresh() 

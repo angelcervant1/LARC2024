@@ -21,6 +21,7 @@ Movement::Movement(BNO *bno, LineSensor *lineSensor, ColorSensor *colorSensor) :
                             kDigitalPinsFrontRightMotor[1], kAnalogPinFrontRightMotor, 
                             kEncoderPinsFrontRightMotor);
   this->past_check = millis();
+  robot->searching_cube = false;
 }
 
 //////////////////////////////////Encoders//////////////////////////////////////

@@ -34,6 +34,7 @@ class Movement {
     bool whichDirection;
     bool moveBac;
     float coord_x;
+    bool searching_cube;
     //////////////////////////////////Constructor//////////////////////////////////////
     Movement(BNO *bno, LineSensor *lineSensor, ColorSensor *colorSensor);
     //////////////////////////////////Motors//////////////////////////////////////

@@ -127,6 +127,18 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
                 writeSerial(true, nullptr, 0);
             }
             break;
+        case 0x06: // get state
+            if (packet_size == 1) { // Check packet size
+                bool s[] = {_robot->searching_cube};
+                writeSerial(true, (uint8_t*)s, sizeof(s));
+            }
+            break;
+        case 0x07: // Get when is infront of robot
+            if (packet_size == 1) { // Check packet size
+                bool s[] = {_robot->inFrontOfCube};
+                writeSerial(true, (uint8_t*)s, sizeof(s));
+            }
+            break;
         case 0x08: // tests
             if (packet_size == 1) { // Check packet size
                 state = TESTS;
@@ -157,3 +169,4 @@ void Raspy::writeSerial(bool success, uint8_t* payload, int elements) {
 int Raspy::get_State(){
     return state;
 }
+
