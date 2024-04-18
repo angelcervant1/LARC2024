@@ -66,6 +66,7 @@ void Gripper::StepperHome(){
         Ajuste=Ajuste+2000;
         // Serial.print("Going Home...");
     }
+    upLevel(3);
     //isHome = true;
     //myStepper.setMaxSpeed(0);
     digitalWrite(Nema_Direction,LOW);

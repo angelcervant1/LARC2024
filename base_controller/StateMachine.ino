@@ -352,7 +352,7 @@ void tests(){
 
         if (CHECK_GRASP) {
             //myGripper->upLevel(0);
-            myGripper->sequenceUp(curr_millis);
+            myGripper->StepperHome();
         }
 
 
