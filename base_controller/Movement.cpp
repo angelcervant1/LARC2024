@@ -450,7 +450,7 @@ void Movement::driveToTarget(float coord_x){
     int xError = (int)coord_x;
 
     Direction direction;
-    float speedFactor = 0.02; // Adjust this value as needed
+    float speedFactor = 0.001; // Adjust this value as needed
     float speed = xError * speedFactor;
     speed = constrain(speed, -kMaxLinearX, kMaxLinearX);
   
@@ -511,7 +511,7 @@ void Movement::moveDirection(Direction direction, const double angleOffset, doub
           sideDetected_[2] = lineSensor->lineDetectedFromSide();
           lineSensor->readDataFromSide(Back);
           sideDetected_[3] = lineSensor->lineDetectedFromSide();
-          linear_y_ = (originAngle == angleOffset) ? speed : speed;
+          linear_y_ = (robotAngle_ == angleOffset) ? speed : speed;
           // Set linear_x_ based on side detection
           // if(sideDetected_[2] == Front && sideDetected_[3] == None){
           //     linear_x_ = movementKp * kMaxLinearX;
@@ -533,7 +533,7 @@ void Movement::moveDirection(Direction direction, const double angleOffset, doub
           sideDetected_[2] = lineSensor->lineDetectedFromSide();
           lineSensor->readDataFromSide(Back);
           sideDetected_[3] = lineSensor->lineDetectedFromSide();
-          linear_y_ = (originAngle == (angleOffset + 180)) ? -speed : -speed;
+          linear_y_ = (robotAngle_ == (angleOffset + 180)) ? -speed : -speed;
           // Set linear_x_ based on side detection
         //   if(sideDetected_[2] == Front && sideDetected_[3] == None){
         //       linear_x_ = -movementKp * kMaxLinearX;
