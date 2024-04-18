@@ -112,7 +112,6 @@ class Movement {
     float getCubeCoordFromRaspi();
     void setCubeCoordFromRaspi(float x );
 
-
   private:
     // Pins
     static constexpr uint8_t kDigitalPinsFrontLeftMotor[2] = {44, 43};
@@ -130,7 +129,8 @@ class Movement {
     static constexpr uint8_t kDigitalPinsBackRightMotor[2] = {38,37};
     static constexpr uint8_t kAnalogPinBackRightMotor = 9;
     static constexpr uint8_t kEncoderPinsBackRightMotor = 18;
-    static constexpr uint8_t distanceSensorPin = 0; //change pin
+    static constexpr uint8_t distanceSensorPin = 27; //change pin
+
     // Velocity maximums
     static constexpr double kWheelBase = 0.120;
     static constexpr double kWheelTrack = 0.235;
@@ -155,7 +155,9 @@ class Movement {
     int counterY = 0;
 
     Direction globalDirection_ = STOP;
-    uint8_t kCentered2Image = 50; //Error in pixels
+    uint8_t kCentered2Image = 30; //Error in pixels
+    uint8_t kImageTolerance = 10; //Error in pixels
+
     int xError = 0;
     // Kinematics.
     Kinematics kinematics_;

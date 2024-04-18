@@ -443,27 +443,27 @@ void Movement::driveToColor(const double start_x_pos, Direction direction, color
 }
 
 void Movement::driveToTarget(float coord_x){
-//The idea is to move to leftmost or rghtmost based on globalPosX varable from 0 to 7 representng the map range
-//Then while moving chec if corrd_x s receved from a color detecton model. 
-//Once detected the ccolor. Move based on the error proportonal if the coord_x is right in the middle (0)
 
-    int xError = (int)coord_x;
+  //The idea is to move to leftmost or rghtmost based on globalPosX varable from 0 to 7 representng the map range
+  //Then while moving chec if corrd_x s receved from a color detecton model. 
+  //Once detected the ccolor. Move based on the error proportonal if the coord_x is right in the middle (0)
+
+    int xError = 0 - (int)coord_x;
 
     Direction direction;
-    float speedFactor = 0.001; // Adjust this value as needed
-    float speed = xError * speedFactor;
-    speed = constrain(speed, -kMaxLinearX, kMaxLinearX);
+    double speedFactor = 0.0009; // Adjust this value as needed
+    double speed = xError * speedFactor;
+    speed = constrain(speed, 0, kMaxLinearX);
   
-
-    if (!(xError < abs(kCentered2Image))) {
-      direction = ((int)coord_x < 0) ? TOLEFT : TORIGHT;
+    if (abs(xError) > kImageTolerance) {
+      direction = (coord_x > 0 && coord_x kCentered2Image) ? TORIGHT : TOLEFT;
       moveDirection(direction, robotAngle_, speed, false);
-    } else if(!digitalRead(distanceSensorPin)){
+    } else if(digitalRead(distanceSensorPin)){
         moveDirection(FORWARD, robotAngle_, speed, false);
     }
     else{
-      stop();
-      // inFrontOfCube = true;
+      hardStop();
+      //inFrontOfCube = true;
     }
 }
 
@@ -475,7 +475,7 @@ void Movement::moveDirection(Direction direction, const double angleOffset, doub
           lineSensor->readDataFromSide(Left);
           sideDetected_[1] = lineSensor->lineDetectedFromSide();
           // Change linear velocity sign (+/-) if Angle offset is given
-          linear_x_ = (originAngle == angleOffset) ? speed : speed;
+          linear_x_ = (robotAngle_ == angleOffset) ? speed : speed;
           // Set linear_y_ based on side detection
           // if(sideDetected_[0] == Right){
           //     linear_y_ = movementKp * kMaxLinearY;
@@ -493,17 +493,8 @@ void Movement::moveDirection(Direction direction, const double angleOffset, doub
           sideDetected_[0] = lineSensor->lineDetectedFromSide();
           lineSensor->readDataFromSide(Left);
           sideDetected_[1] = lineSensor->lineDetectedFromSide();
-          linear_x_ = (originAngle == (angleOffset + 180)) ? -speed : -speed;
+          linear_x_ = (robotAngle_ == (angleOffset + 180)) ? -speed : -speed;
           // Set linear_y_ based on side detection
-          if(sideDetected_[0] == Right){
-              linear_y_ = movementKp * kMaxLinearY;
-          }
-          else if(sideDetected_[1] == Left){
-              linear_y_ = -movementKp * kMaxLinearY;
-          }
-          else{
-            linear_y_ = 0;
-          }
           // Serial.println("BACKWARD");
           break;
         case TOLEFT:

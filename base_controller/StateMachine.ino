@@ -262,6 +262,7 @@ void searchCube(){
                 }
                 break;
         }
+
 } else {
         robot->setGlobalPosY(0);
         //If no cube detected from backwards, then move forward to start search on the other side
@@ -279,18 +280,19 @@ void searchCube(){
 
 void driveToCube(){
  
-    float targetXCoord = robot->getCubeCoordFromRaspi(); //send midpoint from image
-    robot->driveToTarget(targetXCoord);
-    // if(robot->inFrontOfCube){
-    //     currentState = GRAB_CUBE;
-    // }
-    // else{
-    // }
+   
+    if(robot->inFrontOfCube){
+        currentState = GRAB_CUBE;
+    }
+    else{
+        float targetXCoord = robot->getCubeCoordFromRaspi(); //send midpoint from image
+        robot->driveToTarget(targetXCoord);
+    }
 
 }
 
 void grabCube(){
-    myGripper->sequenceUp(curr_millis);
+    myGripper->sequenceDown(curr_millis);
     //set closese square to False after grabbng the cube
 }
 
@@ -317,7 +319,7 @@ void goToPosition(){
 }
 
 void releaseCube(){
-    myGripper->sequenceDown(millis());
+    myGripper->sequenceUp(curr_millis);
 }
 
 void tests(){

@@ -117,7 +117,7 @@ void Gripper::sequenceDown(unsigned long curr_millis){
         // Serial.println("RELEASE");
     } else if (releasing && current_time - releaseStartTime >= 3000) {
         gripping = false;
-        releasing = false;
+        //releasing = false;
         upLevel(6);
         // Serial.println("WAIT OVER");
     }
