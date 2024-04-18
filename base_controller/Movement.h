@@ -155,7 +155,7 @@ class Movement {
     int counterY = 0;
 
     Direction globalDirection_ = STOP;
-    uint8_t kCentered2Image = 30; //Error in pixels
+    uint8_t kCentered2Image = 40; //Error in pixels
     uint8_t kImageTolerance = 10; //Error in pixels
 
     int xError = 0;

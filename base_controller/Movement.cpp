@@ -448,15 +448,15 @@ void Movement::driveToTarget(float coord_x){
   //Then while moving chec if corrd_x s receved from a color detecton model. 
   //Once detected the ccolor. Move based on the error proportonal if the coord_x is right in the middle (0)
 
-    int xError = 0 - (int)coord_x;
+    int xError = kCentered2Image - (int)coord_x;
 
     Direction direction;
-    double speedFactor = 0.0009; // Adjust this value as needed
+    double speedFactor = 0.001; // Adjust this value as needed
     double speed = xError * speedFactor;
     speed = constrain(speed, 0, kMaxLinearX);
   
     if (abs(xError) > kImageTolerance) {
-      direction = (coord_x > 0 && coord_x kCentered2Image) ? TORIGHT : TOLEFT;
+      direction = (coord_x > kCentered2Image) ? TOLEFT : TORIGHT;
       moveDirection(direction, robotAngle_, speed, false);
     } else if(digitalRead(distanceSensorPin)){
         moveDirection(FORWARD, robotAngle_, speed, false);

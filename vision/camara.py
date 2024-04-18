@@ -84,6 +84,7 @@ class Camara:
                             box = index
                 if int(total[box][5]) in range(int(xmid - margin), int(xmid + margin)) and int(total[box][6]) in range(int(ymid - margin), int(ymid + margin)): # inside x limits and y limit
                     self.box = total[box]
+                    #self.image = cv2.drawContours(self.image, (int(xmid - margin), int(ymid + margin)), (int(xmid + margin), int(ymid + margin)), (255,0,0), 3)
                     # print("assdfasdf'")
                     return True, total[box]
 
