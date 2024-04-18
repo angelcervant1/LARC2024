@@ -19,7 +19,7 @@ def scale_value(c1, c2, pixel, f):
 
 if __name__ == '__main__':
      # Camara 1
-     colors1 = color_detection.ColorDetection()
+     colors1 = color_detection.ColorDetection(1)
      arucos1 = arucos_detection.DetectorAruco()
      cam = camara.Camara(1, colors1, arucos1, False)
      # for i in range(10):
@@ -32,20 +32,38 @@ if __name__ == '__main__':
      cam.camara_setup()
      
      # Comunication
-     arduino = communication.Arduino()
-     arduino.connect()
+     # arduino = communication.Arduino()
+     # arduino.connect()
 
      #Flags
-     flag_detect_pattern = False
+     flag_detect_pattern = True
      flag_lock = False
-     find_object = True
+     find_object = False
      ss = time.time()
+     iteration = 0
+     rotate = False
+     angle = 0
      while True:
-          
-          if(flag_detect_pattern):
+          if(rotate):
+               # print(arduino.rotate_90()) 
+               print("rotating")
+               time.sleep(3)
+               ss = time.time()
+               rotate = False
+
+          if(flag_detect_pattern and iteration < 4):
+               if (time.time() - ss > 2):
+                    # Camara 2 
+                    pass
+               if (time.time() - ss > 3):
+                    ss = time.time()
+                    rotate = True
+                    iteration +=1 
                xTile = cam.detect_color_pattern()
                if xTile != 7: 
-                    print(arduino.sendLocation(xTile))
+                    angle = angle * iteration
+                    # print(arduino.sendLocation(xTile))
+                    print(xTile)
                     flag_detect_pattern = False
                     find_object = True
                     pass
@@ -62,7 +80,7 @@ if __name__ == '__main__':
                     try:
                          lost, following_box = cam.track_object()
                          # print('trying')
-                         print(arduino.cube_found(int(cam.lock_box[5])))
+                         # print(arduino.cube_found(int(cam.lock_box[5])))
                          if(not lost): # only use camara 2
                               pass
                     except:

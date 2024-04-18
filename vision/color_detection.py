@@ -3,7 +3,7 @@ import numpy as np
 import Constants
 
 class ColorDetection():
-    def __init__(self):
+    def __init__(self, id):
         self.boxes = []
         self.cx = 0.0
         self.cy = 0.0
@@ -23,6 +23,9 @@ class ColorDetection():
         self.static_color_seq = "GBYRYBG" # static color sequence
         self.mask  = None
         self.mid_color = 4
+
+        # Camara identification
+        self.id = id
     
     def dibujar(self, mask, color, img):
         frame = img
@@ -131,22 +134,36 @@ class ColorDetection():
         """
         This can be modify to do it automatic
         """
-        
+        if self.id == 1: # Colores para camara 1
+            #Red = Cubo Red2 = Hoja
+            lowerRed = np.array([  0,134,137], np.uint8)
+            upperRed = np.array([ 24,235,253], np.uint8)
+            # lowerRed2 = np.array([0,180,103], np.uint8)
+            # upperRed2 = np.array([179,229,152], np.uint8)
 
+            lowerBlue = np.array([ 75,122,110], np.uint8)
+            upperBlue = np.array([130,255,255], np.uint8)
 
-        lowerRed = np.array([  0,134,137], np.uint8)
-        upperRed = np.array([ 24,235,253], np.uint8)
-        lowerRed2 = np.array([0,180,103], np.uint8)
-        upperRed2 = np.array([179,229,152], np.uint8)
+            lowerYellow = np.array([20,101,138], np.uint8)
+            upperYellow = np.array([23,170,181], np.uint8)
 
-        lowerBlue = np.array([ 75,122,110], np.uint8)
-        upperBlue = np.array([130,255,255], np.uint8)
+            lowerGreen = np.array([ 26, 61,105], np.uint8)
+            upperGreen = np.array([ 86,171,160], np.uint8)
+        else: # Colores para camara 2 
+            #Red = Cubo Red2 = Hoja
+            lowerRed = np.array([  0,134,137], np.uint8)
+            upperRed = np.array([ 24,235,253], np.uint8)
+            # lowerRed2 = np.array([0,180,103], np.uint8)
+            # upperRed2 = np.array([179,229,152], np.uint8)
 
-        lowerYellow = np.array([20,101,138], np.uint8)
-        upperYellow = np.array([23,170,181], np.uint8)
+            lowerBlue = np.array([ 75,122,110], np.uint8)
+            upperBlue = np.array([130,255,255], np.uint8)
 
-        lowerGreen = np.array([ 26, 61,105], np.uint8)
-        upperGreen = np.array([ 86,171,160], np.uint8)
+            lowerYellow = np.array([20,101,138], np.uint8)
+            upperYellow = np.array([23,170,181], np.uint8)
+
+            lowerGreen = np.array([ 26, 61,105], np.uint8)
+            upperGreen = np.array([ 86,171,160], np.uint8)
 
         frameHSV = cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
         maskAzul = cv2.inRange(frameHSV, lowerBlue, upperBlue)
@@ -154,8 +171,8 @@ class ColorDetection():
         #maskVerde2 = cv2.inRange(frameHSV, lowerGreen2, upperGreen2)
         maskamarillo = cv2.inRange(frameHSV, lowerYellow, upperYellow)
         maskRed1 = cv2.inRange(frameHSV, lowerRed, upperRed)
-        maskRed2 = cv2.inRange(frameHSV, lowerRed2, upperRed2)
-        maskred = cv2.add(maskRed1,maskRed2)
+        # maskRed2 = cv2.inRange(frameHSV, lowerRed2, upperRed2)
+        maskred = cv2.add(maskRed1)
         #maskverde = cv2.add(maskVerde1,maskVerde2)
         maskverde = maskVerde1
         self.dibujar(maskAzul,(255,0,0), img2)

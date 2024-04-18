@@ -126,7 +126,6 @@ void Encoder::frontRightEncoder() {
 /// STATES ///  
 
 void findOrigin(){
-    robot->setRobotAngle(angleAmount); // read from rasp. Angle gonna be increasing until found a color paper 
     if(!robot->angleOffsetReached){
         robot->orientedMovement(0.0, 0.0, 0.0);
     }
@@ -138,9 +137,6 @@ void findOrigin(){
         currentState = FIND_EMPTY_PATH;
         robot->setInitialRobotAngle(angleAmount);
     }          
-    else{
-        angleAmount += 90;
-    } 
 }
 
 void findEmptyPath(){

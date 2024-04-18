@@ -93,6 +93,7 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
             if (packet_size == 5) { // Check packet size
                 state = FIND_ORIGIN;
                 uint32_t t;
+                uint32_t angle; 
                 memcpy(&t, buffer, sizeof(t));
                 _robot->setGlobalPosX(t);
                 uint32_t s[] = {t};
@@ -120,11 +121,16 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
                 writeSerial(true, (uint8_t*)s, sizeof(s));
             }
             break;
+        case 0x05: // rotate 90 
+            if (packet_size == 1) { // Check packet size
+                _robot->setRobotAngle(getRobotAngle() + 90);
+                writeSerial(true, nullptr, 0);
+            }
+            break;
         case 0x08: // tests
             if (packet_size == 1) { // Check packet size
-                uint32_t t[] = {200};
                 state = TESTS;
-                writeSerial(true, (uint8_t*)t, sizeof(t));
+                writeSerial(true, nullptr, 0);
             }
             break;
         default:
