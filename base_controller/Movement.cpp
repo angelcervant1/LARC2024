@@ -455,14 +455,14 @@ void Movement::driveToTarget(float coord_x){
     speed = constrain(speed, -kMaxLinearX, kMaxLinearX);
   
 
-    if (!(xError < kCentered2Image)) {
-      direction = ((int)coord_x < 0) ? TORIGHT : TOLEFT;
+    if (!(xError < abs(kCentered2Image))) {
+      direction = ((int)coord_x < 0) ? TOLEFT : TORIGHT;
       moveDirection(direction, robotAngle_, speed, false);
     } else if(!digitalRead(distanceSensorPin)){
         moveDirection(FORWARD, robotAngle_, speed, false);
     }
     else{
-      // stop();
+      stop();
       // inFrontOfCube = true;
     }
 }
@@ -477,15 +477,15 @@ void Movement::moveDirection(Direction direction, const double angleOffset, doub
           // Change linear velocity sign (+/-) if Angle offset is given
           linear_x_ = (originAngle == angleOffset) ? speed : speed;
           // Set linear_y_ based on side detection
-          if(sideDetected_[0] == Right){
-              linear_y_ = movementKp * kMaxLinearY;
-          }
-          else if(sideDetected_[1] == Left){
-              linear_y_ = -movementKp * kMaxLinearY;
-          }
-          else{
-            linear_y_ = 0;
-          }
+          // if(sideDetected_[0] == Right){
+          //     linear_y_ = movementKp * kMaxLinearY;
+          // }
+          // else if(sideDetected_[1] == Left){
+          //     linear_y_ = -movementKp * kMaxLinearY;
+          // }
+          // else{
+          //   linear_y_ = 0;
+          // }
           // Serial.println("FORWARD");
           break;
         case BACKWARD:
@@ -513,19 +513,19 @@ void Movement::moveDirection(Direction direction, const double angleOffset, doub
           sideDetected_[3] = lineSensor->lineDetectedFromSide();
           linear_y_ = (originAngle == angleOffset) ? speed : speed;
           // Set linear_x_ based on side detection
-          if(sideDetected_[2] == Front && sideDetected_[3] == None){
-              linear_x_ = movementKp * kMaxLinearX;
-              // Serial.println("BACKWARD");
+          // if(sideDetected_[2] == Front && sideDetected_[3] == None){
+          //     linear_x_ = movementKp * kMaxLinearX;
+          //     // Serial.println("BACKWARD");
 
-          }
-          else if(sideDetected_[3] == Back && sideDetected_[2] == None){
-              linear_x_ = -movementKp * kMaxLinearX;
-              // Serial.println("FORWARD");
+          // }
+          // else if(sideDetected_[3] == Back && sideDetected_[2] == None){
+          //     linear_x_ = -movementKp * kMaxLinearX;
+          //     // Serial.println("FORWARD");
 
-          }
-          else{
-            linear_x_ = 0;
-          }
+          // }
+          // else{
+          //   linear_x_ = 0;
+          // }
           // Serial.println("LEFT");
           break;
         case TORIGHT:
@@ -535,21 +535,21 @@ void Movement::moveDirection(Direction direction, const double angleOffset, doub
           sideDetected_[3] = lineSensor->lineDetectedFromSide();
           linear_y_ = (originAngle == (angleOffset + 180)) ? -speed : -speed;
           // Set linear_x_ based on side detection
-          if(sideDetected_[2] == Front && sideDetected_[3] == None){
-              linear_x_ = -movementKp * kMaxLinearX;
-          }
-          else if(sideDetected_[3] == Back && sideDetected_[2] == None){
-              linear_x_ = movementKp * kMaxLinearX;
-          }
-          else{
-              linear_x_ = 0;
-          }
-          // Serial.println("RIGHT");
-          break;
-        default:
-            stop(); 
-            squaresCount = 0;
-          break;
+        //   if(sideDetected_[2] == Front && sideDetected_[3] == None){
+        //       linear_x_ = -movementKp * kMaxLinearX;
+        //   }
+        //   else if(sideDetected_[3] == Back && sideDetected_[2] == None){
+        //       linear_x_ = movementKp * kMaxLinearX;
+        //   }
+        //   else{
+        //       linear_x_ = 0;
+        //   }
+        //   // Serial.println("RIGHT");
+        //   break;
+        // default:
+        //     stop(); 
+        //     squaresCount = 0;
+        //   break;
     }
   
   orientedMovement(linear_x_, linear_y_, angular_z_);

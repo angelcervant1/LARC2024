@@ -55,7 +55,7 @@ if __name__ == '__main__':
                if(not cam.lock): # base on camara2 
                     # Find closest cube
                     cam.detect_closest_cube()
-                    # Lock closest cube
+                    # Lock cclosest cube
                     cam.lock_object()
                     # print("name" + str(cam.lock_box[0]))
 
