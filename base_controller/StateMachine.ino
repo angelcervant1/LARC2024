@@ -280,7 +280,6 @@ void searchCube(){
 
 void driveToCube(){
  
-   
     if(robot->inFrontOfCube){
         currentState = GRAB_CUBE;
     }

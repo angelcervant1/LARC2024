@@ -467,7 +467,7 @@ void Movement::driveToTarget(float coord_x){
     }
     else{
       hardStop();
-      inFrontOfCube = true;
+      //inFrontOfCube = true;
     }
 }
 
