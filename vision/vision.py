@@ -20,14 +20,14 @@ if __name__ == '__main__':
      # Camara 1
      colors1 = color_detection.ColorDetection()
      arucos1 = arucos_detection.DetectorAruco()
-     cam = camara.Camara(Constants.camara_index, colors1, arucos1, False)
+     cam = camara.Camara(0, colors1, arucos1, False)
      
      # Setup 
      cam.camara_setup()
      
      # Comunication
-     arduino = communication.Arduino()
-     arduino.connect()
+     # arduino = communication.Arduino()
+     # arduino.connect()
 
      #Flags
      flag_detect_pattern = False
@@ -40,7 +40,7 @@ if __name__ == '__main__':
           if(flag_detect_pattern):
                xTile = cam.detect_color_pattern()
                if xTile != 7: 
-                    print(arduino.sendLocation(xTile))
+                    # print(arduino.sendLocation(xTile))
                     pass
           if(find_object): 
                if(not cam.lock): # base on camara2 
@@ -53,7 +53,7 @@ if __name__ == '__main__':
                     try:
                          lost, following_box = cam.track_object()
                          if(not lost): # only use camara 2
-                              print(arduino.cube_found(cam.lock_box[5]))
+                              # print(arduino.cube_found(cam.lock_box[5]))
                               pass
                     except:
                          pass
