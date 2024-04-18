@@ -67,6 +67,7 @@ void Movement::hardStop(){
   linear_x_ = 0; 
   linear_y_ = 0;
   angular_z_ = 0;
+  Serial.println("STOP");
 }
 
 //////////////////////////////////PID//////////////////////////////////////
@@ -448,22 +449,25 @@ void Movement::driveToTarget(float coord_x){
   //Then while moving chec if corrd_x s receved from a color detecton model. 
   //Once detected the ccolor. Move based on the error proportonal if the coord_x is right in the middle (0)
 
-    int xError = kCentered2Image - (int)coord_x;
+    int xError = abs(coord_x) - kCentered2Image;
 
     Direction direction;
     double speedFactor = 0.001; // Adjust this value as needed
     double speed = xError * speedFactor;
-    speed = constrain(speed, 0, kMaxLinearX);
+
   
+    speed = constrain(speed, 0, kMaxLinearX);
+
+
     if (abs(xError) > kImageTolerance) {
-      direction = (coord_x > kCentered2Image) ? TOLEFT : TORIGHT;
+      direction = (coord_x > kCentered2Image) ? TORIGHT : TOLEFT;
       moveDirection(direction, robotAngle_, speed, false);
-    } else if(digitalRead(distanceSensorPin)){
+    } else if(!digitalRead(distanceSensorPin)){
         moveDirection(FORWARD, robotAngle_, speed, false);
     }
     else{
       hardStop();
-      //inFrontOfCube = true;
+      inFrontOfCube = true;
     }
 }
 
@@ -517,7 +521,7 @@ void Movement::moveDirection(Direction direction, const double angleOffset, doub
           // else{
           //   linear_x_ = 0;
           // }
-          // Serial.println("LEFT");
+        //  Serial.println("LEFT");
           break;
         case TORIGHT:
           lineSensor->readDataFromSide(Front);
@@ -535,8 +539,8 @@ void Movement::moveDirection(Direction direction, const double angleOffset, doub
         //   else{
         //       linear_x_ = 0;
         //   }
-        //   // Serial.println("RIGHT");
-        //   break;
+          //  Serial.println("RIGHT");
+          break;
         // default:
         //     stop(); 
         //     squaresCount = 0;

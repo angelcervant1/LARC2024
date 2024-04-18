@@ -95,18 +95,18 @@ void setup() {
     raspy.import(robot);
 //     //serial.print("Starting");
     
-//     //currentState = FIND_ORIGIN; //chhange based on raspy instruction
+    //   currentState = DRIVE_TO_CUBE;
 //     //currentState = ENTER_CLOSEST_SQUARE;
 //     //  currentState = GRAB_CUBE;
 }
 
 void loop() {
 
-     raspy.readSerial();
-     if(raspy.update){
-        currentState = DRIVE_TO_CUBE;
-         raspy.update = false;
-     }
+    raspy.readSerial();
+    if(raspy.update){
+       currentState = DRIVE_TO_CUBE;
+        raspy.update = false;
+    }
 
     curr_millis = millis();
 
@@ -137,7 +137,7 @@ void loop() {
         // In case nothing is received from raspy
     }
 
-    // Serial.println(currentState);
+    //Serial.println(currentState);
     // Serial.print("Global Pos X: "); Serial.println(robot->getCurrentPosX());
     // Serial.print("Global Angle: "); Serial.print(robot->getRobotAngle());
 }

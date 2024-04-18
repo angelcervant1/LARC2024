@@ -24,9 +24,9 @@ void Gripper::downLevel(uint8_t level) {
 
 void Gripper::upLevel(uint8_t level) {
     digitalWrite(Nema_Direction, HIGH);
-    int targetPosition = Paso * level - Ajuste;
+    int targetPosition = Paso * level - 2000;
     if (level < 19) {
-        while (myStepper.currentPosition() < targetPosition) {
+        while (myStepper.currentPosition() < targetPosition && !digitalRead(limitSwitchPin)) {
             myStepper.moveTo(targetPosition);
             myStepper.run();
         }

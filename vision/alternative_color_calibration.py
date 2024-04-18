@@ -4,7 +4,7 @@ import argparse
 import Constants
 import numpy as np 
 
-camara_index = Constants.camara_index
+camara_index = 2
 file_name = Constants.file_name
 def save_value(lower, upper):
     lowerLimit = np.array(lower, dtype=np.uint8)
