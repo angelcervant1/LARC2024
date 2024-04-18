@@ -64,7 +64,7 @@ if __name__ == '__main__':
                xTile = cam.detect_color_pattern()
                if xTile != 7: 
                     angle = angle * iteration
-                    # print(arduino.sendLocation(xTile))
+                    # print(arduino.sendLocation(xTile, angle))
                     print(xTile)
                     flag_detect_pattern = False
                     # find_object = True
