@@ -23,7 +23,7 @@ private:
     int Nivel= 0;
     int Paso= 4049; // pasos para llegar a otro nivel del estante
     int Ajuste=0;
-    bool isHome = false, gripping, releasing;
+    bool isHome, gripping, releasing = false;
     unsigned long long last_time, current_time, graspStartTime, releaseStartTime; 
     
 public:
@@ -41,8 +41,6 @@ public:
     void StepperHome(); 
     void sequenceUp(unsigned long curr_millis); 
     void sequenceDown(unsigned long curr_millis); 
-
-
 };
 
 #endif

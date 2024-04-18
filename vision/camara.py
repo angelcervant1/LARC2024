@@ -40,7 +40,7 @@ class Camara:
         self.total_boxes = []
 
     def camara_refresh(self):
-        if (time.time() - self.prev > 1/60):
+        if (time.time() - self.prev > 10/60):
             self.prev = time.time()
             # Reset values
             self.reset_values()
@@ -86,7 +86,7 @@ class Camara:
                             flag = False
                         elif abs(total[index][5] - xmid) < abs(total[box][5] - xmid):
                             box = index
-                if int(total[box][5]) in range(int(xmid - margin), int(xmid + margin)) and int(total[box][6]) in range(int(ymid - margin), int(ymid + margin)): # inside x limits and y limit
+                if int(total[box][5]) in range(int(xmid - margin), int(xmid + margin)) and int(total[box][6]) in range(int(ymid - margin), int(ymid + margin) and total[box][0] == id): # inside x limits and y limit
                     self.box = total[box]
                     #self.image = cv2.drawContours(self.image, (int(xmid - margin), int(ymid + margin)), (int(xmid + margin), int(ymid + margin)), (255,0,0), 3)
                     # print("assdfasdf'")

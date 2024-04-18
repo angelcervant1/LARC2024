@@ -39,10 +39,13 @@ void ColorSensor::getRGBData(colorData &data) {
         data.red = uint8_t(avgRed);
         data.green = uint8_t(avgGreen);
         data.blue = uint8_t(avgBlue);
-
+        
         // Update the previous millis
         prev_millis = curr_millis;
-
+        // Serial.println(" R: "); Serial.print(data.red);
+        // Serial.print(" G: "); Serial.print(data.green);
+        // Serial.print(" B: "); Serial.print(data.blue);
+        // Serial.println();
      
     }
 }

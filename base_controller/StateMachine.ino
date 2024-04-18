@@ -343,7 +343,7 @@ void tests(){
         if (CHECK_LINES) {
             //myLineSensor->readAllData();
             //robot->getRobotAngle();
-            //colorSensor->getRGBData(rgbData);
+            //colorSensor->getRgbData();
         }
 
         if (CHECK_ODOMETRY) {
