@@ -86,27 +86,27 @@ void setup() {
     myGripper = new Gripper(); 
     robot = new Movement(bnoInstance, myLineSensor, myColorSensor); 
     robot->initEncoders();
-    robot->setGlobalPosX(start_pos_x);
+    // robot->setGlobalPosX(start_pos_x);
     robot->angleOffsetReached = false;
     //robot->setSquareCounter(0);
-   myGripper->StepperHome();
-   myGripper->upLevel(6);
+//    myGripper->StepperHome();
+//    myGripper->upLevel(6);
 
     raspy.import(robot);
-    //serial.print("Starting");
+//     //serial.print("Starting");
     
-    //currentState = FIND_ORIGIN; //chhange based on raspy instruction
-    //currentState = ENTER_CLOSEST_SQUARE;
-     currentState = GRAB_CUBE;
+//     //currentState = FIND_ORIGIN; //chhange based on raspy instruction
+//     //currentState = ENTER_CLOSEST_SQUARE;
+//     //  currentState = GRAB_CUBE;
 }
 
 void loop() {
 
-    //  raspy.readSerial();
-    //  if(raspy.update){
-    //      currentState = raspy.get_State();
-    //      raspy.update = false;
-    //  }
+     raspy.readSerial();
+     if(raspy.update){
+         currentState = raspy.get_State();
+         raspy.update = false;
+     }
 
     curr_millis = millis();
 

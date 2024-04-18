@@ -1,7 +1,7 @@
 #include "QTR.h"
 
 LineSensor::LineSensor() {
-    Serial.begin(115200);
+    // Serial.begin(115200);
     pinMode(muxD1, OUTPUT);
     pinMode(muxD2, OUTPUT);
     pinMode(muxD3, OUTPUT);
