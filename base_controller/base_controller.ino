@@ -85,7 +85,7 @@ void setup() {
     // robot->setGlobalPosX(start_pos_x);
     robot->angleOffsetReached = false;
     //robot->setSquareCounter(0);
-    myGripper->StepperHome();
+    //myGripper->StepperHome();
     // myGripper->upLevel(6);
 
     raspy.import(robot);
