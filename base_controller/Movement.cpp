@@ -374,6 +374,7 @@ void Movement::moveDirection(Direction direction, const uint8_t squares, const d
                   firstLineDetected = true;
               } else if (firstLineDetected && sideDetected_[1] == Left) {
                   globalPosX_ += posXChange;
+                  squaresCount += posXChange;
                   Serial.print("Moved left.  ");
                   Serial.print("Global Pos X: "); 
                   Serial.println(globalPosX_);
@@ -382,6 +383,9 @@ void Movement::moveDirection(Direction direction, const uint8_t squares, const d
               Serial.println("RIGHT");
               break;
         }
+    }
+    else{
+      squaresCount = 0;
     }
     
     orientedMovement(linear_x_, linear_y_, angular_z_);
