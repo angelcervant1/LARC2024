@@ -132,8 +132,8 @@ class ColorDetection():
         This can be modify to do it automatic
         """
 
-        lowerRed = np.array([172,78,157], np.uint8)
-        upperRed = np.array([177,222,207], np.uint8)
+        lowerRed = np.array([1,181,174], np.uint8)
+        upperRed = np.array([5,219,226], np.uint8)
         lowerRed2 = np.array([0,180,103], np.uint8)
         upperRed2 = np.array([179,229,152], np.uint8)
 
