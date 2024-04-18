@@ -33,6 +33,7 @@ class Movement {
     bool detected_cube;
     bool whichDirection;
     bool moveBac;
+    float coord_x;
     //////////////////////////////////Constructor//////////////////////////////////////
     Movement(BNO *bno, LineSensor *lineSensor, ColorSensor *colorSensor);
     //////////////////////////////////Motors//////////////////////////////////////
@@ -108,7 +109,8 @@ class Movement {
 
     void setInitialRobotAngle(double angle);
 
-    int getCubeCoordFromRaspi();
+    float getCubeCoordFromRaspi();
+    void setCubeCoordFromRaspi(float x );
 
 
   private:
@@ -145,16 +147,16 @@ class Movement {
     static constexpr double kBnoKD = 0.0004;
     static constexpr double kBNO_time = 10;
     static constexpr double kMaxErrorSum = 100;
-    static constexpr double kMaxLinearY = 0.3;
-    static constexpr double kMaxLinearX = 0.3;
+    static constexpr double kMaxLinearY = 0.32;
+    static constexpr double kMaxLinearX = 0.32;
     static constexpr double kMaxAngularZ = 1.1;
     uint32_t globalPosX_ = 0;
     int globalPosY_ = 0;
     int counterY = 0;
 
     Direction globalDirection_ = STOP;
-    uint8_t kCentered2Image = 10; //Error in pixels
-    uint8_t xError = 0;
+    uint8_t kCentered2Image = 50; //Error in pixels
+    int xError = 0;
     // Kinematics.
     Kinematics kinematics_;
     BNO *bno;
@@ -177,7 +179,7 @@ class Movement {
 
     // Angle
     float angle_error_ = 0;
-    float movementKp = 0.70;
+    float movementKp = 0.50;
     double robotAngle_ = 0;
     bool firstLineDetected = false;
     int squaresCount = 0;

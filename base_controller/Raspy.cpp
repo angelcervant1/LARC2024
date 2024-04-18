@@ -16,7 +16,7 @@ enum States {
 }state;
 
 Raspy::Raspy(){
-    state = TESTS;
+    state = DEFAULT_STATE;
     tile = 7;
     color = 4;
     update = false;
@@ -110,10 +110,13 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
             break;
         case 0x04: // Cube detection
             if (packet_size == 5){
-                uint32_t t; 
+                float t; 
                 memcpy(&t, buffer, sizeof(t));
-                _robot->detected_cube = t;
-                writeSerial(true, nullptr, 0);
+                state = DRIVE_TO_CUBE;
+                // _robot->detected_cube = true;
+                // _robot->setCubeCoordFromRaspi(t);
+                float s[] = {t};
+                writeSerial(true, (uint8_t*)s, sizeof(s));
             }
             break;
         case 0x08: // tests
