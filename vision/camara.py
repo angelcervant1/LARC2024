@@ -119,14 +119,17 @@ class Camara:
     
     def lock_object(self):
         if self.ret and self.box != []:
+            # print("detection" + str(self.box))
             self.lock_box = self.box
             self.lock = True
+        else:
+            self.lock = False
     
     def track_object(self):
         if self.ret and self.lock_box != []:
             try:
                 lost, lock_box_new = self.find_specific_cube(self.lock_box[0], self.lock_box[5], self.lock_box[6], 100)
-                print(lost)
+                # print(lost)
                 if (lost):
                     # print("ASDASDASDA")
                     self.lock_box = lock_box_new

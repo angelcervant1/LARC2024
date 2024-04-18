@@ -247,9 +247,9 @@ class Arduino():
         else:
            return self.FAIL
     def cube_found(self, xpoint): # Send if there is a cube detection
-        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x05, 0x04)  + struct.pack("i", xpoint) + struct.pack("B", 0x05)
+        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x05, 0x04)  + struct.pack("f", xpoint) + struct.pack("B", 0x05)
         if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-            some, = struct.unpack('I', self.payload_args)
+            some, = struct.unpack('f', self.payload_args)
             return  self.SUCCESS, some
         else:
             return self.FAIL, 0 
@@ -257,7 +257,8 @@ class Arduino():
     def send_test(self):
         cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x08)  + struct.pack("B", 0x09)
         if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-            some, = struct.unpack('I', self.payload_args)
+            some, = struct.unpack('f', self.payload_args)
             return  self.SUCCESS, some
         else:
             return self.FAIL, 0
+    

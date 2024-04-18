@@ -4,6 +4,6 @@ file_name = "color_limits.txt"
 
 # UART communication
 # serial_port = "COM3"
-serial_port = "/dev/ttyACM0"
+serial_port = "/dev/ttyACM1"
 baud_rate = 115200
 timeout = 0.5

@@ -141,8 +141,8 @@ class ColorDetection():
         upperBlue = np.array([130,255,255], np.uint8)
 
 
-        lowerYellow = np.array([21,116,98], np.uint8)
-        upperYellow = np.array([29,203,169], np.uint8)
+        lowerYellow = np.array([20,101,138], np.uint8)
+        upperYellow = np.array([23,170,181], np.uint8)
         
 
 
