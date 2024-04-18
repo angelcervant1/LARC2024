@@ -21,7 +21,7 @@ if __name__ == '__main__':
      # Camara 1
      colors1 = color_detection.ColorDetection()
      arucos1 = arucos_detection.DetectorAruco()
-     cam = camara.Camara(1, colors1, arucos1, False)
+     cam = camara.Camara(0, colors1, arucos1, False)
      # for i in range(10):
      #      try:
      #           cam = camara.Camara(i, colors1, arucos1, False)
@@ -36,7 +36,7 @@ if __name__ == '__main__':
      arduino.connect()
 
      #Flags
-     flag_detect_pattern = True
+     flag_detect_pattern = False
      flag_lock = False
      find_object = True
      ss = time.time()
@@ -51,24 +51,24 @@ if __name__ == '__main__':
                     flag_detect_pattern = False
                     find_object = True
                     pass
-          # elif(find_object): 
-          #      if(not cam.lock): # base on camara2 
-          #           # Find closest cube
-          #           cam.detect_closest_cube()
-          #           # Lock closest cube
-          #           cam.lock_object()
-          #           # print("name" + str(cam.lock_box[0]))
+          elif(find_object): 
+               if(not cam.lock): # base on camara2 
+                    # Find closest cube
+                    cam.detect_closest_cube()
+                    # Lock closest cube
+                    cam.lock_object()
+                    # print("name" + str(cam.lock_box[0]))
 
-          #      else: 
-          #           # print('else')
-          #           try:
-          #                lost, following_box = cam.track_object()
-          #                # print('trying')
-          #                print(arduino.cube_found(int(cam.lock_box[5])))
-          #                if(not lost): # only use camara 2
-          #                     pass
-          #           except:
-          #                pass
+               else: 
+                    # print('else')
+                    try:
+                         lost, following_box = cam.track_object()
+                         # print('trying')
+                         print(arduino.cube_found(int(cam.lock_box[5])))
+                         if(not lost): # only use camara 2
+                              pass
+                    except:
+                         pass
           
           if cv2.waitKey(1) & 0xFF == ord('q'):
                break

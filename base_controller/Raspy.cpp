@@ -115,6 +115,7 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
                 state = DRIVE_TO_CUBE;
                 // _robot->detected_cube = true;
                 // _robot->setCubeCoordFromRaspi(t);
+                this->update = true;
                 float s[] = {t};
                 writeSerial(true, (uint8_t*)s, sizeof(s));
             }

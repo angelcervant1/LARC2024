@@ -279,8 +279,8 @@ void searchCube(){
 
 void driveToCube(){
  
-    // float targetXCoord = robot->getCubeCoordFromRaspi(); //send midpoint from image
-    robot->driveToTarget(100);
+    float targetXCoord = robot->getCubeCoordFromRaspi(); //send midpoint from image
+    robot->driveToTarget(targetXCoord);
     // if(robot->inFrontOfCube){
     //     currentState = GRAB_CUBE;
     // }

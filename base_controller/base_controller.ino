@@ -104,7 +104,7 @@ void loop() {
 
      raspy.readSerial();
      if(raspy.update){
-         currentState = raspy.get_State();
+        currentState = DRIVE_TO_CUBE;
          raspy.update = false;
      }
 
