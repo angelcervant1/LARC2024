@@ -20,6 +20,7 @@ Raspy::Raspy(){
     tile = 7;
     color = 4;
     update = false;
+    this->arduino_state = DEFAULT_STATE;
 }
 void Raspy::import(Movement *robot){
     _robot = robot;
@@ -90,12 +91,14 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
             }
             break;
         case 0x01: // Send localization
-            if (packet_size == 5) { // Check packet size
+            if (packet_size == 9) { // Check packet size
                 state = FIND_ORIGIN;
                 uint32_t t;
                 uint32_t angle; 
                 memcpy(&t, buffer, sizeof(t));
+                memcpy(&angle, buffer + sizeof(t), angle(t));
                 _robot->setGlobalPosX(t);
+                _robot->setInitialRobotAngle(angle);
                 uint32_t s[] = {t};
                 _robot->detect_tile = true;
                 this->update = true;
@@ -143,6 +146,12 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
             if (packet_size == 1) { // Check packet size
                 state = TESTS;
                 writeSerial(true, nullptr, 0);
+            }
+            break;
+        case 0x09: // get status
+            if (packet_size == 1) { // Check packet size
+                uint8_t s[] = {this->arduino_state};
+                writeSerial(true, (uint8_t*)s, sizeof(s));
             }
             break;
         default:

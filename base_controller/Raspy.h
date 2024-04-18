@@ -17,6 +17,7 @@ class Raspy{
     uint8_t cube_offset;
     bool update;
     int get_State();
+    uint8_t arduino_state;
     
   private:
     BNO *_bno;
