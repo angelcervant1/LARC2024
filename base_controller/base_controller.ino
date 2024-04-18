@@ -98,11 +98,11 @@ void setup() {
 
 void loop() {
 
-    // raspy.readSerial();
-    // if(raspy.update){
-    //    currentState = DRIVE_TO_CUBE;
-    //     raspy.update = false;
-    // }
+    raspy.readSerial();
+    if(raspy.update){
+       currentState = DRIVE_TO_CUBE;
+        raspy.update = false;
+    }
 
     curr_millis = millis();
 

@@ -66,6 +66,7 @@ void Gripper::StepperHome(){
         Ajuste=Ajuste+2000;
         // Serial.print("Going Home...");
     }
+    upLevel(3);
     //isHome = true;
     //myStepper.setMaxSpeed(0);
     digitalWrite(Nema_Direction,LOW);
@@ -107,7 +108,7 @@ void Gripper::sequenceDown(unsigned long curr_millis){
         grabCube();
         gripping = true; 
         graspStartTime = current_time;  
-        Serial.println("GRAB");
+        // Serial.println("GRAB");
     } else if (gripping && !releasing && current_time - graspStartTime >= 1) {
         grabCube();
         releasing = true;  
@@ -117,6 +118,6 @@ void Gripper::sequenceDown(unsigned long curr_millis){
         gripping = false;
         //releasing = false;
         upLevel(5);
-        Serial.println("WAIT OVER");
+        // Serial.println("WAIT OVER");
     }
 }
