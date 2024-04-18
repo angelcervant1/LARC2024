@@ -15,6 +15,8 @@ class Camara:
         self.frame = np.array([])
         self.image = np.array([])
         self.filter = filter
+        self.prev = time.time()
+        
         
     
     def camara_setup(self):
@@ -38,20 +40,22 @@ class Camara:
         self.total_boxes = []
 
     def camara_refresh(self):
-        # Reset values
-        self.reset_values()
-        # Capture image
-        self.ret, self.frame = self.cap.read()
-        #Verify frame read
-        if self.ret:
-            if self.filter:
-                self.orient_camara()
-            #Join both arucos and colors images 
-            self.image = self.arucos.detectar_arucos(self.frame)
-            self.image = self.colors.color_detection(self.frame, self.image)
+        if (time.time() - self.prev > 1/60):
+            self.prev = time.time()
+            # Reset values
+            self.reset_values()
+            # Capture image
+            self.ret, self.frame = self.cap.read()
+            #Verify frame read
+            if self.ret:
+                if self.filter:
+                    self.orient_camara()
+                #Join both arucos and colors images 
+                self.image = self.arucos.detectar_arucos(self.frame)
+                self.image = self.colors.color_detection(self.frame, self.image)
 
-            #Show image
-            cv2.imshow("frame", self.image)
+                #Show image
+                cv2.imshow("frame", self.image)
     
     def detect_closest_cube(self):
         #Joins al boxes
