@@ -122,9 +122,8 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
             break;
         case 0x08: // tests
             if (packet_size == 1) { // Check packet size
-                uint32_t t[] = {200};
                 state = TESTS;
-                writeSerial(true, (uint8_t*)t, sizeof(t));
+                writeSerial(true, nullptr, 0);
             }
             break;
         default:

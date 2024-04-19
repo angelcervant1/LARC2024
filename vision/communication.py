@@ -257,8 +257,7 @@ class Arduino():
     def send_test(self):
         cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x08)  + struct.pack("B", 0x09)
         if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-            some, = struct.unpack('f', self.payload_args)
-            return  self.SUCCESS, some
+            return  self.SUCCESS
         else:
             return self.FAIL, 0
     
