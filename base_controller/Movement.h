@@ -68,7 +68,7 @@ class Movement {
 
     void orientedMovement(const double linear_x, const double linear_y, double angular_z);
 
-    void setRobotAngle(const double angle);
+    void setRobotAngle(const uint32_t angle);
 
     float getRobotAngle();
 
@@ -108,7 +108,7 @@ class Movement {
 
     Direction getDirectionState();
 
-    void setInitialRobotAngle(double angle);
+    void setInitialRobotAngle(uint32_t angle);
 
     float getCubeCoordFromRaspi();
     void setCubeCoordFromRaspi(float x );
@@ -166,7 +166,7 @@ class Movement {
     LineSensor *lineSensor;
     ColorSensor *colorSensor;
     ColorSensor::colorData rgbData;
-    double originAngle;
+    uint32_t originAngle;
     
     PID pidBno;
 

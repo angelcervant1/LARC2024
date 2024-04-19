@@ -96,7 +96,7 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
                 uint32_t t;
                 uint32_t angle; 
                 memcpy(&t, buffer, sizeof(t));
-                memcpy(&angle, buffer + sizeof(t), angle(t));
+                memcpy(&angle, buffer + sizeof(t), sizeof(angle));
                 _robot->setGlobalPosX(t);
                 _robot->setInitialRobotAngle(angle);
                 uint32_t s[] = {t};
@@ -116,29 +116,37 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
             if (packet_size == 5){
                 float t; 
                 memcpy(&t, buffer, sizeof(t));
-                state = DRIVE_TO_CUBE;
                 _robot->detected_cube = true;
                 _robot->setCubeCoordFromRaspi(t);
+                state = DRIVE_TO_CUBE;
                 this->update = true;
-                float s[] = {t};
-                writeSerial(true, (uint8_t*)s, sizeof(s));
+//                float s[] = {t};
+                writeSerial(true, nullptr, 0);
             }
             break;
         case 0x05: // rotate 90 
             if (packet_size == 1) { // Check packet size
-                _robot->setRobotAngle(getRobotAngle() + 90);
+                _robot->setRobotAngle(_robot->getRobotAngle() + 90);
                 writeSerial(true, nullptr, 0);
             }
             break;
-        case 0x06: // get state
+        case 0x06: // get searching for cube 
             if (packet_size == 1) { // Check packet size
-                bool s[] = {_robot->searching_cube};
+                if(_robot->searching_cube){
+                    uint32_t s[] = {1};
+                    writeSerial(true, (uint8_t*)s, sizeof(s));
+                }
+                uint32_t s[] = {0};
                 writeSerial(true, (uint8_t*)s, sizeof(s));
             }
             break;
         case 0x07: // Get when is infront of robot
             if (packet_size == 1) { // Check packet size
-                bool s[] = {_robot->inFrontOfCube};
+                if(_robot->inFrontOfCube){
+                    uint32_t s[] = {1};
+                    writeSerial(true, (uint8_t*)s, sizeof(s));
+                }
+                 uint32_t s[] = {0};
                 writeSerial(true, (uint8_t*)s, sizeof(s));
             }
             break;
@@ -178,4 +186,3 @@ void Raspy::writeSerial(bool success, uint8_t* payload, int elements) {
 int Raspy::get_State(){
     return state;
 }
-

@@ -21,12 +21,7 @@ if __name__ == '__main__':
      # Camara 1
      colors1 = color_detection.ColorDetection(1)
      arucos1 = arucos_detection.DetectorAruco()
-     cam = camara.Camara(0, colors1, arucos1, False)
-     # for i in range(10):
-     #      try:
-     #           cam = camara.Camara(i, colors1, arucos1, False)
-     #      except:
-     #           pass
+     cam = camara.Camara(1, colors1, arucos1, False)
      
      # Setup 
      cam.camara_setup()
@@ -36,9 +31,9 @@ if __name__ == '__main__':
      arduino.connect()
 
      #Flags
-     flag_detect_pattern = True
+     flag_detect_pattern = False
      flag_lock = False
-     find_object = False
+     find_object = True
      ss = time.time()
      iteration = 0
      rotate = False
@@ -46,8 +41,10 @@ if __name__ == '__main__':
      in_front_of_cube = False
      while True:
           _, find_object = arduino.get_searching_for_cube()
+          # if find_object:
+          #      print("Detectado")
           if(rotate):
-               # print(arduino.rotate_90()) 
+               print(arduino.rotate_90()) 
                print("rotating")
                time.sleep(3)
                ss = time.time()
@@ -64,27 +61,29 @@ if __name__ == '__main__':
                xTile = cam.detect_color_pattern()
                if xTile != 7: 
                     angle = angle * iteration
-                    # print(arduino.sendLocation(xTile, angle))
+                    print(arduino.sendLocation(xTile, angle))
                     print(xTile)
                     flag_detect_pattern = False
                     # find_object = True
                     pass
           elif(find_object): 
+               # print("Detectado")
                if(not cam.lock): # base on camara2 
-                    # Find closest cube
+                    # Find closest cubeqqq
                     cam.detect_closest_cube()
                     # Lock cclosest cube
                     cam.lock_object()
                     # print("name" + str(cam.lock_box[0]))
 
                else: 
-                    _, in_front_of_cube = arduino.in_front_of_cube()
-                    # print('else')
+                    # _, in_front_of_cube = arduino.in_front_of_cube()
+
+                    # print(in_front_of_cubeq)
                     if  ( not in_front_of_cube):
                          try:
                               lost, following_box = cam.track_object()
                               # print('trying')
-                              # print(arduino.cube_found(int(cam.lock_box[5])))
+                              print(arduino.cube_found(int(cam.lock_box[5])))
                               if(not lost): # only use camara 2
                                    pass
                          except:

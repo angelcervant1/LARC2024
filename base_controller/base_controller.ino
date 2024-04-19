@@ -21,7 +21,7 @@ int iteration = 0;
 double angleOffset = 0.0; //for tests
 double squares = 0; 
 float angleAmount = 0.0;  //for state machne
-uint8_t start_pos_x = 1; //for tests 
+uint8_t start_pos_x = 0; //for tests 
 Direction movementVector[5] = {FORWARD, TOLEFT, BACKWARD, TORIGHT, STOP};
 
 bool reachedAngle;
@@ -71,7 +71,6 @@ enum States {
 };
 
 States currentState;
-ColorSensor::colorData myData;
 
 void setup() {
     //Wire.begin();
@@ -91,16 +90,16 @@ void setup() {
     raspy.import(robot);
 //     //serial.print("Starting");
     
-    //   currentState = DRIVE_TO_CUBE;
+        currentState = SEARCH_CUBE;
 //     //currentState = ENTER_CLOSEST_SQUARE;
-        currentState = DRIVE_TO_COLOR;
+        //currentState = FIND_ORIGIN;
 }
 
 void loop() {
 
     raspy.readSerial();
     if(raspy.update){
-       currentState = DRIVE_TO_CUBE;
+       currentState = raspy.get_State();
         raspy.update = false;
     }
 
@@ -133,7 +132,7 @@ void loop() {
         // In case nothing is received from raspy
     }
 
-    //Serial.println(currentState);
+    // Serial.println(currentState);
     // Serial.print("Global Pos X: "); Serial.println(robot->getCurrentPosX());
     // Serial.print("Global Angle: "); Serial.print(robot->getRobotAngle());
 }

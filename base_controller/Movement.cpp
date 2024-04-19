@@ -21,7 +21,8 @@ Movement::Movement(BNO *bno, LineSensor *lineSensor, ColorSensor *colorSensor) :
                             kDigitalPinsFrontRightMotor[1], kAnalogPinFrontRightMotor, 
                             kEncoderPinsFrontRightMotor);
   this->past_check = millis();
-  robot->searching_cube = false;
+  searching_cube = false;
+  inFrontOfCube = false;
 }
 
 //////////////////////////////////Encoders//////////////////////////////////////
@@ -33,11 +34,11 @@ void Movement::initEncoders() {
 }
 
 ////////////////////////////SET A DESIRED ROBOT ANGLE//////////////////////////////
-void Movement::setRobotAngle(const double angle){
+void Movement::setRobotAngle(uint32_t angle){
   robotAngle_ = angle;
 }
 
-void Movement::setInitialRobotAngle(double angle){
+void Movement::setInitialRobotAngle(uint32_t angle){
   originAngle = angle;
 }
 //////////////////////////////////PWM//////////////////////////////////////
@@ -156,10 +157,10 @@ void Movement::orientedMovement(const double linear_x, const double linear_y, do
     // Determine the direction of rotation
     if (angle_error > 0) {
       angular_z = -angular_speed; // Rotate clockwise
-      //Serial.println("Turning clockwise");
+      // Serial.println("Turning clockwise");
     } else {
       angular_z = angular_speed; // Rotate counterclockwise
-      //Serial.println("Turning counterclockwise");
+      // Serial.println("Turning counterclockwise");
     }
     
     rpm = kinematics_.getRPM(0, 0, angular_z); 
@@ -212,7 +213,7 @@ void Movement::moveDirection(Direction direction, const  double angleOffset){
           else{
             linear_y_ = 0;
           }
-          // Serial.println("BACKWARD");
+          //  Serial.println("BACKWARD");
           break;
         case TOLEFT:
           lineSensor->readDataFromSide(Front);
@@ -398,10 +399,10 @@ void Movement::driveToColor(const double start_x_pos, Direction direction, color
       
       colorSensor->getRGBData(rgbData);
       
-      // Serial.println(" R: "); Serial.print(rgbData.red);
-      // Serial.print(" G: "); Serial.print(rgbData.green);
-      // Serial.print(" B: "); Serial.print(rgbData.blue);
-      // Serial.println();
+     Serial.println(" R: "); Serial.print(rgbData.red);
+     Serial.print(" G: "); Serial.print(rgbData.green);
+     Serial.print(" B: "); Serial.print(rgbData.blue);
+     Serial.println();
 
     bool shouldMoveBackward = false;
       switch (color_id) {
@@ -616,14 +617,11 @@ void Movement::GoToSquare(Direction direction, const double angleOffset){
 }
 
 bool Movement::detectedTilefromRaspi(){
-  return true; //change to false after testing
+  return this->detect_tile; //change to false after testing
   }
 
 bool Movement::detectedCubefromRaspi(){
-  if(this->detected_cube){
-    return false;
-  }
-  return false;
+  return this->detected_cube;
 }
 
 float Movement::getCubeCoordFromRaspi(){

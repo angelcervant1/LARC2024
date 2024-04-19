@@ -42,10 +42,10 @@ void ColorSensor::getRGBData(colorData &data) {
         
         // Update the previous millis
         prev_millis = curr_millis;
-        // Serial.println(" R: "); Serial.print(data.red);
-        // Serial.print(" G: "); Serial.print(data.green);
-        // Serial.print(" B: "); Serial.print(data.blue);
-        // Serial.println();
+//         Serial.println(" R: "); Serial.print(data.red);
+//         Serial.print(" G: "); Serial.print(data.green);
+//         Serial.print(" B: "); Serial.print(data.blue);
+//         Serial.println();
      
     }
 }

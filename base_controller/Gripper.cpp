@@ -26,8 +26,8 @@ void Gripper::upLevel(uint8_t level) {
     digitalWrite(Nema_Direction, HIGH);
     int targetPosition = (Paso * level - Ajuste);
     if (level < 19) {
-            myStepper.moveTo(targetPosition);
-            myStepper.run();
+        myStepper.moveTo(targetPosition);
+        myStepper.run();
     }
 }
 

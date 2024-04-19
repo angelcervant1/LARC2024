@@ -55,7 +55,7 @@ class Camara:
                 self.image = self.colors.color_detection(self.frame, self.image)
 
                 #Show image
-                cv2.imshow("frame", self.image)
+                # cv2.imshow("frame", self.image)
     
     def detect_closest_cube(self):
         #Joins al boxes
@@ -64,7 +64,7 @@ class Camara:
                 total = self.colors.color_close
                 closest = 0 
                 for index in range(0, len(total)):
-                    if total[closest][6] < total[index][6]:
+                    if total[closest][6] < total[index][6] and total[closest][6] > 400:
                         closest = index
                     elif total[closest][6] == total[index][6]:
                         if total[closest][2] < total[index][2]:

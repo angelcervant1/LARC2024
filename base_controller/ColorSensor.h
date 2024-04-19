@@ -2,7 +2,7 @@
 #define ColorSensor_h
 
 #define commonAnode true
-#define BUFFER_SIZE 5
+#define BUFFER_SIZE 4
 
 #include "Adafruit_TCS34725.h"
 
