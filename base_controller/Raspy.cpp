@@ -120,6 +120,12 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
                 writeSerial(true, (uint8_t*)s, sizeof(s));
             }
             break;
+        case 0x05: // rotate 90 
+            if (packet_size == 1) { // Check packet size
+                _robot->setRobotAngle(getRobotAngle() + 90);
+                writeSerial(true, nullptr, 0);
+            }
+            break;
         case 0x08: // tests
             if (packet_size == 1) { // Check packet size
                 state = TESTS;

@@ -252,7 +252,14 @@ class Arduino():
             some, = struct.unpack('f', self.payload_args)
             return  self.SUCCESS, some
         else:
-            return self.FAIL, 0 
+            return self.FAIL, 0
+
+    def rotate_90(self):
+        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x05)  + struct.pack("B", 0x06)
+        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
+            return  self.SUCCESS
+        else:
+            return self.FAIL, 0
     
     def send_test(self):
         cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x08)  + struct.pack("B", 0x09)
