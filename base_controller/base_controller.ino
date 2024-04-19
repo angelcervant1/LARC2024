@@ -9,9 +9,9 @@ ColorSensor *myColorSensor = nullptr;
 Gripper *myGripper = nullptr;
 Raspy raspy;
 
-bool CHECK_PID = true;
+bool CHECK_PID = false;
 bool CHECK_ODOMETRY = false;
-bool CHECK_LINES = false;
+bool CHECK_LINES = true;
 bool CHECK_GRASP = false;
 
 /////////////////////////////////////remove after testing///////////////////////////////////////////////////  
@@ -89,22 +89,24 @@ void setup() {
     raspy.import(robot);
 //     //serial.print("Starting");
     
-        currentState = GRAB_CUBE;
+        currentState = DRIVE_TO_CUBE;
 //     //currentState = ENTER_CLOSEST_SQUARE;
         //currentState = FIND_ORIGIN;
 }
 
 void loop() {
+
     if(ready){
         myGripper->StepperHome();
+        myGripper->upLevel(5);
       ready = false;
      }
 
-//    raspy.readSerial();
-//    if(raspy.update){
-//       currentState = raspy.get_State();
-//        raspy.update = false;
-//    }
+   raspy.readSerial();
+   if(raspy.update){
+      currentState = raspy.get_State();
+       raspy.update = false;
+   }
 
     curr_millis = millis();
 

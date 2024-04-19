@@ -118,7 +118,7 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
                 memcpy(&t, buffer, sizeof(t));
                 _robot->detected_cube = true;
                 _robot->setCubeCoordFromRaspi(t);
-                state = DRIVE_TO_CUBE;
+                //state = DRIVE_TO_CUBE;
                 this->update = true;
 //                float s[] = {t};
                 writeSerial(true, nullptr, 0);
@@ -160,6 +160,13 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
             if (packet_size == 1) { // Check packet size
                 uint8_t s[] = {this->arduino_state};
                 writeSerial(true, (uint8_t*)s, sizeof(s));
+            }
+            break;
+        case 0x0A: // get status
+            if (packet_size == 1) { // Check packet size
+                state = GRAB_CUBE;
+                _robot->inFrontOfCube = true;
+                writeSerial(true, nullptr, 0);
             }
             break;
         default:
