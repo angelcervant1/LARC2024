@@ -1,3 +1,4 @@
+
 #include "Movement.h"
 #include "Raspy.h"
 #include "Encoder.h"
@@ -89,23 +90,23 @@ void setup() {
     raspy.import(robot);
 //     //serial.print("Starting");
     
-        currentState = DRIVE_TO_CUBE;
+        //currentState = TESTS;
 //     //currentState = ENTER_CLOSEST_SQUARE;
         //currentState = FIND_ORIGIN;
 }
 
 void loop() {
-
+    raspy.readSerial();
     if(ready){
         myGripper->StepperHome();
         myGripper->upLevel(5);
-      ready = false;
+        ready = false;
      }
 
-   raspy.readSerial();
+   
    if(raspy.update){
       currentState = raspy.get_State();
-       raspy.update = false;
+      raspy.update = false;
    }
 
     curr_millis = millis();

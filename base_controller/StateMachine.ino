@@ -129,7 +129,7 @@ void findOrigin(){
     if(!robot->angleOffsetReached){
         robot->orientedMovement(0.0, 0.0, 0.0);
     }
-    else if (robot->detectedTilefromRaspi()){
+    else if (robot->detectedTileFromRaspi()){
         robot->hardStop();
         robot->setRobotAngle(angleAmount);
         robot->orientedMovement(0.0, 0.0, 0.0);
@@ -280,6 +280,7 @@ void driveToCube(){
     if(robot->inFrontOfCube){
         robot->hardStop();
         currentState = GRAB_CUBE;
+        robot->inFrontOfCube = false;
     }
     else{
         float targetXCoord = robot->getCubeCoordFromRaspi(); //send midpoint from image
@@ -290,9 +291,9 @@ void driveToCube(){
 
 void grabCube(){
     myGripper->sequenceDown(curr_millis);
-        if(myGripper->prevLevel == 7){
-            currentState = RELEASE_CUBE;
-       }
+    //     if(myGripper->prevLevel == 10){
+    //         currentState = RELEASE_CUBE;
+    //    }
     }
 
 
@@ -345,10 +346,10 @@ void tests(){
         }
 
         if (CHECK_LINES) {
-            //myLineSensor->readAllData();
+            myLineSensor->readAllData();
             //robot->getRobotAngle();
             //colorSensor->getRgbData();
-            Serial.println(digitalRead(31));
+           // Serial.println(digitalRead(31));
         }
 
         if (CHECK_ODOMETRY) {
