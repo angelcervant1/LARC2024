@@ -21,7 +21,7 @@ if __name__ == '__main__':
      # Camara 1
      colors1 = color_detection.ColorDetection(1)
      arucos1 = arucos_detection.DetectorAruco()
-     cam = camara.Camara(1, colors1, arucos1, False)
+     cam = camara.Camara(0, colors1, arucos1, False)
      
      # Setup 
      cam.camara_setup()
@@ -40,7 +40,7 @@ if __name__ == '__main__':
      angle = 0
      in_front_of_cube = False
      while True:
-          _, find_object = arduino.get_searching_for_cube()
+          # _, find_object = arduino.get_searching_for_cube()
           # if find_object:
           #      print("Detectado")
           if(rotate):
@@ -83,7 +83,7 @@ if __name__ == '__main__':
                          try:
                               lost, following_box = cam.track_object()
                               # print('trying')
-                              print(arduino.cube_found(int(cam.lock_box[5])))
+                              arduino.cube_found(int(cam.lock_box[5]))
                               if(not lost): # only use camara 2
                                    pass
                          except:

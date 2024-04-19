@@ -30,6 +30,7 @@ bool fullScanCompleted = false;
 bool startingScanFrom0 = false;
 bool startingScanFrom6 = false;
 bool fromOtherSide = false;
+bool ready;
 
 ///////////////////////////////////// //////////////////////////////////////////////////////////////////////////////////////
 
@@ -84,7 +85,7 @@ void setup() {
     // robot->setGlobalPosX(start_pos_x);
     robot->angleOffsetReached = false;
     //robot->setSquareCounter(0);
-    //myGripper->StepperHome();
+    ready = true;
     // myGripper->upLevel(6);
 
     raspy.import(robot);
@@ -96,7 +97,11 @@ void setup() {
 }
 
 void loop() {
+    if(ready){
+      myGripper->StepperHome();
+      ready = false;
 
+    }
     raspy.readSerial();
     if(raspy.update){
        currentState = raspy.get_State();

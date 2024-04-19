@@ -38,8 +38,11 @@ void Gripper::upLevel(uint8_t level) {
 void Gripper::downSteps(int steps) {
 }
 
-void Gripper::upSteps(int steps) {
-
+void Gripper::upSteps(int time) {
+    int t = time;
+    while(millis() - time < 15000){
+        upLevel(5);
+}
 }
 
 void Gripper::releaseCube() {
@@ -57,19 +60,29 @@ void Gripper::grabCube(){
 
 }
 void Gripper::StepperHome(){
-
     digitalWrite(Nema_Direction, HIGH);
-
-    while(!digitalRead(limitSwitchPin)){
-        myStepper.move(-2000);
-        myStepper.runToPosition();
-        Ajuste=Ajuste+2000;
+    int last_check = millis();
+    int debounce = 100;
+    while(true){
+        bool read = digitalRead(limitSwitchPin);
+        if(read){
+            if (millis()-last_check>debounce){
+              break;
+            }
+        }
+        else{
+            myStepper.move(-2000);
+            myStepper.runToPosition();
+            Ajuste=Ajuste+2000;
+            last_check = millis();
+        }
         // Serial.print("Going Home...");
     }
-    upLevel(3);
+    upSteps(last_check);
     //isHome = true;
     //myStepper.setMaxSpeed(0);
     digitalWrite(Nema_Direction,LOW);
+  
 }
 
 void Gripper::stop(){
