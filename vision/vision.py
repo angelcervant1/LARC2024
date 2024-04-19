@@ -39,7 +39,7 @@ if __name__ == '__main__':
      #Flags
      flag_detect_pattern = False
      flag_lock = False
-     find_object = False
+     find_object = True
      ss = time.time()
      iteration = 0
      rotate = False
@@ -76,18 +76,19 @@ if __name__ == '__main__':
                     flag_detect_pattern = False
                     # find_object = True
                     pass
-          elif(find_object):
-               # arduino.rotate_90()
+          elif(find_object): # camara 2 
                if(not cam.lock): # base on camara2
                     if first:
                          sup = time.time()
                          firts = False 
-                    if(time.time() - sup > 5 and cam.lock_box == []):
-                         # print(arduino.rotate_90()) 
-                         time.sleep(3)
+                    if(time.time() - sup > 3 and cam.lock_box == []): # Check for patron
+                         flag_detect_pattern = True
+                         # arduino.rotate_90()
+                         change_cam = True # Cam 1 = True Cam 2 = False
                          sup = time.time()
+                         ss = time.time()
                          pass
-                    # print("Detectado")
+                    print("Detectado")
                     # Find closest cubeqqq
                     cam.detect_closest_cube()
                     
