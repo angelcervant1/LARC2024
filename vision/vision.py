@@ -36,6 +36,7 @@ if __name__ == '__main__':
      ss = time.time()
      iteration = 0
      rotate = False
+     angle = 0
      while True:
           if(rotate):
                # print(arduino.rotate_90()) 
@@ -45,12 +46,16 @@ if __name__ == '__main__':
                rotate = False
 
           if(flag_detect_pattern and iteration < 4):
+               if (time.time() - ss > 2):
+                    # Camara 2 
+                    pass
                if (time.time() - ss > 3):
                     ss = time.time()
                     rotate = True
                     iteration +=1 
                xTile = cam.detect_color_pattern()
                if xTile != 7: 
+                    angle = angle * iteration
                     # print(arduino.sendLocation(xTile))
                     print(xTile)
                     flag_detect_pattern = False

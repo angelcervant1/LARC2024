@@ -93,6 +93,7 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
             if (packet_size == 5) { // Check packet size
                 state = FIND_ORIGIN;
                 uint32_t t;
+                uint32_t angle; 
                 memcpy(&t, buffer, sizeof(t));
                 _robot->setGlobalPosX(t);
                 uint32_t s[] = {t};
