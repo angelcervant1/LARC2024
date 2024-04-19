@@ -41,7 +41,7 @@ class Camara:
 
     def camara_refresh(self):
         while True:
-            if (time.time() - self.prev > 5/60):
+            if (time.time() - self.prev > 0):
                 self.prev = time.time()
                 # Reset values
                 self.reset_values()
@@ -57,7 +57,7 @@ class Camara:
                     #Join both arucos and colors images 
                     self.image = self.arucos.detectar_arucos(self.frame)
                     self.image = self.colors.color_detection(self.frame, self.image)
-                    cv2.imshow("frame", self.image)
+                    # cv2.imshow("frame", self.image)
                     break
                     #Show image
     
@@ -68,7 +68,7 @@ class Camara:
                 total = self.colors.color_close
                 closest = 0 
                 for index in range(0, len(total)):
-                    if total[closest][6] < total[index][6] and total[closest][6] > 400:
+                    if total[closest][6] > total[index][6] and total[closest][6] > 400:
                         closest = index
                     elif total[closest][6] == total[index][6]:
                         if total[closest][2] < total[index][2]:
@@ -90,7 +90,8 @@ class Camara:
                             flag = False
                         elif abs(total[index][5] - xmid) < abs(total[box][5] - xmid):
                             box = index
-                if int(total[box][5]) in range(int(xmid - margin), int(xmid + margin)) and int(total[box][6]) in range(int(ymid - margin), int(ymid + margin) and total[box][0] == id): # inside x limits and y limit
+                if (int(total[box][5]) in range(int(xmid - margin), int(xmid + margin)) and int(total[box][6]) in range(int(ymid - margin), int(ymid + margin))
+                    and total[box][0] == str(id)): # inside x limits and y limit
                     self.box = total[box]
                     #self.image = cv2.drawContours(self.image, (int(xmid - margin), int(ymid + margin)), (int(xmid + margin), int(ymid + margin)), (255,0,0), 3)
                     # print("assdfasdf'")

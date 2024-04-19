@@ -146,7 +146,7 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
                     uint32_t s[] = {1};
                     writeSerial(true, (uint8_t*)s, sizeof(s));
                 }
-                 uint32_t s[] = {0};
+                uint32_t s[] = {0};
                 writeSerial(true, (uint8_t*)s, sizeof(s));
             }
             break;
