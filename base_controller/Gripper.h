@@ -25,8 +25,8 @@ private:
     int Ajuste=0;
     bool isHome, gripping, releasing = false;
     unsigned long long last_time, current_time, graspStartTime, releaseStartTime; 
-    
 public:
+    bool leaveCube = true;
     Gripper(); // Constructor
     AccelStepper myStepper;
     Servo myServoR; 
@@ -41,6 +41,8 @@ public:
     void StepperHome(); 
     void sequenceUp(unsigned long curr_millis); 
     void sequenceDown(unsigned long curr_millis); 
+    int prevLevel = 0;    
+
 };
 
 #endif

@@ -30,7 +30,7 @@ bool fullScanCompleted = false;
 bool startingScanFrom0 = false;
 bool startingScanFrom6 = false;
 bool fromOtherSide = false;
-bool ready;
+bool ready = true;
 
 ///////////////////////////////////// //////////////////////////////////////////////////////////////////////////////////////
 
@@ -54,7 +54,6 @@ void moveBackward(Movement *robot) {
     robot->orientedMovement(-0.35, 0.0, 0.0);
     //serial.println("Moving Backwards");
 }
-
 
 enum States {
     TESTS,
@@ -85,28 +84,27 @@ void setup() {
     // robot->setGlobalPosX(start_pos_x);
     robot->angleOffsetReached = false;
     //robot->setSquareCounter(0);
-    ready = true;
-    // myGripper->upLevel(6);
+    //myGripper->StepperHome();
 
     raspy.import(robot);
 //     //serial.print("Starting");
     
-        currentState = SEARCH_CUBE;
+        currentState = GRAB_CUBE;
 //     //currentState = ENTER_CLOSEST_SQUARE;
         //currentState = FIND_ORIGIN;
 }
 
 void loop() {
     if(ready){
-      myGripper->StepperHome();
+        myGripper->StepperHome();
       ready = false;
+     }
 
-    }
-    raspy.readSerial();
-    if(raspy.update){
-       currentState = raspy.get_State();
-        raspy.update = false;
-    }
+//    raspy.readSerial();
+//    if(raspy.update){
+//       currentState = raspy.get_State();
+//        raspy.update = false;
+//    }
 
     curr_millis = millis();
 

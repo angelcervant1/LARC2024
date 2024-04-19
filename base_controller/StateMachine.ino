@@ -289,8 +289,11 @@ void driveToCube(){
 
 void grabCube(){
     myGripper->sequenceDown(curr_millis);
-    //set closese square to False after grabbng the cube
-}
+        if(myGripper->prevLevel == 5){
+            currentState = RELEASE_CUBE;
+       }
+    }
+
 
 
 void enterClosestSquare(){
@@ -315,7 +318,7 @@ void goToPosition(){
 }
 
 void releaseCube(){
-    myGripper->sequenceUp(curr_millis);
+    myGripper->releaseCube();
 }
 
 void tests(){
