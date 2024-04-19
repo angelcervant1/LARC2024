@@ -399,10 +399,10 @@ void Movement::driveToColor(const double start_x_pos, Direction direction, color
       
       colorSensor->getRGBData(rgbData);
       
-     Serial.println(" R: "); Serial.print(rgbData.red);
-     Serial.print(" G: "); Serial.print(rgbData.green);
-     Serial.print(" B: "); Serial.print(rgbData.blue);
-     Serial.println();
+    //  Serial.println(" R: "); Serial.print(rgbData.red);
+    //  Serial.print(" G: "); Serial.print(rgbData.green);
+    //  Serial.print(" B: "); Serial.print(rgbData.blue);
+    //  Serial.println();
 
     bool shouldMoveBackward = false;
       switch (color_id) {
@@ -454,7 +454,7 @@ void Movement::driveToTarget(float coord_x){
     int xError = abs(coord_x) - kCentered2Image;
 
     Direction direction;
-    double speedFactor = 0.001; // Adjust this value as needed
+    double speedFactor = 0.0009; // Adjust this value as needed
     double speed = xError * speedFactor;
 
   
@@ -463,13 +463,13 @@ void Movement::driveToTarget(float coord_x){
 
     if (abs(xError) > kImageTolerance) {
       direction = (coord_x > kCentered2Image) ? TORIGHT : TOLEFT;
-      moveDirection(direction, robotAngle_, speed, false);
-    } else if(!digitalRead(distanceSensorPin)){
-        moveDirection(FORWARD, robotAngle_, speed, false);
+      moveDirection(direction, robotAngle_, 0.1, false);
+    } else if(!inFrontOfCube){
+        moveDirection(FORWARD, robotAngle_, 0.1, false);
     }
     else{
       hardStop();
-      //inFrontOfCube = true;
+      // inFrontOfCube = true;
     }
 }
 

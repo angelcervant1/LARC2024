@@ -111,7 +111,7 @@ class Movement {
     void setInitialRobotAngle(uint32_t angle);
 
     float getCubeCoordFromRaspi();
-    void setCubeCoordFromRaspi(float x );
+    void setCubeCoordFromRaspi(float x);
 
   private:
     // Pins
@@ -130,7 +130,7 @@ class Movement {
     static constexpr uint8_t kDigitalPinsBackRightMotor[2] = {38,37};
     static constexpr uint8_t kAnalogPinBackRightMotor = 9;
     static constexpr uint8_t kEncoderPinsBackRightMotor = 18;
-    static constexpr uint8_t distanceSensorPin = 27; //change pin
+    static constexpr uint8_t distanceSensorPin = 31; //change pin
 
     // Velocity maximums
     static constexpr double kWheelBase = 0.120;
@@ -156,7 +156,7 @@ class Movement {
     int counterY = 0;
 
     Direction globalDirection_ = STOP;
-    uint8_t kCentered2Image = 60; //Error in pixels
+    uint8_t kCentered2Image = 10; //Error in pixels
     uint8_t kImageTolerance = 15; //Error in pixels
 
     int xError = 0;

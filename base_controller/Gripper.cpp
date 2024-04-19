@@ -94,7 +94,6 @@ void Gripper::StepperHome(){
     // upLevel(6);
     //isHome = true;
     //myStepper.setMaxSpeed(0);
-    digitalWrite(Nema_Direction,LOW);
     // digitalWrite(Nema_Direction,LOW);
 
     // digitalWrite(Nema_Direction, HIGH);
@@ -141,7 +140,7 @@ void Gripper::sequenceUp(unsigned long curr_milis){
     } else if (releasing && current_time - releaseStartTime >= 3000) {
         gripping = false;
         releasing = false;
-        upLevel(5);
+        upLevel(7);
         // Serial.println("WAIT OVER");
     }
 }

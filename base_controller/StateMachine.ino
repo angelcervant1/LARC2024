@@ -278,6 +278,7 @@ void searchCube(){
 void driveToCube(){
  
     if(robot->inFrontOfCube){
+        robot->hardStop();
         currentState = GRAB_CUBE;
     }
     else{
@@ -289,7 +290,7 @@ void driveToCube(){
 
 void grabCube(){
     myGripper->sequenceDown(curr_millis);
-        if(myGripper->prevLevel == 5){
+        if(myGripper->prevLevel == 7){
             currentState = RELEASE_CUBE;
        }
     }
@@ -347,6 +348,7 @@ void tests(){
             //myLineSensor->readAllData();
             //robot->getRobotAngle();
             //colorSensor->getRgbData();
+            Serial.println(digitalRead(31));
         }
 
         if (CHECK_ODOMETRY) {
