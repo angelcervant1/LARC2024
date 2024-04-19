@@ -155,19 +155,21 @@ class ColorDetection():
             upperGreen = np.array([ 81,165,109], np.uint8)
         else: # Colores para camara 2 
             #Red = Cubo Red2 = Hoja
-            lowerRed = np.array([  0,134,137], np.uint8)
-            upperRed = np.array([ 24,235,253], np.uint8)
+            
+
+            lowerRed = np.array([  0,108, 78], np.uint8)
+            upperRed = np.array([ 20,211,176], np.uint8)
             # lowerRed2 = np.array([0,180,103], np.uint8)
             # upperRed2 = np.array([179,229,152], np.uint8)
+            lowerBlue = np.array([107,170,36], np.uint8)
+            upperBlue = np.array([114,255,56], np.uint8)
+            
+            
+            lowerYellow = np.array([21,140,93], np.uint8)
+            upperYellow = np.array([28,200,155], np.uint8)
 
-            lowerBlue = np.array([ 75,122,110], np.uint8)
-            upperBlue = np.array([130,255,255], np.uint8)
-
-            lowerYellow = np.array([20,101,138], np.uint8)
-            upperYellow = np.array([23,170,181], np.uint8)
-
-            lowerGreen = np.array([ 26, 61,105], np.uint8)
-            upperGreen = np.array([ 86,171,160], np.uint8)
+            lowerGreen = np.array([67,144,40], np.uint8)
+            upperGreen = np.array([80,225,58], np.uint8)
 
         frameHSV = cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
         maskAzul = cv2.inRange(frameHSV, lowerBlue, upperBlue)

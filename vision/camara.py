@@ -6,6 +6,7 @@ class Camara:
     def __init__(self, camara , colors, arucos, filter):
         self.colors = colors
         self.arucos = arucos
+        self.camara_number = camara
         self.cap = cv2.VideoCapture(camara)
         self.box = []
         self.lock_box = []
@@ -57,7 +58,8 @@ class Camara:
                     #Join both arucos and colors images 
                     self.image = self.arucos.detectar_arucos(self.frame)
                     self.image = self.colors.color_detection(self.frame, self.image)
-                    # cv2.imshow("frame", self.image)
+                    cv2.imshow(str(self.camara_number), self.image)
+                    # print(self.ret)
                     break
                     #Show image
     
@@ -139,10 +141,13 @@ class Camara:
         if self.ret and self.lock_box != []:
             try:
                 lost, lock_box_new = self.find_specific_cube(self.lock_box[0], self.lock_box[5], self.lock_box[6], 100)
-                # print(lost)
                 if (lost):
-                    # print("ASDASDASDA")
                     self.lock_box = lock_box_new
+                    #Find closeness with area 
+                    area = (self.lock_box[2] - self.lock_box[1]) *  (self.lock_box[4] - self.lock_box[3])
+                    # print(area)
+                    if area > 80000:
+                        return False, self.lock_box 
                     return True, self.lock_box 
                 else:
                     # print("out" + str(lost))
