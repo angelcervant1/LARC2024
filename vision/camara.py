@@ -146,7 +146,7 @@ class Camara:
                     #Find closeness with area 
                     area = (self.lock_box[2] - self.lock_box[1]) *  (self.lock_box[4] - self.lock_box[3])
                     # print(area)
-                    if area > 80000:
+                    if area > 95000:
                         return False, self.lock_box 
                     return True, self.lock_box 
                 else:

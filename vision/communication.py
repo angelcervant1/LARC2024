@@ -301,3 +301,11 @@ class Arduino():
         else:
             return self.FAIL, 0
     
+    def findOrigin(self):
+        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x0B)  + struct.pack("B", 0x0C)
+        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
+            # some, = struct.unpack('i', self.payload_args)
+            return  self.SUCCESS
+        else:
+            return self.FAIL, 0
+    

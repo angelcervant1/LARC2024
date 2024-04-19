@@ -137,39 +137,39 @@ class ColorDetection():
         if self.id == 1: # Colores para camara 1
             #Red = Cubo Red2 = Hoja
             
-            lowerRed = np.array([0,228,94], np.uint8)
-            upperRed = np.array([179,253,109], np.uint8)
+            lowerRed = np.array([0,66,30], np.uint8)
+            upperRed = np.array([179,195,85], np.uint8)
             # lowerRed = np.array([  0,128,119], np.uint8)
             # upperRed = np.array([  8,255,255], np.uint8)
             # lowerRed2 = np.array([0,180,103], np.uint8)
             # upperRed2 = np.array([179,229,152], np.uint8)    
 
-            lowerBlue = np.array([ 88,132, 57], np.uint8)
-            upperBlue = np.array([137,244,238], np.uint8)
+            lowerBlue = np.array([75,57,9], np.uint8)
+            upperBlue = np.array([126,237,76], np.uint8)
 
-            lowerYellow = np.array([25, 120, 169], np.uint8)
-            upperYellow = np.array([29, 160, 206], np.uint8)
+            lowerYellow = np.array([14,152,36], np.uint8)
+            upperYellow = np.array([28,255,110], np.uint8)
 
 
-            lowerGreen = np.array([70,73,55], np.uint8)
-            upperGreen = np.array([ 81,165,109], np.uint8)
+            lowerGreen = np.array([72,6,3], np.uint8)
+            upperGreen = np.array([114,255,105], np.uint8)
         else: # Colores para camara 2 
             #Red = Cubo Red2 = Hoja
             
 
-            lowerRed = np.array([  0,108, 78], np.uint8)
-            upperRed = np.array([ 20,211,176], np.uint8)
+            lowerRed = np.array([  0,183, 122], np.uint8)
+            upperRed = np.array([ 3,213,152], np.uint8)
             # lowerRed2 = np.array([0,180,103], np.uint8)
             # upperRed2 = np.array([179,229,152], np.uint8)
-            lowerBlue = np.array([107,170,36], np.uint8)
-            upperBlue = np.array([114,255,56], np.uint8)
+            lowerBlue = np.array([22,125,63], np.uint8)
+            upperBlue = np.array([108,255,252], np.uint8)
             
             
-            lowerYellow = np.array([21,140,93], np.uint8)
-            upperYellow = np.array([28,200,155], np.uint8)
+            lowerYellow = np.array([0,0,0], np.uint8)
+            upperYellow = np.array([0,0,0], np.uint8)
 
-            lowerGreen = np.array([67,144,40], np.uint8)
-            upperGreen = np.array([80,225,58], np.uint8)
+            lowerGreen = np.array([0,0,0], np.uint8)
+            upperGreen = np.array([0,0,0], np.uint8)
 
         frameHSV = cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
         maskAzul = cv2.inRange(frameHSV, lowerBlue, upperBlue)
