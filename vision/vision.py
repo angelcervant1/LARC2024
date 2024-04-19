@@ -19,7 +19,7 @@ def scale_value(c1, c2, pixel, f):
 
 if __name__ == '__main__':
      # Camara 1
-     colors1 = color_detection.ColorDetection(1)
+     colors1 = color_detection.ColorDetection(0)
      arucos1 = arucos_detection.DetectorAruco()
      cam = camara.Camara(0, colors1, arucos1, False)
 
@@ -33,8 +33,8 @@ if __name__ == '__main__':
      # cam2.camara_setup()
      
      # Comunication
-     # arduino = communication.Arduino()
-     # arduino.connect()
+     arduino = communication.Arduino()
+     arduino.connect()
 
      #Flags
      flag_detect_pattern = False
@@ -54,13 +54,13 @@ if __name__ == '__main__':
           # if find_object:
           #      print("Detectado")
           if(rotate):
-               # arduino.findOrigin()
-               # print(arduino.rotate_90()) 
-               time.sleep(3)
+               arduino.findOrigin()
+               print(arduino.rotate_90()) 
+               time.sleep(0.5)
                ss = time.time()
                rotate = False
           if(flag_detect_pattern and iteration < 4):
-               # arduino.findOrigin()
+               arduino.findOrigin()
                if (time.time() - ss > 2):
                     # Camara 2 
                     pass
@@ -83,7 +83,8 @@ if __name__ == '__main__':
                          firts = False 
                     if(time.time() - sup > 3 and cam.lock_box == []): # Check for patron
                          flag_detect_pattern = True
-                         # arduino.rotate_90()
+                         arduino.findOrigin()
+                         arduino.rotate_90()
                          change_cam = True # Cam 1 = True Cam 2 = False
                          sup = time.time()
                          ss = time.time()
@@ -103,7 +104,7 @@ if __name__ == '__main__':
                     if  (not in_front_of_cube):
                          try:
                               lost, following_box = cam.track_object()
-                              # print(arduino.cube_found(int(cam.lock_box[5])))
+                              print(arduino.cube_found(int(cam.lock_box[5])))
                               if(not lost): # only use camara 2
                                    if tampo < 4:
                                         in_front_of_cube = True
@@ -111,8 +112,8 @@ if __name__ == '__main__':
                          except:
                               pass
                     else:
-                         # arduino.cube_found(0)
-                         # arduino.setCubeDetection() 
+                         arduino.cube_found(0)
+                         arduino.setCubeDetection() 
                          flag_detect_pattern = True  
 
                          # print("hook")

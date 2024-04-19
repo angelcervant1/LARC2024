@@ -58,7 +58,7 @@ class Camara:
                     #Join both arucos and colors images 
                     self.image = self.arucos.detectar_arucos(self.frame)
                     self.image = self.colors.color_detection(self.frame, self.image)
-                    cv2.imshow(str(self.camara_number), self.image)
+                    # cv2.imshow(str(self.camara_number), self.image)
                     # print(self.ret)
                     break
                     #Show image
