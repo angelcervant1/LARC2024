@@ -19,12 +19,18 @@ def scale_value(c1, c2, pixel, f):
 
 if __name__ == '__main__':
      # Camara 1
-     colors1 = color_detection.ColorDetection(1)
+     colors1 = color_detection.ColorDetection(0)
      arucos1 = arucos_detection.DetectorAruco()
      cam = camara.Camara(0, colors1, arucos1, False)
+
+     # Camara 2
+     # colors2 = color_detection.ColorDetection(0)
+     # arucos2 = arucos_detection.DetectorAruco()
+     # cam2 = camara.Camara(1, colors2, arucos2, False)
      
      # Setup 
      cam.camara_setup()
+     # cam2.camara_setup()
      
      # Comunication
      arduino = communication.Arduino()
@@ -39,18 +45,22 @@ if __name__ == '__main__':
      rotate = False
      angle = 0
      in_front_of_cube = False
+     first = True
+     tampo = 0 
      while True:
+          cam.camara_refresh() 
+          # cam.camara_refresh()
           # _, find_object = arduino.get_searching_for_cube()
           # if find_object:
           #      print("Detectado")
           if(rotate):
+               arduino.findOrigin()
                print(arduino.rotate_90()) 
-               print("rotating")
-               time.sleep(3)
+               time.sleep(0.5)
                ss = time.time()
                rotate = False
-
           if(flag_detect_pattern and iteration < 4):
+               arduino.findOrigin()
                if (time.time() - ss > 2):
                     # Camara 2 
                     pass
@@ -61,38 +71,55 @@ if __name__ == '__main__':
                xTile = cam.detect_color_pattern()
                if xTile != 7: 
                     angle = angle * iteration
-                    print(arduino.sendLocation(xTile, angle))
+                    # print(arduino.sendLocation(xTile, angle))
                     print(xTile)
                     flag_detect_pattern = False
                     # find_object = True
                     pass
-          elif(find_object): 
-               # print("Detectado")
-               if(not cam.lock): # base on camara2 
+          elif(find_object): # camara 2 
+               if(not cam.lock): # base on camara2
+                    if first:
+                         sup = time.time()
+                         firts = False 
+                    if(time.time() - sup > 3 and cam.lock_box == []): # Check for patron
+                         flag_detect_pattern = True
+                         arduino.findOrigin()
+                         arduino.rotate_90()
+                         change_cam = True # Cam 1 = True Cam 2 = False
+                         sup = time.time()
+                         ss = time.time()
+                         pass
+                    print("Detectado")
                     # Find closest cubeqqq
                     cam.detect_closest_cube()
-                    # Lock cclosest cube
+                    
+                    # Lock closest cube
                     cam.lock_object()
                     # print("name" + str(cam.lock_box[0]))
+                    #Send data to sencond camara
 
                else: 
-                    # _, in_front_of_cube = arduino.in_front_of_cube()
-
+                    # in_front_of_cube = arduino.in_front_of_cube()
                     # print(in_front_of_cubeq)
-                    if  ( not in_front_of_cube):
+                    if  (not in_front_of_cube):
                          try:
                               lost, following_box = cam.track_object()
-                              # print('trying')
-                              arduino.cube_found(int(cam.lock_box[5]))
+                              print(arduino.cube_found(int(cam.lock_box[5])))
                               if(not lost): # only use camara 2
-                                   pass
+                                   if tampo < 4:
+                                        in_front_of_cube = True
+                                   tampo +=1 
                          except:
                               pass
-                    else: 
-                         print("hook")
+                    else:
+                         arduino.cube_found(0)
+                         arduino.setCubeDetection() 
+                         flag_detect_pattern = True  
+
+                         # print("hook")
+                         pass
           
           # Refresher
-          cam.camara_refresh() 
           if cv2.waitKey(1) & 0xFF == ord('q'):
                break
         

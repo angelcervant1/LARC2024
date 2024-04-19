@@ -249,8 +249,8 @@ class Arduino():
     def cube_found(self, xpoint): # Send if there is a cube detection
         cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x05, 0x04)  + struct.pack("f", xpoint) + struct.pack("B", 0x05)
         if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-            # some, = struct.unpack('f', self.payload_args)
-            return  self.SUCCESS, 
+            some, = struct.unpack('f', self.payload_args)
+            return  self.SUCCESS, some
         else:
             return self.FAIL, 0
 
@@ -272,7 +272,7 @@ class Arduino():
     def in_front_of_cube(self):
         cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x07)  + struct.pack("B", 0x08)
         if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-            # some, = struct.unpack('i', self.payload_args)
+            some, = struct.unpack('i', self.payload_args)
             return  self.SUCCESS
         else:
             return self.FAIL, 0
@@ -286,10 +286,26 @@ class Arduino():
             return self.FAIL, 0
     
     def getState(self):
-        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x09)  + struct.pack("B", 0x10)
+        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x09)  + struct.pack("B", 0x0A)
         if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
             some, = struct.unpack('i', self.payload_args)
             return  self.SUCCESS, some
+        else:
+            return self.FAIL, 0
+        
+    def setCubeDetection(self):
+        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x0A)  + struct.pack("B", 0x0B)
+        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
+            # some, = struct.unpack('i', self.payload_args)
+            return  self.SUCCESS
+        else:
+            return self.FAIL, 0
+    
+    def findOrigin(self):
+        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x0B)  + struct.pack("B", 0x0C)
+        if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
+            # some, = struct.unpack('i', self.payload_args)
+            return  self.SUCCESS
         else:
             return self.FAIL, 0
     

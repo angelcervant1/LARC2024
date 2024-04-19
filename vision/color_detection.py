@@ -137,47 +137,67 @@ class ColorDetection():
         if self.id == 1: # Colores para camara 1
             #Red = Cubo Red2 = Hoja
             
-            lowerRed = np.array([0,228,94], np.uint8)
-            upperRed = np.array([179,253,109], np.uint8)
+
+            lowerRed = np.array([147,157, 56], np.uint8)
+            upperRed = np.array([180,255,255], np.uint8)
             # lowerRed = np.array([  0,128,119], np.uint8)
             # upperRed = np.array([  8,255,255], np.uint8)
             # lowerRed2 = np.array([0,180,103], np.uint8)
             # upperRed2 = np.array([179,229,152], np.uint8)    
 
-            lowerBlue = np.array([ 88,132, 57], np.uint8)
-            upperBlue = np.array([137,244,238], np.uint8)
 
-            lowerYellow = np.array([11, 87,161], np.uint8)
-            upperYellow = np.array([66,255,255], np.uint8)
+            lowerBlue = np.array([99,77,88], np.uint8)
+            upperBlue = np.array([167,255,141], np.uint8)
 
 
-            lowerGreen = np.array([70,73,55], np.uint8)
-            upperGreen = np.array([ 81,165,109], np.uint8)
+            lowerYellow = np.array([  0,115,138], np.uint8)
+            upperYellow = np.array([180,255,255], np.uint8)
+
+
+
+
+
+            lowerGreen = np.array([78,62,35], np.uint8)
+            upperGreen = np.array([ 92,236,108], np.uint8)
+            lowerGreen2 = np.array([37,54,53], np.uint8)
+            upperGreen2 = np.array([ 99,177,133], np.uint8)
         else: # Colores para camara 2 
             #Red = Cubo Red2 = Hoja
-            lowerRed = np.array([  0,134,137], np.uint8)
-            upperRed = np.array([ 24,235,253], np.uint8)
+            
+
+            lowerRed = np.array([147,157, 56], np.uint8)
+            upperRed = np.array([180,255,255], np.uint8)
+            # lowerRed = np.array([  0,128,119], np.uint8)
+            # upperRed = np.array([  8,255,255], np.uint8)
             # lowerRed2 = np.array([0,180,103], np.uint8)
-            # upperRed2 = np.array([179,229,152], np.uint8)
+            # upperRed2 = np.array([179,229,152], np.uint8)    
 
-            lowerBlue = np.array([ 75,122,110], np.uint8)
-            upperBlue = np.array([130,255,255], np.uint8)
 
-            lowerYellow = np.array([20,101,138], np.uint8)
-            upperYellow = np.array([23,170,181], np.uint8)
+            lowerBlue = np.array([99,77,88], np.uint8)
+            upperBlue = np.array([167,255,141], np.uint8)
 
-            lowerGreen = np.array([ 26, 61,105], np.uint8)
-            upperGreen = np.array([ 86,171,160], np.uint8)
+
+            lowerYellow = np.array([  0,115,138], np.uint8)
+            upperYellow = np.array([180,255,255], np.uint8)
+
+
+
+
+
+            lowerGreen = np.array([78,62,35], np.uint8)
+            upperGreen = np.array([ 92,236,108], np.uint8)
+            lowerGreen2 = np.array([37,54,53], np.uint8)
+            upperGreen2 = np.array([ 99,177,133], np.uint8)
 
         frameHSV = cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
         maskAzul = cv2.inRange(frameHSV, lowerBlue, upperBlue)
         maskVerde1 = cv2.inRange(frameHSV, lowerGreen, upperGreen)
-        #maskVerde2 = cv2.inRange(frameHSV, lowerGreen2, upperGreen2)
+        # maskVerde2 = cv2.inRange(frameHSV, lowerGreen2, upperGreen2)
         maskamarillo = cv2.inRange(frameHSV, lowerYellow, upperYellow)
         maskRed1 = cv2.inRange(frameHSV, lowerRed, upperRed)
         # maskRed2 = cv2.inRange(frameHSV, lowerRed2, upperRed2)
         maskred = maskRed1
-        #maskverde = cv2.add(maskVerde1,maskVerde2)
+        # maskverde = cv2.add(maskVerde1,maskVerde2)
         maskverde = maskVerde1
         self.dibujar(maskAzul,(255,0,0), img2)
         img2 = self.dibujar(maskamarillo,(0,255,255), img2)

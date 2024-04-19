@@ -6,6 +6,7 @@ class Camara:
     def __init__(self, camara , colors, arucos, filter):
         self.colors = colors
         self.arucos = arucos
+        self.camara_number = camara
         self.cap = cv2.VideoCapture(camara)
         self.box = []
         self.lock_box = []
@@ -41,7 +42,7 @@ class Camara:
 
     def camara_refresh(self):
         while True:
-            if (time.time() - self.prev > 5/60):
+            if (time.time() - self.prev > 0):
                 self.prev = time.time()
                 # Reset values
                 self.reset_values()
@@ -57,7 +58,8 @@ class Camara:
                     #Join both arucos and colors images 
                     self.image = self.arucos.detectar_arucos(self.frame)
                     self.image = self.colors.color_detection(self.frame, self.image)
-                    cv2.imshow("frame", self.image)
+                    # cv2.imshow(str(self.camara_number), self.image)
+                    # print(self.ret)
                     break
                     #Show image
     
@@ -68,7 +70,7 @@ class Camara:
                 total = self.colors.color_close
                 closest = 0 
                 for index in range(0, len(total)):
-                    if total[closest][6] < total[index][6] and total[closest][6] > 400:
+                    if total[closest][6] > total[index][6] and total[closest][6] > 400:
                         closest = index
                     elif total[closest][6] == total[index][6]:
                         if total[closest][2] < total[index][2]:
@@ -90,7 +92,8 @@ class Camara:
                             flag = False
                         elif abs(total[index][5] - xmid) < abs(total[box][5] - xmid):
                             box = index
-                if int(total[box][5]) in range(int(xmid - margin), int(xmid + margin)) and int(total[box][6]) in range(int(ymid - margin), int(ymid + margin) and total[box][0] == id): # inside x limits and y limit
+                if (int(total[box][5]) in range(int(xmid - margin), int(xmid + margin)) and int(total[box][6]) in range(int(ymid - margin), int(ymid + margin))
+                    and total[box][0] == str(id)): # inside x limits and y limit
                     self.box = total[box]
                     #self.image = cv2.drawContours(self.image, (int(xmid - margin), int(ymid + margin)), (int(xmid + margin), int(ymid + margin)), (255,0,0), 3)
                     # print("assdfasdf'")
@@ -138,10 +141,13 @@ class Camara:
         if self.ret and self.lock_box != []:
             try:
                 lost, lock_box_new = self.find_specific_cube(self.lock_box[0], self.lock_box[5], self.lock_box[6], 100)
-                # print(lost)
                 if (lost):
-                    # print("ASDASDASDA")
                     self.lock_box = lock_box_new
+                    #Find closeness with area 
+                    area = (self.lock_box[2] - self.lock_box[1]) *  (self.lock_box[4] - self.lock_box[3])
+                    # print(area)
+                    if area > 95000:
+                        return False, self.lock_box 
                     return True, self.lock_box 
                 else:
                     # print("out" + str(lost))

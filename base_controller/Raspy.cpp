@@ -146,9 +146,9 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
                 if(_robot->inFrontOfCube){
                     uint32_t s[] = {1};
                     writeSerial(true, (uint8_t*)s, sizeof(s));
-                } else{
-                 uint32_t s[] = {0};
-                writeSerial(true, (uint8_t*)s, sizeof(s));}
+                }
+                uint32_t s[] = {0};
+                writeSerial(true, (uint8_t*)s, sizeof(s));
             }
             break;
         case 0x08: // tests
