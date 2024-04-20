@@ -463,9 +463,9 @@ void Movement::driveToTarget(float coord_x){
 
     if (abs(xError) > kImageTolerance && !inFrontOfCube) {
       direction = (coord_x > kCentered2Image) ? TORIGHT : TOLEFT;
-      moveDirection(direction, robotAngle_, 0.1, false);
+      moveDirection(direction, robotAngle_, 0.2, false);
     } else if(!inFrontOfCube){
-        moveDirection(FORWARD, robotAngle_, 0.1, false);
+        moveDirection(FORWARD, robotAngle_, 0.2, false);
     }
     else{
       hardStop();

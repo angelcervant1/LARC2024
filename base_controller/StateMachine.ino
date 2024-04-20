@@ -129,7 +129,7 @@ void findOrigin(){
     if(!robot->angleOffsetReached){
         robot->orientedMovement(0.0, 0.0, 0.0);
     }
-    else if (robot->detectedTileFromRaspi()){
+    else if (robot->detectedTilefromRaspi()){
         robot->hardStop();
         robot->setRobotAngle(angleAmount);
         robot->orientedMovement(0.0, 0.0, 0.0);
@@ -282,7 +282,9 @@ void driveToCube(){
         currentState = GRAB_CUBE;
         robot->inFrontOfCube = false;
     }
-    else{
+    else if(robot->inFrontOfAruco && !digitalRead(robot->limitForAruco)){ 
+        robot->moveDirection(FORWARD, robot->getRobotAngle(), 0.2, false);
+    }else{
         float targetXCoord = robot->getCubeCoordFromRaspi(); //send midpoint from image
         robot->driveToTarget(targetXCoord);
     }

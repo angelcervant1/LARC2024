@@ -35,6 +35,7 @@ class Movement {
     bool moveBac;
     float coord_x;
     bool searching_cube;
+    
     //////////////////////////////////Constructor//////////////////////////////////////
     Movement(BNO *bno, LineSensor *lineSensor, ColorSensor *colorSensor);
     //////////////////////////////////Motors//////////////////////////////////////
@@ -49,9 +50,12 @@ class Movement {
     colorNum pastColor;
     float past_check;
     bool inFrontOfCube = false;
+    bool inFrontOfAruco = false;
     bool closestSquare;
     // Initialize motor encoders.
     void initEncoders();
+    static constexpr uint8_t limitForAruco = 12; //change pin
+
 
     //////////////////////////////////PWM//////////////////////////////////////
     // Set same pwm to all motors.
@@ -131,6 +135,7 @@ class Movement {
     static constexpr uint8_t kAnalogPinBackRightMotor = 9;
     static constexpr uint8_t kEncoderPinsBackRightMotor = 18;
     static constexpr uint8_t distanceSensorPin = 31; //change pin
+
 
     // Velocity maximums
     static constexpr double kWheelBase = 0.120;

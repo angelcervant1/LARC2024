@@ -176,6 +176,19 @@ void Raspy::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer
                 writeSerial(true, nullptr, 0);
             }
             break;
+        case 0x0C: // Fnd orgn
+            if (packet_size == 1) { // Check packet size
+                _robot->hardStop();
+                writeSerial(true, nullptr, 0);
+            }
+            break;
+        case 0x0D: // Fnd orgn
+            if (packet_size == 1) { // Check packet size
+                if(_robot->inFrontOfAruco && !digitalRead(_robot->limitForAruco)){ 
+                _robot->moveDirection(FORWARD, _robot->getRobotAngle(), 0.2, false);}
+                writeSerial(true, nullptr, 0);
+            }
+            break;  
         default:
         break;
     }
