@@ -18,7 +18,14 @@ class Camara:
         self.filter = filter
         self.prev = time.time()
         
-        
+    def close(self):
+        self.cap.release()
+        cv2.destroyWindow(str(self.camara_number))
+
+    
+    def open(self):
+        self.cap.open(self.camara_number)
+        self.camara_setup()
     
     def camara_setup(self):
         self.ret, self.frame = self.cap.read()
@@ -41,27 +48,25 @@ class Camara:
         self.total_boxes = []
 
     def camara_refresh(self):
-        while True:
-            if (time.time() - self.prev > 0):
-                self.prev = time.time()
-                # Reset values
-                self.reset_values()
-                # Capture image
-                try: 
-                    self.ret, self.frame = self.cap.read()
-                except:
-                    continue
-                #Verify frame read
-                if self.ret:
-                    if self.filter:
-                        self.orient_camara()
-                    #Join both arucos and colors images 
-                    self.image = self.arucos.detectar_arucos(self.frame)
-                    self.image = self.colors.color_detection(self.frame, self.image)
-                    # cv2.imshow(str(self.camara_number), self.image)
-                    # print(self.ret)
-                    break
-                    #Show image
+        if (time.time() - self.prev > 0):
+            self.prev = time.time()
+            # Reset values
+            self.reset_values()
+            # Capture image
+            try: 
+                self.ret, self.frame = self.cap.read()
+            except:
+                pass
+            #Verify frame read
+            if self.ret:
+                if self.filter:
+                    self.orient_camara()
+                #Join both arucos and colors images 
+                self.image = self.arucos.detectar_arucos(self.frame)
+                self.image = self.colors.color_detection(self.frame, self.image)
+                cv2.imshow(str(self.camara_number), self.image)
+                # print(self.ret)
+                #Show image
     
     def detect_closest_cube(self):
         #Joins al boxes
