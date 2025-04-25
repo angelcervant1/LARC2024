@@ -6,17 +6,17 @@ Our autonomous system was designed to make real-time decisions using data from m
 
 ## Key design goals:
 
-Real-time autonomous navigation
+- Real-time autonomous navigation
 
-Robust obstacle detection and avoidance
+- Robust obstacle detection and avoidance
 
-Accurate target identification and localization
+- Accurate target identification and localization
 
 # 🔧 Key Features & Contributions
-Sensor Fusion: Combined data from ultrasonic sensors, IMU, and wheel encoders to create a reliable estimate of the robot's pose and environment.
+- Sensor Fusion: Combined data from ultrasonic sensors, IMU, and wheel encoders to create a reliable estimate of the robot's pose and environment.
 
-Path Planning Optimization: Implemented and tuned dynamic path-planning algorithms to improve efficiency in navigation and reduce computation latency.
+- Path Planning Optimization: Implemented and tuned dynamic path-planning algorithms to improve efficiency in navigation and reduce computation latency.
 
-Control Systems Design: Developed PID-based controllers to ensure smooth motion and stable trajectory tracking.
+- Control Systems Design: Developed PID-based controllers to ensure smooth motion and stable trajectory tracking. As well a Kinematic Model was used to accurately control the robot's motion.
 
-Robust Performance: Validated the system in real-world scenarios involving dynamic obstacles and variable terrain.
+- Robust Performance: Validated the system in real-world scenarios involving dynamic obstacles and variable terrain.
